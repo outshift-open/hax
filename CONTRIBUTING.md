@@ -1,6 +1,6 @@
 # How to Contribute
 
-Thanks for your interest in contributing to `ActionEngine`! Here are a few
+Thanks for your interest in contributing to `HAX (Human-Agent Experience) Interface`! Here are a few
 general guidelines on contributing and reporting bugs that we ask you to review.
 Following these guidelines helps to communicate that you respect the time of the
 contributors managing and developing this open source project. In return, they
@@ -39,7 +39,7 @@ major version release.
 
 ## Other Ways to Contribute
 
-We welcome anyone that wants to contribute to `ActionEngine` to triage and
+We welcome anyone that wants to contribute to `HAX Interface` to triage and
 reply to open issues to help troubleshoot and fix existing bugs. Here is what
 you can do:
 
@@ -50,9 +50,9 @@ you can do:
   [Wiki](https://github.com/org_name/repo_name/wiki) with up-to-date
   instructions and code samples.
 - Review existing pull requests, and testing patches against real existing
-  applications that use `ActionEngine`.
+  applications that use `HAX Interface`.
 - Write a test, or add a missing test case to an existing test.
 
-Thanks again for your interest on contributing to `ActionEngine`!
+Thanks again for your interest on contributing to `HAX Interface`!
 
 :heart:
