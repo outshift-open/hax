@@ -19,6 +19,8 @@ The HAX Interface provides tools and guidelines for creating consistent, trusted
 
 ## Installation
 
+
+
 ## Architecture Overview
 
 The HAX Interface architecture is designed to facilitate seamless human-agent collaboration. Key components include:
@@ -27,6 +29,12 @@ The HAX Interface architecture is designed to facilitate seamless human-agent co
 - **Reusable UI Components:** Pre-built components for common interaction patterns (e.g., confidence indicators, decision logs, action asks).
 - **HAX Playbooks:** Pre-defined behavioral patterns for agents to follow in specific scenarios.
 - **Looped-In-Human (LIH) Mechanisms:** Tools for agents to involve humans in decision-making when needed.
+
+## CLI Usage
+
+The HAX SDK includes a CLI to `init` setup, `add` components, and more.
+
+To get started with the CLI, see the [CLI README](cli/README.md) for installation and usage instructions.
 
 ## Roadmap
 
