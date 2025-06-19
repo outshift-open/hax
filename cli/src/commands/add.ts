@@ -35,7 +35,7 @@ export const addCommand = new Command("add")
       
     }
 
-    console.log(`\n🚀 Adding ${componentName} component...\n`);
+    console.log(`\n🚀 Copying ${componentName} component...\n`);
 
     await generateComponent(componentName, addBackend, config);
     updateConfig(config);
