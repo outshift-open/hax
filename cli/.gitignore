@@ -1,0 +1,21 @@
+# Node
+node_modules/
+dist/
+.cache/
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# CLI artifacts
+agntcy-hax.yaml
+
+# Environment
+.env
+.DS_Store
+../.DS_Store
+
+frontend/src/components/agntcy/
+backend/tools/
