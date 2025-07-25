@@ -31,10 +31,10 @@ Add a new component:
 ```bash
 agntcy-hax add <ComponentName>
 ```
+
 This creates:
 A frontend component in `frontend/src/components/agntcy/ComponentName`
 An optional backend tool in `backend/tools/ComponentName`
-
 
 ## Project Structure
 
@@ -81,8 +81,8 @@ components: []
 backend_path: "./backend"
 frontend_path: "./frontend"
 frontend_path: "./frontend"
-backend_framework: "LangGraph"      
-frontend_framework: "React" 
+backend_framework: "LangGraph"
+frontend_framework: "React"
 ```
 
 You can modify these paths to match your project structure.
@@ -115,7 +115,7 @@ agntcy-hax add ComponentName
 
 ### list
 
-List existing components 
+List existing components
 
 ```bash
 agntcy-hax list
