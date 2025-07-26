@@ -9,7 +9,7 @@ import {
   resolveRegistryDependencies,
   WORKSPACE_ROOT,
   type RegistryItem,
-} from "../registry/api.js"
+} from "@/api/registry"
 import { logger } from "@/utils/logger"
 
 export async function generateComponent(
