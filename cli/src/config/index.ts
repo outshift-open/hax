@@ -1,66 +1,105 @@
-import fs from "fs";
-import inquirer from "inquirer";
+import fs from "fs"
+import inquirer from "inquirer"
 
-import chalk from "chalk";
-import { printPanelBox } from "@/utils/logger";
-import YAML from "yaml";
+import { logger, printPanelBox, highlighter } from "@/utils/logger"
+import path from "path"
 
 export interface HaxConfig {
-  version: string;
-  components: string[];
-  backend_path: string;
-  frontend_path: string;
-  backend_framework?: string;
-  frontend_framework?: string;
+  $schema?: string
+  style: string
+  artifacts: {
+    path: string
+  }
+  zones: {
+    path: string
+  }
+  messages: {
+    path: string
+  }
+  prompts: {
+    path: string
+  }
+  components?: string[]
+  backend_framework?: string
+  frontend_framework?: string
 }
 
-const CONFIG_FILE = "agntcy-hax.yaml";
+const CONFIG_FILE = "hax.json"
 
 export function readConfig(): HaxConfig {
   if (!fs.existsSync(CONFIG_FILE)) {
-    console.error("\n" + chalk.red("Error: Config file not found. Have you run 'agntcy-hax init'?"));
-    process.exit(1);
+    logger.error(
+      "\n" + "Error: Config file not found. Have you run 'agntcy-hax init'?",
+    )
+    process.exit(1)
   }
+  try {
+    const raw = fs.readFileSync(CONFIG_FILE, "utf-8")
+    const parsed = JSON.parse(raw)
 
-  const raw = fs.readFileSync(CONFIG_FILE, "utf-8");
-  const parsed = parseYAML(raw);
+    if (!parsed.style || !parsed.artifacts?.path) {
+      logger.error("Missing required configuration fields")
+    }
 
-  return {
-    version: parsed.version ?? "0.1.0",
-    components: Array.isArray(parsed.components) ? parsed.components : [],
-    backend_path: parsed.backend_path ?? "./backend",
-    frontend_path: parsed.frontend_path ?? "./frontend",
-    backend_framework: parsed.backend_framework,
-    frontend_framework: parsed.frontend_framework,
-  };
+    return {
+      $schema: parsed.$schema ?? "https://hax.dev/schema.json",
+      style: parsed.style ?? "default",
+      artifacts: parsed.artifacts ?? { path: "src/hax/artifacts" },
+      zones: parsed.zones ?? { path: "src/hax/zones" },
+      messages: parsed.messages ?? { path: "src/hax/messages" },
+      prompts: parsed.prompts ?? { path: "src/hax/prompts" },
+      components: Array.isArray(parsed.components) ? parsed.components : [],
+      backend_framework: parsed.backend_framework,
+      frontend_framework: parsed.frontend_framework,
+    }
+  } catch (error) {
+    const configPath = path.resolve(CONFIG_FILE)
+    logger.error("\n" + `Invalid configuration found in ${configPath}.`)
+    if (error instanceof Error) {
+      logger.error(`Error: ${error.message}`)
+    } else {
+      logger.error(`Error: ${String(error)}`)
+    }
+    process.exit(1)
+  }
 }
 
-
 export function updateConfig(config: HaxConfig): void {
-  fs.writeFileSync(CONFIG_FILE, toYAML(config));
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2))
 }
 
 export async function createConfig(): Promise<void> {
   if (fs.existsSync(CONFIG_FILE)) {
-    console.log(chalk.green(`✅ Config file already exists, skipping initialization.`));
-    return;
+    logger.info(`✅ Config file already exists, skipping initialization.`)
+    return
   }
 
-console.log("\n🧙 Welcome to the HAX SDK initialization wizard!\n");
-  console.log(
-    chalk.gray(
-      "This wizard will help you set up your HAX SDK configuration.\nYou can always change these settings later in the config file.\n"
-    )
-  );
+  logger.info("\n🧙 Welcome to the HAX SDK initialization wizard!\n")
+  logger.debug(
+    "This wizard will help you set up your HAX SDK configuration.\nYou can always change these settings later in the config file.\n",
+  )
 
-  console.log("");
-  console.log(chalk.cyan("💻 Frontend Framework Configuration:"));
-  console.log("");
-  
+  logger.break()
+  logger.info("💻 Frontend Framework Configuration:")
+  logger.break()
+
+  const pathAnswers = await inquirer.prompt([
+    {
+      type: "input",
+      name: "hax_base_path",
+      message: "Where would you like to store your HAX components?",
+      default: "src/hax",
+      validate: (input: string) => {
+        if (!input.trim()) {
+          return "Please enter a valid path"
+        }
+        return true
+      },
+    },
+  ])
+
   const frontendAnswers = await inquirer.prompt([
-    
-
-        {
+    {
       type: "list",
       name: "frontend_framework",
       message: "Choose your front-end framework",
@@ -71,28 +110,14 @@ console.log("\n🧙 Welcome to the HAX SDK initialization wizard!\n");
       ],
       default: "React",
     },
-       {
-      type: "input",
-      name: "frontend_path",
-      message: "Where would you like the front-end components stored?",
-      default: "./frontend",
-    },
+  ])
 
- 
+  logger.break()
+  logger.info("🛠️ Backend Framework Configuration:")
+  logger.break()
+
+  const backendAnswers = await inquirer.prompt([
     {
-      type: "input",
-      name: "version",
-      message: "Enter the initial version",
-      default: "0.1.0",
-    },
-    ]);
-
-    console.log("");
-    console.log(chalk.cyan("🛠️ Backend Framework Configuration:"));
-    console.log("");
-
-    const backendAnswers = await inquirer.prompt([
-        {
       type: "list",
       name: "backend_framework",
       message: "Choose your backend framework",
@@ -104,25 +129,41 @@ console.log("\n🧙 Welcome to the HAX SDK initialization wizard!\n");
       ],
       default: "LangGraph",
     },
-       {
-      type: "input",
-      name: "backend_path",
-      message: "Where would you like the backend tools stored?",
-      default: "./backend",
+  ])
+
+  const basePath = pathAnswers.hax_base_path.replace(/\/$/, "")
+
+  const config: HaxConfig = {
+    $schema: "./schema.json",
+    style: "default",
+    artifacts: {
+      path: `${basePath}/artifacts`,
     },
-  ]);
+    zones: {
+      path: `${basePath}/zones`,
+    },
+    messages: {
+      path: `${basePath}/messages`,
+    },
+    prompts: {
+      path: `${basePath}/prompts`,
+    },
+    components: [],
+    backend_framework: backendAnswers.backend_framework,
+    frontend_framework: frontendAnswers.frontend_framework,
+  }
 
-  console.log("");
+  console.log("")
 
- printPanelBox(
-  `${chalk.yellow("📝 Configuration Summary:")}\n` +
-    `${chalk.gray("Backend Framework:")} ${chalk.magenta(backendAnswers.backend_framework)}\n` +
-    `${chalk.gray("Backend Path:")} ${chalk.magenta(backendAnswers.backend_path)}\n` +
-    `${chalk.gray("Frontend Framework:")} ${chalk.cyan(frontendAnswers.frontend_framework)}\n` +
-    `${chalk.gray("Frontend Path:")} ${chalk.cyan(frontendAnswers.frontend_path)}\n` +
-    `${chalk.gray("Version:")} ${chalk.white(frontendAnswers.version)}\n`
-);
-
+  printPanelBox(
+    `${highlighter.warn("📝 Configuration Summary:")}\n` +
+      `${highlighter.debug("Base Path:")} ${highlighter.info(basePath)}\n` +
+      `${highlighter.debug("Artifacts Path:")} ${highlighter.accent(config.artifacts.path)}\n` +
+      `${highlighter.debug("Frontend Framework:")} ${highlighter.info(config.frontend_framework || "Not set")}\n` +
+      `${highlighter.debug("Backend Framework:")} ${highlighter.accent(config.backend_framework || "Not set")}\n` +
+      `${highlighter.debug("")}\n` +
+      `${highlighter.debug("Note:")} ${highlighter.debug("Additional paths (zones, messages, prompts) will be created as needed when adding components.")}\n`,
+  )
   const confirm = await inquirer.prompt([
     {
       type: "confirm",
@@ -130,38 +171,19 @@ console.log("\n🧙 Welcome to the HAX SDK initialization wizard!\n");
       message: "Do you want to save this configuration?",
       default: true,
     },
-  ]);
+  ])
 
   if (!confirm.save) {
-    console.log(chalk.red("❌ Initialization cancelled. No changes made."));
-    process.exit(1);
+    logger.error("❌ Initialization cancelled. No changes made.")
+    process.exit(1)
   }
 
-  const config: HaxConfig = {
-    version: frontendAnswers.version,
-    components: [],
-    backend_path: backendAnswers.backend_path,
-    frontend_path: frontendAnswers.frontend_path,
-    backend_framework: backendAnswers.backend_framework,
-    frontend_framework: frontendAnswers.frontend_framework,
-  };
+  updateConfig(config)
 
-  updateConfig(config);
-
-console.log("");
-printPanelBox(
-  `${chalk.greenBright("✨ Successfully initialized HAX SDK!")}\n` +
-  `${chalk.white("🎯 You can now start adding components with:")}\n` +
-  `${chalk.blueBright("🚀 agntcy-hax add <component-name>")}`
-);
-
-}
-
-
-function parseYAML(raw: string): Record<string, any>{
-  return YAML.parse(raw);
-}
-
-function toYAML(config: HaxConfig): string {
-  return YAML.stringify(config);
+  console.log("")
+  printPanelBox(
+    `${highlighter.success("✨ Successfully initialized HAX SDK!")}\n` +
+      `${highlighter.debug("🎯 You can now start adding components with:")}\n` +
+      `${highlighter.primary("🚀 agntcy-hax add <component-name>")}`,
+  )
 }

@@ -1,44 +1,56 @@
-import { Command } from "commander";
-import inquirer from "inquirer";
-import chalk from "chalk";
-import { generateComponent } from "../generator";
-import { readConfig, updateConfig } from "../config";
-import { printPanelBox } from "../utils/logger";
-import fs from "fs";
+import { Command } from "commander"
+import inquirer from "inquirer"
+import { generateComponent } from "../generator"
+import { readConfig, updateConfig } from "../config"
+import { logger, highlighter, printPanelBox } from "../utils/logger"
+import fs from "fs"
 
 export const addCommand = new Command("add")
   .argument("<component>", "Component name to add")
   .description("Add an existing HAX component from the library to your project")
   .action(async (componentName: string) => {
-    console.log(`\n🔮 Adding component: ${chalk.blue(componentName)} from HAX library\n`);
+    logger.break()
+    logger.info(
+      `🔮 Adding component: ${highlighter.primary(componentName)} from HAX library`,
+    )
+    logger.break()
 
     const { addBackend } = await inquirer.prompt([
       {
         type: "confirm",
         name: "addBackend",
-        message: "🛠️  Do you want to include the backend tool for this component?",
+        message:
+          "🛠️  Do you want to include the backend tool for this component?",
         default: true,
       },
-    ]);
+    ])
 
-    let config;
+    let config
     try {
-      config = readConfig();
+      config = readConfig()
     } catch (err) {
-      console.error(chalk.redBright(`\nError: ${(err as Error).message}`));
-      return;
+      logger.error(`Error: ${(err as Error).message}`)
+      return
     }
 
-    // Ensure frontend path exists and create it if not
-    if (!fs.existsSync(config.frontend_path)) {
-      console.log(chalk.yellow(`\n⚠️  Frontend path '${config.frontend_path}' does not exist. It will be created.`));
-      
+    // Ensure artifacts path exists and create it if not
+    if (!fs.existsSync(config.artifacts.path)) {
+      logger.warn(
+        `Artifacts path '${config.artifacts.path}' does not exist. It will be created.`,
+      )
+      fs.mkdirSync(config.artifacts.path, { recursive: true })
     }
 
-    console.log(`\n🚀 Copying ${componentName} component...\n`);
+    logger.info(`🚀 Copying ${componentName} component...`)
+    logger.break()
 
-    await generateComponent(componentName, addBackend, config);
-    updateConfig(config);
+    try {
+      await generateComponent(componentName, addBackend, config)
+      updateConfig(config)
+    } catch (err) {
+      logger.error(`Error: ${(err as Error).message}`)
+      return
+    }
 
     const successMsg = [
       `✨ Successfully added ${componentName} component!`,
@@ -46,7 +58,7 @@ export const addCommand = new Command("add")
       "📦 Component is ready to use",
     ]
       .filter(Boolean)
-      .join("\n");
+      .join("\n")
 
-    printPanelBox(successMsg);
-  });
+    printPanelBox(successMsg)
+  })
