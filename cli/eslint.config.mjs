@@ -12,7 +12,6 @@ const compat = new FlatCompat({
 })
 
 const eslintConfig = [
-  
   {
     ignores: [
       "node_modules/**",
@@ -23,7 +22,6 @@ const eslintConfig = [
       "tsup.config.ts",
     ],
   },
-
 
   {
     files: ["**/*.{ts,tsx}"],
@@ -39,7 +37,6 @@ const eslintConfig = [
       "@typescript-eslint": typescriptEslint,
     },
     rules: {
-      
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_" },
@@ -47,15 +44,13 @@ const eslintConfig = [
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-inferrable-types": "warn",
 
-  
-      "no-console": "off", 
+      "no-console": "off",
       "prefer-const": "error",
       "no-var": "error",
       "object-shorthand": "error",
       "prefer-template": "error",
     },
   },
-
 
   ...compat.config({
     extends: ["plugin:prettier/recommended"],
