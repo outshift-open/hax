@@ -6,12 +6,18 @@ import { logger, highlighter, printPanelBox } from "../utils/logger"
 import fs from "fs"
 
 export const addCommand = new Command("add")
-  .argument("<component>", "Component name to add")
+  .argument("[components...]", "Component name(s) to add")
   .description("Add an existing HAX component from the library to your project")
-  .action(async (componentName: string) => {
+  .action(async (componentNames: string[]) => {
+    if (componentNames.length === 0) {
+      logger.error(
+        "No component name provided. Please specify a component to add.",
+      )
+      return
+    }
     logger.break()
     logger.info(
-      `🔮 Adding component: ${highlighter.primary(componentName)} from HAX library`,
+      `🔮 Adding component ${componentNames.length > 1 ? "s" : ""}: ${componentNames.map((name) => highlighter.primary(name)).join(", ")} from HAX library`,
     )
     logger.break()
 
@@ -41,24 +47,44 @@ export const addCommand = new Command("add")
       fs.mkdirSync(config.artifacts.path, { recursive: true })
     }
 
-    logger.info(`🚀 Copying ${componentName} component...`)
-    logger.break()
+    let successCount = 0
+    let errorCount = 0
+    const errors: string[] = []
 
-    try {
-      await generateComponent(componentName, addBackend, config)
-      updateConfig(config)
-    } catch (err) {
-      logger.error(`Error: ${(err as Error).message}`)
-      return
+    for (const componentName of componentNames) {
+      try {
+        logger.info(`Adding ${componentName}...`)
+        await generateComponent(componentName, addBackend, config)
+        successCount++
+      } catch (err) {
+        logger.error(`Error adding ${componentName}: ${(err as Error).message}`)
+        errorCount++
+        errors.push(componentName)
+      }
     }
 
+    try {
+      updateConfig(config)
+    } catch (err) {
+      logger.error(`Error updating config: ${(err as Error).message}`)
+    }
+
+    logger.break()
     const successMsg = [
-      `✨ Successfully added ${componentName} component!`,
-      addBackend ? "🔧 Backend tool was added" : null,
-      "📦 Component is ready to use",
+      `✨ Successfully added ${successCount} component${successCount !== 1 ? "s" : ""}!`,
+      errorCount > 0
+        ? `⚠️ ${errorCount} component${errorCount !== 1 ? "s" : ""} failed`
+        : null,
+      addBackend ? "🔧 Backend tools were added" : null,
+      "📦 Components are ready to use",
     ]
       .filter(Boolean)
       .join("\n")
 
     printPanelBox(successMsg)
+    if (errors.length > 0) {
+      logger.break()
+      logger.error("Failed components:")
+      errors.forEach((error) => logger.error(`  • ${error}`))
+    }
   })
