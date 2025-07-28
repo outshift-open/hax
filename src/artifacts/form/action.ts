@@ -1,13 +1,12 @@
-import { useCopilotAction } from "@copilotkit/react-core"
-import { FormArtifact } from "./types"
+import { useCopilotAction } from "@copilotkit/react-core";
+import { ArtifactTab } from "./types";
 
 interface UseFormActionProps {
   addOrUpdateArtifact: (
     type: "form",
-    data: FormArtifact["data"],  
-  ) => void
+    data: Extract<ArtifactTab, { type: "form" }>["data"]
+  ) => void;
 }
-
 export const useFormAction = ({ addOrUpdateArtifact }: UseFormActionProps) => {
   useCopilotAction({
     name: "create_form",
@@ -27,12 +26,12 @@ export const useFormAction = ({ addOrUpdateArtifact }: UseFormActionProps) => {
       },
     ],
     handler: async (args) => {
-      const { title, fieldsJson } = args
-      const fields = JSON.parse(fieldsJson)
+      const { title, fieldsJson } = args;
+      const fields = JSON.parse(fieldsJson);
 
-      addOrUpdateArtifact("form", { title, fields })
+      addOrUpdateArtifact("form", { title, fields });
 
-      return `Created form "${title}" with ${fields.length} fields`
+      return `Created form "${title}" with ${fields.length} fields`;
     },
-  })
-}
+  });
+};
