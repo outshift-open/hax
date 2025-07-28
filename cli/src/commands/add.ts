@@ -53,6 +53,31 @@ export const addCommand = new Command("add")
 
     for (const componentName of componentNames) {
       try {
+        const { getRegistryItem } = await import("@/api/registry")
+        const component = await getRegistryItem(componentName, "local")
+        if (!component) {
+          errors.push(componentName)
+          errorCount++
+        }
+      } catch (err) {
+        errors.push(componentName)
+        errorCount++
+      }
+    }
+
+    if (errorCount > 0) {
+      logger.break()
+      const componentText =
+        componentNames.length === 1 ? "component" : "components"
+      const doesText = componentNames.length === 1 ? "does" : "do"
+      const errorMsg = `Error adding ${componentText}. Component${componentNames.length === 1 ? "" : "s"} ${doesText} not exist in registry. Please confirm that ${componentText} ${componentNames.length === 1 ? "is" : "are"} valid.`
+
+      logger.error(errorMsg)
+      return
+    }
+
+    for (const componentName of componentNames) {
+      try {
         logger.info(`Adding ${componentName}...`)
         await generateComponent(componentName, addBackend, config)
         successCount++
@@ -70,11 +95,9 @@ export const addCommand = new Command("add")
     }
 
     logger.break()
+
     const successMsg = [
       `✨ Successfully added ${successCount} component${successCount !== 1 ? "s" : ""}!`,
-      errorCount > 0
-        ? `⚠️ ${errorCount} component${errorCount !== 1 ? "s" : ""} failed`
-        : null,
       addBackend ? "🔧 Backend tools were added" : null,
       "📦 Components are ready to use",
     ]
@@ -82,9 +105,4 @@ export const addCommand = new Command("add")
       .join("\n")
 
     printPanelBox(successMsg)
-    if (errors.length > 0) {
-      logger.break()
-      logger.error("Failed components:")
-      errors.forEach((error) => logger.error(`  • ${error}`))
-    }
   })
