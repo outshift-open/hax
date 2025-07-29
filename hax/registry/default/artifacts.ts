@@ -60,4 +60,35 @@ export const artifacts = [
       },
     ],
   },
+  {
+    name: "mindmap",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "@xyflow/react",
+      "elkjs",
+    ],
+    files: [
+      {
+        path: "hax/artifacts/mindmap/mindmap.tsx",
+        type: "registry:component",
+      },
+      {
+        path: "hax/artifacts/mindmap/action.tsx",
+        type: "registry:hook",
+      },
+      {
+        path: "hax/artifacts/mindmap/types.ts",
+        type: "registry:types",
+      },
+      {
+        path: "hax/artifacts/mindmap/index.ts",
+        type: "registry:index",
+      },
+    ],
+  },
 ];
