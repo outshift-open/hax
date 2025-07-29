@@ -59,7 +59,7 @@ export const addCommand = new Command("add")
           errors.push(componentName)
           errorCount++
         }
-      } catch (err) {
+      } catch {
         errors.push(componentName)
         errorCount++
       }

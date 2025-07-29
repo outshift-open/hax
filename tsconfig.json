@@ -6,17 +6,17 @@
     "moduleResolution": "Node",
     "moduleDetection": "force",
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": "hax",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "jsx": "react-jsx",                    
-    "allowSyntheticDefaultImports": true,  
-    "baseUrl": "src",
+    "jsx": "react-jsx",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["hax/*"]
     }
   },
-  "include": ["src"]
+  "include": ["hax"]
 }

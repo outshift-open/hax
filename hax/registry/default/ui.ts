@@ -5,31 +5,35 @@ export const uiComponents = [
     dependencies: ["@radix-ui/react-slot", "class-variance-authority"],
     files: [
       {
-        path: "src/ui/button.tsx",
+        path: "hax/components/ui/button.tsx",
         type: "registry:component",
-      }
-    ]
+      },
+    ],
   },
   {
-    name: "input", 
+    name: "input",
     type: "registry:ui",
     dependencies: ["class-variance-authority"],
     files: [
       {
-        path: "src/ui/input.tsx",
+        path: "hax/components/ui/input.tsx",
         type: "registry:component",
-      }
-    ]
+      },
+    ],
   },
   {
     name: "select",
-    type: "registry:ui", 
-    dependencies: ["@radix-ui/react-select", "class-variance-authority", "lucide-react"],
+    type: "registry:ui",
+    dependencies: [
+      "@radix-ui/react-select",
+      "class-variance-authority",
+      "lucide-react",
+    ],
     files: [
       {
-        path: "src/ui/select.tsx",
+        path: "hax/components/ui/select.tsx",
         type: "registry:component",
-      }
-    ]
+      },
+    ],
   },
-]
+];

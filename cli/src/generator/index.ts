@@ -172,7 +172,8 @@ async function installUIComponent(name: string, _config: HaxConfig) {
   for (const ext of possibleExtensions) {
     const candidatePath = path.join(
       WORKSPACE_ROOT,
-      "src",
+      "hax",
+      "components",
       "ui",
       `${name}${ext}`,
     )
@@ -188,7 +189,7 @@ async function installUIComponent(name: string, _config: HaxConfig) {
     return
   }
 
-  const uiTargetDir = path.resolve("src", "ui")
+  const uiTargetDir = path.resolve("src", "components", "ui")
   fs.mkdirSync(uiTargetDir, { recursive: true })
 
   const uiTargetPath = path.join(uiTargetDir, `${name}${foundExtension}`)
@@ -215,7 +216,7 @@ async function installUIComponent(name: string, _config: HaxConfig) {
 
 // Ensure lib/utils.ts exists. Only copy if it doesn't already exist.
 async function ensureUtilsFile(_config: HaxConfig) {
-  const utilsSourcePath = path.join(WORKSPACE_ROOT, "src", "lib", "utils.ts")
+  const utilsSourcePath = path.join(WORKSPACE_ROOT, "hax", "lib", "utils.ts")
   const utilsTargetDir = path.resolve("src", "lib")
   fs.mkdirSync(utilsTargetDir, { recursive: true })
   const utilsTargetPath = path.join(utilsTargetDir, "utils.ts")

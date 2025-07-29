@@ -1,33 +1,31 @@
-
-
-import React, { useState } from "react"
-import { Button } from "@/ui/button"
-import { Input } from "@/ui/input"
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/ui/select"
+} from "@/components/ui/select";
 
 export interface FormField {
-  type: "text" | "email" | "number" | "select" | "checkbox" | "textarea"
-  label: string
-  placeholder?: string
-  options?: string[]
-  required?: boolean
-  name?: string
-  rows?: number
+  type: "text" | "email" | "number" | "select" | "checkbox" | "textarea";
+  label: string;
+  placeholder?: string;
+  options?: string[];
+  required?: boolean;
+  name?: string;
+  rows?: number;
 }
 
 export interface HAXFormProps {
-  title?: string
-  fields: FormField[]
-  isExecuting?: boolean
+  title?: string;
+  fields: FormField[];
+  isExecuting?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onFormSubmit?: (formTitle: string, data: Record<string, any>) => void
-  onReset?: () => void
+  onFormSubmit?: (formTitle: string, data: Record<string, any>) => void;
+  onReset?: () => void;
 }
 
 export function HAXForm({
@@ -38,35 +36,35 @@ export function HAXForm({
   onReset,
 }: HAXFormProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [formData, setFormData] = useState<Record<string, any>>({})
+  const [formData, setFormData] = useState<Record<string, any>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (isExecuting) {
-      return
+      return;
     }
 
-    await onFormSubmit?.(title, formData)
-  }
+    await onFormSubmit?.(title, formData);
+  };
 
   const handleReset = () => {
     if (isExecuting) {
-      return
+      return;
     }
 
-    setFormData({})
-    onReset?.()
-  }
+    setFormData({});
+    onReset?.();
+  };
 
   const updateField = (name: string, value: unknown) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const getFieldName = (field: FormField, index: number) =>
     field.name ||
     field.label.toLowerCase().replace(/\s+/g, "_") ||
-    `field_${index}`
+    `field_${index}`;
 
   return (
     <div className="mx-auto w-full max-w-4xl p-4">
@@ -76,7 +74,7 @@ export function HAXForm({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             {fields.map((field, index) => {
-              const fieldName = getFieldName(field, index)
+              const fieldName = getFieldName(field, index);
 
               return (
                 <div key={index} className="space-y-1">
@@ -151,7 +149,7 @@ export function HAXForm({
                     />
                   )}
                 </div>
-              )
+              );
             })}
           </div>
 
@@ -174,5 +172,5 @@ export function HAXForm({
         </form>
       </div>
     </div>
-  )
+  );
 }
