@@ -2,9 +2,13 @@ import { existsSync, readFileSync } from "fs"
 import path from "path"
 import { uiComponents } from "@/registry/default/ui"
 // Use native fetch (available in Node 18+)
-import { z } from "zod"
 import { fileURLToPath } from "url"
 import { logger } from "@/utils/logger"
+import {
+  RegistryItem,
+  RegistryItemSchema as registryItemSchema,
+  REGISTRY_SOURCES,
+} from "@/types"
 
 // Get workspace root for file operations
 function getWorkspaceRoot(): string {
@@ -30,41 +34,6 @@ function getWorkspaceRoot(): string {
 
 export const WORKSPACE_ROOT = getWorkspaceRoot()
 
-// Registry schemas
-export const registryItemSchema = z.object({
-  name: z.string(),
-  type: z.enum(["registry:artifacts", "registry:ui", "registry:lib"]),
-  dependencies: z.array(z.string()).optional(),
-  registryDependencies: z.array(z.string()).optional(),
-  files: z.array(
-    z.object({
-      path: z.string(),
-      type: z.string(),
-    }),
-  ),
-})
-
-export type RegistryItem = z.infer<typeof registryItemSchema>
-
-export const registryIndexSchema = z.array(
-  z.object({
-    name: z.string(),
-    type: z.string(),
-  }),
-)
-
-// Support multiple registry sources
-const REGISTRY_SOURCES = {
-  // Local development
-  local: "file://",
-  // Published npm package (not yet published)
-  npm: "",
-  // GitHub branch (for testing)
-  github: (branch: string) =>
-    `https://raw.githubusercontent.com/cisco-eti/agntcy-hax/${branch}/registry/`,
-  cdn: "",
-}
-
 export async function getRegistryItem(name: string, source = "local") {
   try {
     let registryUrl: string
@@ -85,10 +54,10 @@ export async function getRegistryItem(name: string, source = "local") {
     } else if (source.startsWith("github:")) {
       // GitHub branch: github:main, github:develop
       const branch = source.replace("github:", "")
-      registryUrl = `${REGISTRY_SOURCES.github(branch)}default/${name}.json`
+      registryUrl = `${REGISTRY_SOURCES.GITHUB(branch)}default/${name}.json`
     } else {
       // Published registry
-      registryUrl = `${REGISTRY_SOURCES.cdn}${name}.json`
+      registryUrl = `${REGISTRY_SOURCES.CDN}${name}.json`
     }
 
     const response = await fetch(registryUrl)

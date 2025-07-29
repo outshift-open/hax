@@ -1,17 +1,7 @@
 import fs from "fs"
 import path from "path"
 import { logger } from "./logger"
-
-interface CompilerOptions {
-  baseUrl?: string
-  paths?: Record<string, string[]>
-  [key: string]: unknown
-}
-
-interface ProjectConfig {
-  compilerOptions?: CompilerOptions
-  [key: string]: unknown
-}
+import { ProjectConfig } from "@/types"
 
 export function isTypeScriptProject(cwd: string): boolean {
   const tsConfigFiles = [

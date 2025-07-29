@@ -3,6 +3,7 @@ import inquirer from "inquirer"
 import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, highlighter, printPanelBox } from "../utils/logger"
+import { generateComponentMessage } from "../utils/text"
 import fs from "fs"
 
 export const addCommand = new Command("add")
@@ -21,13 +22,13 @@ export const addCommand = new Command("add")
     )
     logger.break()
 
-    const { addBackend } = await inquirer.prompt([
+    const { includeBackendTools } = await inquirer.prompt([
       {
         type: "confirm",
-        name: "addBackend",
+        name: "includeBackendTools",
         message:
           "🛠️  Do you want to include the backend tool for this component?",
-        default: true,
+        default: false,
       },
     ])
 
@@ -49,18 +50,18 @@ export const addCommand = new Command("add")
 
     let successCount = 0
     let errorCount = 0
-    const errors: string[] = []
+    const validationErrors: string[] = []
 
     for (const componentName of componentNames) {
       try {
         const { getRegistryItem } = await import("@/api/registry")
         const component = await getRegistryItem(componentName, "local")
         if (!component) {
-          errors.push(componentName)
+          validationErrors.push(componentName)
           errorCount++
         }
       } catch {
-        errors.push(componentName)
+        validationErrors.push(componentName)
         errorCount++
       }
     }
@@ -79,12 +80,11 @@ export const addCommand = new Command("add")
     for (const componentName of componentNames) {
       try {
         logger.info(`Adding ${componentName}...`)
-        await generateComponent(componentName, addBackend, config)
+        await generateComponent(componentName, includeBackendTools, config)
         successCount++
       } catch (err) {
         logger.error(`Error adding ${componentName}: ${(err as Error).message}`)
         errorCount++
-        errors.push(componentName)
       }
     }
 
@@ -96,13 +96,16 @@ export const addCommand = new Command("add")
 
     logger.break()
 
-    const successMsg = [
-      `✨ Successfully added ${successCount} component${successCount !== 1 ? "s" : ""}!`,
-      addBackend ? "🔧 Backend tools were added" : null,
-      "📦 Components are ready to use",
-    ]
-      .filter(Boolean)
-      .join("\n")
+    if (successCount > 0) {
+      const successMsg = generateComponentMessage(
+        successCount,
+        includeBackendTools,
+        "success",
+      )
 
-    printPanelBox(successMsg)
+      printPanelBox(successMsg)
+    } else {
+      const errorMsg = generateComponentMessage(0, false, "error")
+      logger.error(errorMsg)
+    }
   })

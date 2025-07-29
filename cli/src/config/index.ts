@@ -1,30 +1,8 @@
 import fs from "fs"
 import inquirer from "inquirer"
-
-import { logger, printPanelBox, highlighter } from "@/utils/logger"
 import path from "path"
-
-export interface HaxConfig {
-  $schema?: string
-  style: string
-  artifacts: {
-    path: string
-  }
-  zones: {
-    path: string
-  }
-  messages: {
-    path: string
-  }
-  prompts: {
-    path: string
-  }
-  components?: string[]
-  backend_framework?: string
-  frontend_framework?: string
-}
-
-const CONFIG_FILE = "hax.json"
+import { logger, printPanelBox, highlighter } from "@/utils/logger"
+import { HaxConfig, CONFIG_FILE } from "@/types"
 
 export function readConfig(): HaxConfig {
   if (!fs.existsSync(CONFIG_FILE)) {
