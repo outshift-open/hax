@@ -108,21 +108,10 @@ export const REGISTRY_FILE_TYPES = {
   INDEX: "registry:index",
 } as const
 
-export const REGISTRY_ITEM_TYPES = {
-  ARTIFACTS: "registry:artifacts",
-  UI: "registry:ui",
-  LIB: "registry:lib",
-} as const
-
-export const IMPORT_PATTERNS = {
-  UTILS_RELATIVE: /from ["']\.\.\/lib\/utils["']/g,
-  UTILS_ALIAS: 'from "@/lib/utils"',
-} as const
-
 export const REGISTRY_SOURCES = {
+  GITHUB: (repo: string, branch: string) =>
+    `https://raw.githubusercontent.com/${repo}/${branch}/`,
   LOCAL: "file://",
   NPM: "",
-  GITHUB: (branch: string) =>
-    `https://raw.githubusercontent.com/cisco-eti/agntcy-hax/${branch}/registry/`,
   CDN: "",
 } as const

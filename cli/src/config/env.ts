@@ -13,10 +13,14 @@ dotenv.config({ path: path.join(__dirname, "../../.env"), debug: false })
 console.log = originalConsoleLog
 
 export const ENV_CONFIG = {
-  registrySource: process.env.HAX_REGISTRY_SOURCE || "",
+  registrySource:
+    // process.env.HAX_REGISTRY_SOURCE || "github:component-integration",
+    process.env.HAX_REGISTRY_SOURCE || "local",
+
   github: {
-    repo: process.env.HAX_GITHUB_REPO || "",
-    defaultBranch: process.env.HAX_GITHUB_DEFAULT_BRANCH || "",
+    repo: process.env.HAX_GITHUB_REPO || "cisco-eti/agntcy-hax",
+    defaultBranch: process.env.HAX_GITHUB_DEFAULT_BRANCH || "main",
+    token: process.env.HAX_GITHUB_TOKEN || "",
   },
   cdn: {
     baseUrl: process.env.HAX_CDN_BASE_URL || "",

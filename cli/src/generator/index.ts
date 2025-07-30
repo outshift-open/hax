@@ -73,6 +73,7 @@ async function copyComponentFiles(
   component: RegistryItem,
   name: string,
   config: HaxConfig,
+  createdFiles: string[],
 ) {
   for (const file of component.files) {
     if (!file.content) {
@@ -84,7 +85,12 @@ async function copyComponentFiles(
       const targetDir = path.join(config.artifacts.path, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
-      writeFileIfNotExists(targetPath, file.content, `component file`)
+      writeFileIfNotExists(
+        targetPath,
+        file.content,
+        `component file`,
+        createdFiles,
+      )
     }
 
     if (
@@ -99,7 +105,12 @@ async function copyComponentFiles(
       const targetDir = path.join(config.artifacts.path, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
-      writeFileIfNotExists(targetPath, file.content, `${file.type} file`)
+      writeFileIfNotExists(
+        targetPath,
+        file.content,
+        `${file.type} file`,
+        createdFiles,
+      )
     }
   }
 }
@@ -129,12 +140,13 @@ export async function generateComponent(
   }
 
   const componentName = name.trim()
+  const createdFiles: string[] = []
 
   if (!Array.isArray(config.components)) {
     config.components = []
   }
 
-  const component = await getRegistryItem(componentName, "local")
+  const component = await getRegistryItem(componentName)
   if (!component) {
     throw new Error(
       `Component "${componentName}" not found in registry. Available components can be listed with 'hax list'.`,
@@ -165,9 +177,16 @@ export async function generateComponent(
 
   await installDependencies(npmDependencies, registryDependencies, config)
 
-  await copyComponentFiles(component, componentName, config)
+  await copyComponentFiles(component, componentName, config, createdFiles)
 
-  await ensureUtilsFile(config)
+  await ensureUtilsFile(config, createdFiles)
+
+  if (createdFiles.length > 0) {
+    logger.success("✅ Created:")
+    createdFiles.forEach((file) => {
+      logger.info(`- ${file}`)
+    })
+  }
 
   logger.success(`Added ${componentName} component`)
 
@@ -220,6 +239,7 @@ function writeFileIfNotExists(
   targetPath: string,
   content: string,
   description: string,
+  createdFiles?: string[],
 ) {
   if (!fs.existsSync(targetPath)) {
     try {
@@ -227,7 +247,13 @@ function writeFileIfNotExists(
       fs.mkdirSync(targetDir, { recursive: true })
 
       fs.writeFileSync(targetPath, content)
-      logger.debug(`✅ Created ${description} at ${targetPath}`)
+
+      if (createdFiles && Array.isArray(createdFiles)) {
+        const relativePath = path.relative(process.cwd(), targetPath)
+        createdFiles.push(relativePath)
+      } else if (!createdFiles) {
+        logger.debug(`✅ Created ${description} at ${targetPath}`)
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error)
@@ -241,49 +267,59 @@ function writeFileIfNotExists(
   }
 }
 
+// Get the UI component from registry dependencies
 async function installUIComponent(name: string, _config: HaxConfig) {
-  // Get the UI component from registry
-  const uiComponent = await getRegistryItem(name, "local")
+  const { getRegistryDependency } = await import("@/registry/api")
+  const uiComponent = await getRegistryDependency(name)
   if (!uiComponent) {
     logger.warn(`UI component "${name}" not found in registry`)
     return
   }
 
-  logger.debug(`Installing UI component: ${name}`)
-
-  // Copy UI component files to components/ui directory
   for (const file of uiComponent.files) {
     if (!file.content) {
       logger.warn(`No content found for UI component file: ${file.path}`)
       continue
     }
 
-    // UI components go to components/ui directory
     const targetDir = path.resolve(DIRECTORIES.UI_COMPONENTS)
     fs.mkdirSync(targetDir, { recursive: true })
     const targetPath = path.join(targetDir, path.basename(file.path))
-
-    writeFileIfNotExists(targetPath, file.content, `UI component file`)
+    writeFileIfNotExists(targetPath, file.content, `UI component file`, [])
   }
 }
 
 // Ensure lib/utils.ts exists. Only copy if it doesn't already exist.
-async function ensureUtilsFile(_config: HaxConfig) {
+async function ensureUtilsFile(_config: HaxConfig, createdFiles: string[]) {
   const utilsTargetDir = path.resolve(DIRECTORIES.LIB)
   fs.mkdirSync(utilsTargetDir, { recursive: true })
   const utilsTargetPath = path.join(utilsTargetDir, "utils.ts")
 
-  // If utils file doesn't exist, create it with a basic template
   if (!fs.existsSync(utilsTargetPath)) {
-    // Basic utils template - in the future this could come from registry too
-    const utilsContent = `import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwindcss-merge"
+    try {
+      const { readComponentFile } = await import("@/utils/registry")
+      const utilsContent = readComponentFile("hax/lib/utils.ts")
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-`
-
-    await writeFileIfNotExists(utilsTargetPath, utilsContent, "utils file")
+      if (utilsContent) {
+        writeFileIfNotExists(
+          utilsTargetPath,
+          utilsContent,
+          "utils file",
+          createdFiles,
+        )
+        return
+      } else {
+        throw new Error("Utils file content is empty or could not be read")
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
+      logger.error(`❌ Failed to create utils file: ${errorMessage}`)
+      throw new Error(
+        `Cannot create utils file. The CLI could not read the source utils file from hax/lib/utils.ts. ` +
+          `This may indicate a problem with the CLI installation or file permissions. ` +
+          `Please check your installation and try again.`,
+      )
+    }
   }
 }

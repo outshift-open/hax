@@ -48,7 +48,7 @@ export const addCommand = new Command("add")
     for (const componentName of componentNames) {
       try {
         const { getRegistryItem } = await import("@/registry/api")
-        const component = await getRegistryItem(componentName, "local")
+        const component = await getRegistryItem(componentName)
         if (!component) {
           validationErrors.push(componentName)
           errorCount++
