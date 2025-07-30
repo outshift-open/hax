@@ -19,17 +19,23 @@ export function readConfig(): HaxConfig {
       logger.error("Missing required configuration fields")
     }
 
-    return {
+    const config: HaxConfig = {
       $schema: parsed.$schema ?? "https://hax.dev/schema.json",
       style: parsed.style ?? "default",
       artifacts: parsed.artifacts ?? { path: "src/hax/artifacts" },
-      zones: parsed.zones ?? { path: "src/hax/zones" },
-      messages: parsed.messages ?? { path: "src/hax/messages" },
-      prompts: parsed.prompts ?? { path: "src/hax/prompts" },
       components: Array.isArray(parsed.components) ? parsed.components : [],
-      backend_framework: parsed.backend_framework,
-      frontend_framework: parsed.frontend_framework,
     }
+
+    // Only include optional fields if they exist in the parsed config
+    if (parsed.zones) config.zones = parsed.zones
+    if (parsed.messages) config.messages = parsed.messages
+    if (parsed.prompts) config.prompts = parsed.prompts
+    if (parsed.backend_framework)
+      config.backend_framework = parsed.backend_framework
+    if (parsed.frontend_framework)
+      config.frontend_framework = parsed.frontend_framework
+
+    return config
   } catch (error) {
     const configPath = path.resolve(CONFIG_FILE)
     logger.error("\n" + `Invalid configuration found in ${configPath}.`)
