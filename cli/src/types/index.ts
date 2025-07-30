@@ -33,6 +33,7 @@ export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>
 export const RegistryFileSchema = z.object({
   path: z.string(),
   type: z.string(),
+  content: z.string().optional(),
 })
 
 export const RegistryItemSchema = z.object({

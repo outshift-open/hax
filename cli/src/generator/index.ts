@@ -1,20 +1,14 @@
 import fs from "fs"
 import path from "path"
 import { spawn } from "child_process"
-import { ensurePathAliases, isTypeScriptProject } from "@/utils/project"
+import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
-import {
-  getRegistryItem,
-  resolveRegistryDependencies,
-  WORKSPACE_ROOT,
-} from "@/api/registry"
+import { getRegistryItem, resolveRegistryDependencies } from "@/registry/api"
 import {
   HaxConfig,
   RegistryItem,
-  FILE_EXTENSIONS,
   REGISTRY_FILE_TYPES,
   DIRECTORIES,
-  IMPORT_PATTERNS,
 } from "../types"
 
 async function collectDependencies(component: RegistryItem): Promise<{
@@ -81,17 +75,16 @@ async function copyComponentFiles(
   config: HaxConfig,
 ) {
   for (const file of component.files) {
-    const sourcePath = path.join(WORKSPACE_ROOT, file.path)
+    if (!file.content) {
+      logger.warn(`No content found for file: ${file.path}`)
+      continue
+    }
 
     if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
       const targetDir = path.join(config.artifacts.path, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
-      copyFileIfNotExists(
-        sourcePath,
-        targetPath,
-        `component file "${file.path}"`,
-      )
+      writeFileIfNotExists(targetPath, file.content, `component file`)
     }
 
     if (
@@ -106,11 +99,7 @@ async function copyComponentFiles(
       const targetDir = path.join(config.artifacts.path, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
-      copyFileIfNotExists(
-        sourcePath,
-        targetPath,
-        `${file.type} file "${file.path}"`,
-      )
+      writeFileIfNotExists(targetPath, file.content, `${file.type} file`)
     }
   }
 }
@@ -227,9 +216,9 @@ async function installNPMDependencies(dependencies: string[]) {
   })
 }
 
-function copyFileIfNotExists(
-  sourcePath: string,
+function writeFileIfNotExists(
   targetPath: string,
+  content: string,
   description: string,
 ) {
   if (!fs.existsSync(targetPath)) {
@@ -237,85 +226,64 @@ function copyFileIfNotExists(
       const targetDir = path.dirname(targetPath)
       fs.mkdirSync(targetDir, { recursive: true })
 
-      if (!fs.existsSync(targetPath)) {
-        fs.copyFileSync(sourcePath, targetPath)
-      }
+      fs.writeFileSync(targetPath, content)
+      logger.debug(`✅ Created ${description} at ${targetPath}`)
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error)
       logger.error(
-        `Failed to copy ${description} from "${sourcePath}" to "${targetPath}": ${errorMessage}`,
+        `Failed to write ${description} to "${targetPath}": ${errorMessage}`,
       )
       throw error
     }
+  } else {
+    logger.debug(`⏭️ Skipped ${description} (already exists): ${targetPath}`)
   }
-}
-
-function fixImportsInFile(filePath: string) {
-  const content = fs.readFileSync(filePath, "utf-8")
-  const fixedContent = content.replace(
-    IMPORT_PATTERNS.UTILS_RELATIVE,
-    IMPORT_PATTERNS.UTILS_ALIAS,
-  )
-  fs.writeFileSync(filePath, fixedContent)
 }
 
 async function installUIComponent(name: string, _config: HaxConfig) {
-  // Use project detection to prioritize correct extensions and order extensions based on project type
-  const isTS = isTypeScriptProject(process.cwd())
-
-  const possibleExtensions = isTS
-    ? [
-        ...FILE_EXTENSIONS.TYPESCRIPT,
-        ...FILE_EXTENSIONS.JAVASCRIPT,
-        ...FILE_EXTENSIONS.OTHER,
-      ]
-    : [
-        ...FILE_EXTENSIONS.JAVASCRIPT,
-        ...FILE_EXTENSIONS.TYPESCRIPT,
-        ...FILE_EXTENSIONS.OTHER,
-      ]
-
-  let uiSourcePath: string | null = null
-  let foundExtension: string | null = null
-
-  for (const ext of possibleExtensions) {
-    const candidatePath = path.join(
-      WORKSPACE_ROOT,
-      "hax",
-      "components",
-      "ui",
-      `${name}${ext}`,
-    )
-    if (fs.existsSync(candidatePath)) {
-      uiSourcePath = candidatePath
-      foundExtension = ext
-      break
-    }
-  }
-
-  if (!uiSourcePath || !foundExtension) {
-    logger.warn(`UI component "${name}" not found with any supported extension`)
+  // Get the UI component from registry
+  const uiComponent = await getRegistryItem(name, "local")
+  if (!uiComponent) {
+    logger.warn(`UI component "${name}" not found in registry`)
     return
   }
 
-  const uiTargetDir = path.resolve(DIRECTORIES.UI_COMPONENTS)
-  fs.mkdirSync(uiTargetDir, { recursive: true })
+  logger.debug(`Installing UI component: ${name}`)
 
-  const uiTargetPath = path.join(uiTargetDir, `${name}${foundExtension}`)
+  // Copy UI component files to components/ui directory
+  for (const file of uiComponent.files) {
+    if (!file.content) {
+      logger.warn(`No content found for UI component file: ${file.path}`)
+      continue
+    }
 
-  // Only copy if it doesn't already exist and fix import paths after copying
-  copyFileIfNotExists(uiSourcePath, uiTargetPath, `UI component "${name}"`)
-  if (fs.existsSync(uiTargetPath)) {
-    fixImportsInFile(uiTargetPath)
+    // UI components go to components/ui directory
+    const targetDir = path.resolve(DIRECTORIES.UI_COMPONENTS)
+    fs.mkdirSync(targetDir, { recursive: true })
+    const targetPath = path.join(targetDir, path.basename(file.path))
+
+    writeFileIfNotExists(targetPath, file.content, `UI component file`)
   }
 }
 
 // Ensure lib/utils.ts exists. Only copy if it doesn't already exist.
 async function ensureUtilsFile(_config: HaxConfig) {
-  const utilsSourcePath = path.join(WORKSPACE_ROOT, "hax", "lib", "utils.ts")
   const utilsTargetDir = path.resolve(DIRECTORIES.LIB)
   fs.mkdirSync(utilsTargetDir, { recursive: true })
   const utilsTargetPath = path.join(utilsTargetDir, "utils.ts")
-  copyFileIfNotExists(utilsSourcePath, utilsTargetPath, "utils file")
+
+  // If utils file doesn't exist, create it with a basic template
+  if (!fs.existsSync(utilsTargetPath)) {
+    // Basic utils template - in the future this could come from registry too
+    const utilsContent = `import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwindcss-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+`
+
+    await writeFileIfNotExists(utilsTargetPath, utilsContent, "utils file")
+  }
 }

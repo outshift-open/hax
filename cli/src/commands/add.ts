@@ -40,21 +40,14 @@ export const addCommand = new Command("add")
       return
     }
 
-    // Ensure artifacts path exists and create it if not
-    if (!fs.existsSync(config.artifacts.path)) {
-      logger.warn(
-        `Artifacts path '${config.artifacts.path}' does not exist. It will be created.`,
-      )
-      fs.mkdirSync(config.artifacts.path, { recursive: true })
-    }
-
     let successCount = 0
     let errorCount = 0
     const validationErrors: string[] = []
 
+    // First validate all components exist before creating any directories
     for (const componentName of componentNames) {
       try {
-        const { getRegistryItem } = await import("@/api/registry")
+        const { getRegistryItem } = await import("@/registry/api")
         const component = await getRegistryItem(componentName, "local")
         if (!component) {
           validationErrors.push(componentName)
@@ -75,6 +68,14 @@ export const addCommand = new Command("add")
 
       logger.error(errorMsg)
       return
+    }
+
+    // Ensure artifacts path exists and create it if not (only after validation passes)
+    if (!fs.existsSync(config.artifacts.path)) {
+      logger.warn(
+        `Artifacts path '${config.artifacts.path}' does not exist. It will be created.`,
+      )
+      fs.mkdirSync(config.artifacts.path, { recursive: true })
     }
 
     for (const componentName of componentNames) {

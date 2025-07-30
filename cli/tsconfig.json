@@ -11,9 +11,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/registry/*": ["../hax/registry/*"]
+      "@/*": ["src/*"]
     }
   },
-  "include": ["src", "../hax/registry"]
+  "include": ["src"]
 }

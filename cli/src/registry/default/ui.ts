@@ -1,4 +1,7 @@
-export const uiComponents = [
+import { RegistryItem } from "@/types"
+import { readComponentFile } from "@/utils/registry"
+
+export const uiComponents: RegistryItem[] = [
   {
     name: "button",
     type: "registry:ui",
@@ -7,6 +10,7 @@ export const uiComponents = [
       {
         path: "hax/components/ui/button.tsx",
         type: "registry:component",
+        content: readComponentFile("hax/components/ui/button.tsx"),
       },
     ],
   },
@@ -18,6 +22,7 @@ export const uiComponents = [
       {
         path: "hax/components/ui/input.tsx",
         type: "registry:component",
+        content: readComponentFile("hax/components/ui/input.tsx"),
       },
     ],
   },
@@ -33,7 +38,8 @@ export const uiComponents = [
       {
         path: "hax/components/ui/select.tsx",
         type: "registry:component",
+        content: readComponentFile("hax/components/ui/select.tsx"),
       },
     ],
   },
-];
+]
