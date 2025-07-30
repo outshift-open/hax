@@ -87,10 +87,7 @@ export const addCommand = new Command("add")
     logger.break()
 
     if (successCount > 0) {
-      const successMsg = generateComponentMessage(
-        successCount,
-        "success",
-      )
+      const successMsg = generateComponentMessage(successCount, "success")
 
       printPanelBox(successMsg)
     } else {

@@ -115,10 +115,7 @@ async function copyComponentFiles(
   }
 }
 
-export async function generateComponent(
-  name: string,
-  config: HaxConfig,
-) {
+export async function generateComponent(name: string, config: HaxConfig) {
   // Input validation
   if (!name || typeof name !== "string" || name.trim().length === 0) {
     throw new Error("Component name is required and must be a non-empty string")
