@@ -117,7 +117,6 @@ async function copyComponentFiles(
 
 export async function generateComponent(
   name: string,
-  includeBackendTools: boolean,
   config: HaxConfig,
 ) {
   // Input validation
@@ -129,10 +128,6 @@ export async function generateComponent(
     throw new Error(
       "Component name can only contain letters, numbers, hyphens, and underscores",
     )
-  }
-
-  if (typeof includeBackendTools !== "boolean") {
-    throw new Error("includeBackendTools must be a boolean value")
   }
 
   if (!config || typeof config !== "object") {
@@ -190,16 +185,6 @@ export async function generateComponent(
 
   logger.success(`Added ${componentName} component`)
 
-  if (includeBackendTools) {
-    // For now, we are creating a placeholder backend folder
-    const backendDir = path.join(DIRECTORIES.BACKEND_TOOLS, componentName)
-    fs.mkdirSync(backendDir, { recursive: true })
-    fs.writeFileSync(
-      path.join(backendDir, `${componentName}.py`),
-      `# ${componentName} backend tool`,
-    )
-    logger.success(`✅ Created backend tool folder at ${backendDir}`)
-  }
   if (!config.components.includes(componentName)) {
     config.components.push(componentName)
   }

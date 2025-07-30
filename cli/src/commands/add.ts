@@ -1,5 +1,4 @@
 import { Command } from "commander"
-import inquirer from "inquirer"
 import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, highlighter, printPanelBox } from "../utils/logger"
@@ -21,16 +20,6 @@ export const addCommand = new Command("add")
       `🔮 Adding component ${componentNames.length > 1 ? "s" : ""}: ${componentNames.map((name) => highlighter.primary(name)).join(", ")} from HAX library`,
     )
     logger.break()
-
-    const { includeBackendTools } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "includeBackendTools",
-        message:
-          "🛠️  Do you want to include the backend tool for this component?",
-        default: false,
-      },
-    ])
 
     let config
     try {
@@ -81,7 +70,7 @@ export const addCommand = new Command("add")
     for (const componentName of componentNames) {
       try {
         logger.info(`Adding ${componentName}...`)
-        await generateComponent(componentName, includeBackendTools, config)
+        await generateComponent(componentName, config)
         successCount++
       } catch (err) {
         logger.error(`Error adding ${componentName}: ${(err as Error).message}`)
@@ -100,13 +89,12 @@ export const addCommand = new Command("add")
     if (successCount > 0) {
       const successMsg = generateComponentMessage(
         successCount,
-        includeBackendTools,
         "success",
       )
 
       printPanelBox(successMsg)
     } else {
-      const errorMsg = generateComponentMessage(0, false, "error")
+      const errorMsg = generateComponentMessage(0, "error")
       logger.error(errorMsg)
     }
   })

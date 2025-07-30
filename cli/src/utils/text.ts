@@ -12,7 +12,6 @@ export const conjugate = (
 
 export const generateComponentMessage = (
   count: number,
-  addBackend: boolean,
   type: "success" | "error",
 ): string => {
   const componentText = pluralize(count, "component")
@@ -20,7 +19,6 @@ export const generateComponentMessage = (
   if (type === "success") {
     return [
       `✨ Successfully added ${count} ${componentText}!`,
-      addBackend ? "🔧 Backend tools were added" : null,
       "📦 Components are ready to use",
     ]
       .filter(Boolean)
