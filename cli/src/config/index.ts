@@ -82,15 +82,6 @@ export async function createConfig(): Promise<void> {
     artifacts: {
       path: `${basePath}/artifacts`,
     },
-    zones: {
-      path: `${basePath}/zones`,
-    },
-    messages: {
-      path: `${basePath}/messages`,
-    },
-    prompts: {
-      path: `${basePath}/prompts`,
-    },
     components: [],
   }
 
@@ -99,9 +90,7 @@ export async function createConfig(): Promise<void> {
   printPanelBox(
     `${highlighter.warn("📝 Configuration Summary:")}\n` +
       `${highlighter.debug("Base Path:")} ${highlighter.info(basePath)}\n` +
-      `${highlighter.debug("Artifacts Path:")} ${highlighter.accent(config.artifacts.path)}\n` +
-      `${highlighter.debug("")}\n` +
-      `${highlighter.debug("Note:")} ${highlighter.debug("Additional paths (zones, messages, prompts) will be created as needed when adding components.")}\n`,
+      `${highlighter.debug("Artifacts Path:")} ${highlighter.accent(config.artifacts.path)}\n`,
   )
   const confirm = await inquirer.prompt([
     {

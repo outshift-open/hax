@@ -90,15 +90,21 @@ export const HaxConfigSchema = z.object({
   artifacts: z.object({
     path: z.string(),
   }),
-  zones: z.object({
-    path: z.string(),
-  }),
-  messages: z.object({
-    path: z.string(),
-  }),
-  prompts: z.object({
-    path: z.string(),
-  }),
+  zones: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
+  messages: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
+  prompts: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
   components: z.array(z.string()).optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
