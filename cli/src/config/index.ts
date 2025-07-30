@@ -58,8 +58,6 @@ export async function createConfig(): Promise<void> {
   )
 
   logger.break()
-  logger.info("💻 Frontend Framework Configuration:")
-  logger.break()
 
   const pathAnswers = await inquirer.prompt([
     {
@@ -73,39 +71,6 @@ export async function createConfig(): Promise<void> {
         }
         return true
       },
-    },
-  ])
-
-  const frontendAnswers = await inquirer.prompt([
-    {
-      type: "list",
-      name: "frontend_framework",
-      message: "Choose your front-end framework",
-      choices: [
-        { name: "React", value: "React" },
-        { name: "Vue", value: "Vue" },
-        { name: "Custom", value: "Custom" },
-      ],
-      default: "React",
-    },
-  ])
-
-  logger.break()
-  logger.info("🛠️ Backend Framework Configuration:")
-  logger.break()
-
-  const backendAnswers = await inquirer.prompt([
-    {
-      type: "list",
-      name: "backend_framework",
-      message: "Choose your backend framework",
-      choices: [
-        { name: "LangGraph", value: "LangGraph" },
-        { name: "Autogen", value: "Autogen" },
-        { name: "AICanvas", value: "AICanvas" },
-        { name: "Custom", value: "Custom" },
-      ],
-      default: "LangGraph",
     },
   ])
 
@@ -127,8 +92,6 @@ export async function createConfig(): Promise<void> {
       path: `${basePath}/prompts`,
     },
     components: [],
-    backend_framework: backendAnswers.backend_framework,
-    frontend_framework: frontendAnswers.frontend_framework,
   }
 
   console.log("")
@@ -137,8 +100,6 @@ export async function createConfig(): Promise<void> {
     `${highlighter.warn("📝 Configuration Summary:")}\n` +
       `${highlighter.debug("Base Path:")} ${highlighter.info(basePath)}\n` +
       `${highlighter.debug("Artifacts Path:")} ${highlighter.accent(config.artifacts.path)}\n` +
-      `${highlighter.debug("Frontend Framework:")} ${highlighter.info(config.frontend_framework || "Not set")}\n` +
-      `${highlighter.debug("Backend Framework:")} ${highlighter.accent(config.backend_framework || "Not set")}\n` +
       `${highlighter.debug("")}\n` +
       `${highlighter.debug("Note:")} ${highlighter.debug("Additional paths (zones, messages, prompts) will be created as needed when adding components.")}\n`,
   )
@@ -146,7 +107,7 @@ export async function createConfig(): Promise<void> {
     {
       type: "confirm",
       name: "save",
-      message: "Do you want to save this configuration?",
+      message: "Do you want to save this configuration to hax.json?",
       default: true,
     },
   ])
