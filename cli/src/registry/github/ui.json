@@ -1,0 +1,24 @@
+{
+  "button": {
+    "type": "registry:ui",
+    "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "button.tsx", "type": "registry:component" }]
+  },
+  "input": {
+    "type": "registry:ui",
+    "dependencies": ["class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "input.tsx", "type": "registry:component" }]
+  },
+  "select": {
+    "type": "registry:ui",
+    "dependencies": [
+      "@radix-ui/react-select",
+      "class-variance-authority",
+      "lucide-react"
+    ],
+    "registryDependencies": [],
+    "files": [{ "name": "select.tsx", "type": "registry:component" }]
+  }
+}

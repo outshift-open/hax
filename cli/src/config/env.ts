@@ -14,8 +14,8 @@ console.log = originalConsoleLog
 
 export const ENV_CONFIG = {
   registrySource:
-    // process.env.HAX_REGISTRY_SOURCE || "github:component-integration",
-    process.env.HAX_REGISTRY_SOURCE || "local",
+    process.env.HAX_REGISTRY_SOURCE || "github:component-integration",
+  // process.env.HAX_REGISTRY_SOURCE || "local",
 
   github: {
     repo: process.env.HAX_GITHUB_REPO || "cisco-eti/agntcy-hax",

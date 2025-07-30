@@ -1,6 +1,6 @@
 import { uiComponents } from "@/registry/default/ui"
 import { logger } from "@/utils/logger"
-import { RegistryItem, REGISTRY_SOURCES } from "@/types"
+import { RegistryItem, REGISTRY_SOURCES, GitHubRegistryMetadata } from "@/types"
 import { ENV_CONFIG } from "@/config/env"
 
 export async function getRegistryItem(
@@ -43,7 +43,7 @@ export async function getRegistryDependency(
     const registrySource = source || ENV_CONFIG.registrySource
 
     if (registrySource === "local") {
-      // Look for UI components (registry dependencies)
+      // Look for UI components
       const uiComponent = await getUIComponent(name)
       return uiComponent || null
     } else if (registrySource.startsWith("github:")) {
@@ -107,91 +107,111 @@ async function getGitHubRegistryItem(
   name: string,
   branch: string,
 ): Promise<RegistryItem | null> {
-  const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
+  // Fetch metadata first
+  const metadata = await fetchGitHubRegistryMetadata("artifacts", branch)
+  if (!metadata || !metadata[name]) {
+    logger.debug(`Component "${name}" not found in GitHub artifacts metadata`)
+    return null
+  }
 
-  const artifactComponent = await fetchGitHubComponent(
+  const componentMeta = metadata[name]
+
+  // Fetch the actual component files based on metadata
+  return await fetchGitHubComponentFromMetadata(
     name,
     "artifacts",
-    `${baseUrl}hax/artifacts/${name}/${name}.tsx`,
+    componentMeta,
     branch,
   )
-  return artifactComponent
 }
 
 async function getGitHubRegistryDependency(
   name: string,
   branch: string,
 ): Promise<RegistryItem | null> {
-  const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
+  // Fetch metadata first
+  const metadata = await fetchGitHubRegistryMetadata("ui", branch)
+  if (!metadata || !metadata[name]) {
+    logger.debug(`UI component "${name}" not found in GitHub UI metadata`)
+    return null
+  }
 
-  const uiComponent = await fetchGitHubComponent(
+  const componentMeta = metadata[name]
+
+  // Fetch the actual component files based on metadata
+  return await fetchGitHubComponentFromMetadata(
     name,
     "ui",
-    `${baseUrl}hax/components/ui/${name}.tsx`,
+    componentMeta,
     branch,
   )
-  return uiComponent
 }
 
-async function fetchGitHubComponent(
+async function fetchGitHubRegistryMetadata(
+  type: "artifacts" | "ui",
+  branch: string,
+): Promise<GitHubRegistryMetadata | null> {
+  try {
+    const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
+    const metadataUrl = `${baseUrl}cli/src/registry/github/${type}.json`
+
+    const response = await fetchGitHubFile(metadataUrl)
+    if (!response) {
+      logger.debug(`No GitHub registry metadata found at ${metadataUrl}`)
+      return null
+    }
+
+    return JSON.parse(response) as GitHubRegistryMetadata
+  } catch (error) {
+    logger.error(
+      `Failed to parse GitHub registry metadata for ${type}: ${error}`,
+    )
+    return null
+  }
+}
+
+async function fetchGitHubComponentFromMetadata(
   name: string,
-  type: "ui" | "artifacts",
-  mainFileUrl: string,
+  type: "artifacts" | "ui",
+  metadata: GitHubRegistryMetadata[string],
   branch: string,
 ): Promise<RegistryItem | null> {
   try {
-    const content = await fetchGitHubFile(mainFileUrl)
-    if (!content) return null
-
+    const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
     const registryItem: RegistryItem = {
       name,
-      type: type === "ui" ? "registry:ui" : "registry:artifacts",
-      files: [
-        {
-          path:
-            type === "ui"
-              ? `hax/components/ui/${name}.tsx`
-              : `hax/artifacts/${name}/${name}.tsx`,
-          type: "registry:component",
-          content,
-        },
-      ],
+      type: metadata.type,
+      dependencies:
+        metadata.dependencies.length > 0 ? metadata.dependencies : undefined,
+      registryDependencies:
+        metadata.registryDependencies.length > 0
+          ? metadata.registryDependencies
+          : undefined,
+      files: [],
     }
 
-    if (type === "artifacts") {
-      const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
-      const additionalFiles = [
-        { name: "action.ts", type: "registry:hook" },
-        { name: "types.ts", type: "registry:types" },
-        { name: "index.ts", type: "registry:index" },
-      ]
+    // Fetch all files specified in metadata
+    for (const fileInfo of metadata.files) {
+      const filePath =
+        type === "artifacts"
+          ? `hax/artifacts/${name}/${fileInfo.name}`
+          : `hax/components/ui/${fileInfo.name}`
 
-      for (const file of additionalFiles) {
-        const fileUrl = `${baseUrl}hax/artifacts/${name}/${file.name}`
-        const fileContent = await fetchGitHubFile(fileUrl)
-        if (fileContent) {
-          registryItem.files.push({
-            path: `hax/artifacts/${name}/${file.name}`,
-            type: file.type,
-            content: fileContent,
-          })
-        }
+      const fileUrl = `${baseUrl}${filePath}`
+      const fileContent = await fetchGitHubFile(fileUrl)
+
+      if (fileContent) {
+        registryItem.files.push({
+          path: filePath,
+          type: fileInfo.type,
+          content: fileContent,
+        })
+      } else {
+        logger.debug(`Could not fetch file: ${fileUrl}`)
       }
     }
 
-    // Try to extract dependencies from the content (basic regex parsing)
-    const dependencies = extractDependencies(content)
-    if (dependencies.length > 0) {
-      registryItem.dependencies = dependencies
-    }
-
-    // Extract registry dependencies (UI components used)
-    const registryDependencies = extractRegistryDependencies(content)
-    if (registryDependencies.length > 0) {
-      registryItem.registryDependencies = registryDependencies
-    }
-
-    return registryItem
+    return registryItem.files.length > 0 ? registryItem : null
   } catch (error) {
     logger.error(`Failed to fetch GitHub component "${name}": ${error}`)
     return null
@@ -227,47 +247,4 @@ async function fetchGitHubFile(url: string): Promise<string | null> {
     logger.debug(`Failed to fetch file from ${url}: ${error}`)
     return null
   }
-}
-
-function extractDependencies(content: string): string[] {
-  const dependencies: string[] = []
-
-  // Extract npm package imports (basic detection)
-  const npmImportMatches = content.match(/from\s+["']([^@\/][^"']+)["']/g)
-  if (npmImportMatches) {
-    for (const match of npmImportMatches) {
-      const packageName = match.match(/["']([^"']+)["']/)?.[1]
-      if (
-        packageName &&
-        !packageName.startsWith("./") &&
-        !packageName.startsWith("../")
-      ) {
-        // Basic npm package detection - you might want to refine this
-        if (!dependencies.includes(packageName)) {
-          dependencies.push(packageName)
-        }
-      }
-    }
-  }
-
-  return dependencies
-}
-
-function extractRegistryDependencies(content: string): string[] {
-  const registryDependencies: string[] = []
-
-  // Extract UI component imports
-  const uiImportMatches = content.match(
-    /from\s+["']@\/components\/ui\/(\w+)["']/g,
-  )
-  if (uiImportMatches) {
-    for (const match of uiImportMatches) {
-      const componentName = match.match(/\/(\w+)["']/)?.[1]
-      if (componentName && !registryDependencies.includes(componentName)) {
-        registryDependencies.push(componentName)
-      }
-    }
-  }
-
-  return registryDependencies
 }

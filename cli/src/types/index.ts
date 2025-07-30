@@ -55,6 +55,19 @@ export type RegistryFile = z.infer<typeof RegistryFileSchema>
 export type RegistryItem = z.infer<typeof RegistryItemSchema>
 export type RegistryIndex = z.infer<typeof RegistryIndexSchema>
 
+// GitHub registry metadata types
+export interface GitHubRegistryMetadata {
+  [componentName: string]: {
+    type: RegistryItemType
+    dependencies: string[]
+    registryDependencies: string[]
+    files: Array<{
+      name: string
+      type: RegistryFileType
+    }>
+  }
+}
+
 export const CompilerOptionsSchema = z
   .object({
     baseUrl: z.string().optional(),
