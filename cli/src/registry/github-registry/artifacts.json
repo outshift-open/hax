@@ -63,8 +63,7 @@
       "zod",
       "@copilotkit/react-core",
       "@monaco-editor/react",
-      "monaco-editor",
-      "@types/monaco-editor"
+      "monaco-editor"
     ],
     "registryDependencies": ["select", "generated-ui-wrapper"],
     "files": [
