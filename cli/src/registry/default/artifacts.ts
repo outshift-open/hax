@@ -147,4 +147,43 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "details",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
+    registryDependencies: ["card", "table"],
+    files: [
+      {
+        path: "hax/artifacts/details/details.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/artifacts/details/details.tsx"),
+      },
+      {
+        path: "hax/artifacts/details/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/artifacts/details/action.ts"),
+      },
+      {
+        path: "hax/artifacts/details/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/details/types.ts"),
+      },
+      {
+        path: "hax/artifacts/details/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/details/index.ts"),
+      },
+      {
+        path: "hax/artifacts/details/description.ts",
+        type: "registry:description",
+        content: readComponentFile("hax/artifacts/details/description.ts"),
+      },
+    ],
+  },
 ]

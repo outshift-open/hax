@@ -28,5 +28,17 @@
     "files": [
       { "name": "generated-ui-wrapper.tsx", "type": "registry:component" }
     ]
+  },
+  "table": {
+    "type": "registry:ui",
+    "dependencies": ["class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "table.tsx", "type": "registry:component" }]
+  },
+  "card": {
+    "type": "registry:ui",
+    "dependencies": ["class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "card.tsx", "type": "registry:component" }]
   }
 }

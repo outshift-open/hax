@@ -43,6 +43,30 @@ export const uiComponents: RegistryItem[] = [
     ],
   },
   {
+    name: "card",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/card.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/card.tsx"),
+      },
+    ],
+  },
+  {
+    name: "table",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/table.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/table.tsx"),
+      },
+    ],
+  },
+  {
     name: "generated-ui-wrapper",
     type: "registry:ui",
     dependencies: [],

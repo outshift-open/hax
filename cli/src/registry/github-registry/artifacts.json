@@ -1,5 +1,4 @@
 {
-  "_comment": "Updated Monaco dependencies - removed non-existent @types/monaco-editor",
   "form": {
     "type": "registry:artifacts",
     "dependencies": [
@@ -69,6 +68,25 @@
     "registryDependencies": ["select", "generated-ui-wrapper"],
     "files": [
       { "name": "code-editor.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  },
+  "details": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react"
+    ],
+    "registryDependencies": ["table", "card"],
+    "files": [
+      { "name": "details.tsx", "type": "registry:component" },
       { "name": "action.ts", "type": "registry:hook" },
       { "name": "types.ts", "type": "registry:types" },
       { "name": "index.ts", "type": "registry:index" },
