@@ -20,6 +20,17 @@ npm link
 
 ## Quick Start
 
+**Important**: Create a `.env` file in your project directory with your GitHub token:
+
+```bash
+# .env file
+HAX_REGISTRY_SOURCE=github:component-integration
+HAX_GITHUB_TOKEN=your_github_token_here
+```
+
+Get your GitHub token from: https://github.com/settings/tokens  
+(Required because the agntcy-hax repository is private)
+
 Initialize HAX in your project:
 
 ```bash

@@ -58,6 +58,15 @@ export async function createConfig(): Promise<void> {
     return
   }
 
+  if (!fs.existsSync("package.json")) {
+    logger.error(
+      "\n" +
+        "Error: No package.json found in current directory.\n" +
+        "Please run 'agntcy-hax init' in a Node.js project directory.",
+    )
+    process.exit(1)
+  }
+
   logger.info("\n🧙 Welcome to the HAX SDK initialization wizard!\n")
   logger.debug(
     "This wizard will help you set up your HAX SDK configuration.\nYou can always change these settings later in the config file.\n",

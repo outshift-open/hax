@@ -117,6 +117,7 @@ export const CONFIG_FILE = "hax.json"
 
 export const DIRECTORIES = {
   UI_COMPONENTS: "src/components/ui",
+  COMPONENTS: "src/components",
   LIB: "src/lib",
   BACKEND_TOOLS: "backend/tools",
 } as const

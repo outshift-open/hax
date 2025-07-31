@@ -3,7 +3,12 @@ import path from "path"
 import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
-import { getRegistryItem, resolveRegistryDependencies } from "@/registry/api"
+import {
+  getRegistryItem,
+  resolveRegistryDependencies,
+  getRegistryDependency,
+} from "@/registry/api"
+import { readComponentFile } from "@/utils/registry"
 import {
   HaxConfig,
   RegistryItem,
@@ -263,7 +268,6 @@ function writeFileIfNotExists(
 
 // Get the UI component from registry dependencies
 async function installUIComponent(name: string, _config: HaxConfig) {
-  const { getRegistryDependency } = await import("@/registry/api")
   const uiComponent = await getRegistryDependency(name)
   if (!uiComponent) {
     logger.warn(`UI component "${name}" not found in registry`)
@@ -276,7 +280,11 @@ async function installUIComponent(name: string, _config: HaxConfig) {
       continue
     }
 
-    const targetDir = path.resolve(DIRECTORIES.UI_COMPONENTS)
+    // Determine target directory based on component name
+    const targetDir = name === "generated-ui-wrapper" 
+      ? path.resolve(DIRECTORIES.COMPONENTS)
+      : path.resolve(DIRECTORIES.UI_COMPONENTS)
+    
     fs.mkdirSync(targetDir, { recursive: true })
     const targetPath = path.join(targetDir, path.basename(file.path))
     writeFileIfNotExists(targetPath, file.content, `UI component file`, [])
@@ -291,7 +299,6 @@ async function ensureUtilsFile(_config: HaxConfig, createdFiles: string[]) {
 
   if (!fs.existsSync(utilsTargetPath)) {
     try {
-      const { readComponentFile } = await import("@/utils/registry")
       const utilsContent = readComponentFile("hax/lib/utils.ts")
 
       if (utilsContent) {
