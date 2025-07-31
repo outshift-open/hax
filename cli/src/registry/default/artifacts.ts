@@ -156,6 +156,7 @@ export const artifacts: RegistryItem[] = [
       "tailwind-merge",
       "zod",
       "@copilotkit/react-core",
+      "lucide-react",
     ],
     registryDependencies: ["card", "table"],
     files: [
@@ -183,6 +184,51 @@ export const artifacts: RegistryItem[] = [
         path: "hax/artifacts/details/description.ts",
         type: "registry:description",
         content: readComponentFile("hax/artifacts/details/description.ts"),
+      },
+    ],
+  },
+  {
+    name: "data-visualizer",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "react-chartjs-2",
+      "chart.js",
+    ],
+    registryDependencies: [],
+    files: [
+      {
+        path: "hax/artifacts/data-visualizer/data-visualizer.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/data-visualizer/data-visualizer.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/data-visualizer/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/artifacts/data-visualizer/action.ts"),
+      },
+      {
+        path: "hax/artifacts/data-visualizer/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/data-visualizer/types.ts"),
+      },
+      {
+        path: "hax/artifacts/data-visualizer/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/data-visualizer/index.ts"),
+      },
+      {
+        path: "hax/artifacts/data-visualizer/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/data-visualizer/description.ts",
+        ),
       },
     ],
   },
