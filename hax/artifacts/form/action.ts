@@ -1,5 +1,6 @@
 import { useCopilotAction } from "@copilotkit/react-core";
 import { ArtifactTab } from "./types";
+import { FORM_DESCRIPTION } from "./description";
 
 interface UseFormActionProps {
   addOrUpdateArtifact: (
@@ -10,7 +11,7 @@ interface UseFormActionProps {
 export const useFormAction = ({ addOrUpdateArtifact }: UseFormActionProps) => {
   useCopilotAction({
     name: "create_form",
-    description: "Create a dynamic form for data collection",
+    description: FORM_DESCRIPTION,
     parameters: [
       {
         name: "title",

@@ -1,5 +1,6 @@
 import { useCopilotAction } from "@copilotkit/react-core";
 import { ArtifactTab, TIMELINE_STATUSES, TimelineItem } from "./types";
+import { TIMELINE_DESCRIPTION } from "./description";
 
 interface UseTimelineActionProps {
   addOrUpdateArtifact: (
@@ -15,8 +16,7 @@ export const useTimelineAction = ({
 }: UseTimelineActionProps) => {
   useCopilotAction({
     name: "create_timeline",
-    description:
-      "Add, track or update the activity timeline with EVERY action taken by the agent, including successful, failed, attempted or input-required actions",
+    description: TIMELINE_DESCRIPTION,
     parameters: [
       {
         name: "title",

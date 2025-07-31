@@ -1,5 +1,6 @@
 import { useCopilotAction } from "@copilotkit/react-core";
 import { ArtifactTab } from "./types";
+import { MINDMAP_DESCRIPTION } from "./description";
 
 interface UseMindmapActionProps {
   addOrUpdateArtifact: (
@@ -14,7 +15,7 @@ export const useMindmapAction = ({
   useCopilotAction(
     {
       name: "create_mindmap",
-      description: "Create a mindmap visualization with nodes and connections",
+      description: MINDMAP_DESCRIPTION,
       available: "enabled",
       parameters: [
         {
