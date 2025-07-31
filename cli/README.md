@@ -2,10 +2,10 @@
   <img src="assets/repo-img.png" alt="Agntcy HAX SDK" width="200">
 </p>
 
-<h1 align="center">HAX CLI</h1>
+<h1 align="center">HAX SDK</h1>
 
 <p align="center">
-A human-AI experience repository focused on providing composable building blocks for rich, agentic user experiences.
+A human-AI experience CLI tool for installing composable building blocks for rich, agentic user experiences.
 </p>
 
 ## Installation
@@ -18,111 +18,244 @@ npm run build
 npm link
 ```
 
-## Usage
+## Quick Start
 
-Initialize HAX SDK in your project:
-
-```bash
-agntcy-hax init
-```
-
-Add a new component:
-
-```bash
-agntcy-hax add <ComponentName>
-```
-
-This creates:
-A frontend component in `frontend/src/components/agntcy/ComponentName`
-An optional backend tool in `backend/tools/ComponentName`
-
-## Project Structure
-
-- `src/`: Main package directory
-  - `index.ts`: Main CLI entry point
-  - `commands/`: Command implementations (add, init, list)
-  - `config/`: Configuration management (agntcy-hax.yaml handler)
-  - `generator/`: Component generation logic (creates frontend/backend files)
-  - `utils.py`: Utility functions (e.g., box logger for CLI output)
-
-## Development
-
-1. Live dev (optional)
-
-```bash
-npm run dev
-```
-
-2. Build CLI output
-
-```bash
-npm run build
-```
-
-3. Link to system globally
-
-```bash
-npm link
-```
-
-4. Run commands:
-
-```bash
-agntcy-hax --help
-```
-
-## Configuration
-
-The tool creates a `agntcy-hax.yaml` file in your project root with the following structure:
-
-```yaml
-version: "0.1.0"
-components: []
-backend_path: "./backend"
-frontend_path: "./frontend"
-frontend_path: "./frontend"
-backend_framework: "LangGraph"
-frontend_framework: "React"
-```
-
-You can modify these paths to match your project structure.
-
-## Component Generation
-
-When adding a component:
-
-- Frontend component is created in `{frontend_path}/src/components/agntcy/`
-- Backend tool (optional) is created in `{backend_path}/tools/`
-- Component is registered in the configuration file
-
-## Commands
-
-### init
-
-Initialize HAX SDK in the current project:
+Initialize HAX in your project:
 
 ```bash
 agntcy-hax init
 ```
 
-### add
-
-Add a new HAX component:
+Add components to your project:
 
 ```bash
-agntcy-hax add ComponentName
+agntcy-hax add form
+agntcy-hax add code-editor data-visualizer
 ```
 
-### list
-
-List existing components
+List available components:
 
 ```bash
 agntcy-hax list
 ```
 
-The tool will prompt you to decide if you want to generate a backend tool for the component.
+## Available Components
+
+- **form** - Dynamic form builder
+- **timeline** - Activity timeline with status indicators
+- **mindmap** - Interactive mindmap with auto-layout
+- **code-editor** - Monaco-based code editor
+- **details** - Statistics and data display component
+- **data-visualizer** - Data visualization wrapper
+
+## Configuration
+
+The CLI creates a `hax.json` file in your project:
+
+```json
+{
+  "$schema": "./schema.json",
+  "style": "default",
+  "artifacts": {
+    "path": "src/hax/artifacts"
+  },
+  "components": []
+}
+```
+
+### Configuration Options
+
+- **artifacts.path**: Where components are installed (default: `src/hax`)
+- **components**: List of installed components (auto-managed)
+- **style**: Component styling variant (default: "default")
+
+## Registry Sources
+
+The CLI supports multiple registry sources:
+
+### GitHub Registry (Default)
+
+```bash
+# Uses GitHub registry from specified branch
+HAX_REGISTRY_SOURCE=github:main
+```
+
+### Local Registry
+
+```bash
+# Uses local TypeScript registry files
+HAX_REGISTRY_SOURCE=local
+```
+
+Set via environment variable:
+
+```bash
+# Set environment variable for current session
+export HAX_REGISTRY_SOURCE=github:main
+
+# Or run with environment variable
+HAX_REGISTRY_SOURCE=github:main agntcy-hax add form
+```
+
+## Project Structure
+
+- `cli/`: CLI source code and tooling
+  - `src/`: Main CLI source code
+    - `commands/`: CLI commands (add, init, list)
+    - `config/`: Configuration management
+    - `generator/`: Component installation engine
+    - `registry/`: Component registries
+      - `default/`: Local TypeScript registry
+      - `github-registry/`: GitHub JSON registry
+    - `types/`: TypeScript type definitions
+    - `utils/`: Utility functions
+- `hax/`: HAX component library
+  - `artifacts/`: Available HAX components (form, timeline, etc.)
+  - `components/ui/`: Shared UI components
+  - `lib/`: Utility libraries
+
+## How It Works
+
+1. **Registry**: Components are defined in registries with metadata (dependencies, files, types)
+2. **Installation**: CLI downloads component files and installs npm dependencies
+3. **Path Aliases**: Automatically configures TypeScript/JavaScript path mapping
+4. **Dependencies**: Resolves both npm packages and HAX UI component dependencies
+
+## Component Structure
+
+Each HAX component includes:
+
+```
+component-name/
+├── component-name.tsx    # Main React component
+├── action.ts            # CopilotKit action hook
+├── types.ts             # TypeScript definitions
+├── index.ts             # Exports
+└── description.ts       # Detailed instructions for agents
+```
+
+## Commands
+
+### `init`
+
+Initialize HAX in your project:
+
+```bash
+agntcy-hax init
+```
+
+### `add [components...]`
+
+Install one or more components:
+
+```bash
+agntcy-hax add form timeline
+```
+
+### `list`
+
+Show installed components:
+
+```bash
+agntcy-hax list
+```
+
+## Environment Variables
+
+Configure via environment variables:
+
+````bash
+## Environment Variables
+
+Configure via environment variables:
+
+```bash
+# Registry source - use environment variable
+export HAX_REGISTRY_SOURCE=github:main
+
+# GitHub configuration (for private repos)
+export HAX_GITHUB_REPO=your-org/your-repo
+export HAX_GITHUB_TOKEN=your_token_here
+````
+
+````
+
+## Development
+
+### For Contributors
+
+**Working on the CLI code itself:**
+
+1. **Set up environment in the CLI directory**:
+   ```bash
+   cd cli
+   cp .env.example .env
+   ```
+
+2. **Update `.env` with your GitHub token**:
+   ```bash
+   # Edit .env file
+   HAX_REGISTRY_SOURCE=github:component-integration
+   HAX_GITHUB_TOKEN=your_actual_github_token
+   ```
+
+**Testing the CLI in other projects:**
+
+Create a `.env` file in your test project with the same configuration.
+
+**Note**: A GitHub token is required because the `agntcy-hax` repository is private.
+Get your GitHub token from: https://github.com/settings/tokens
+
+### Build CLI
+
+```bash
+npm run build
+```
+
+### Testing
+
+```bash
+# Link globally for testing
+npm link
+
+# Test commands
+agntcy-hax --help
+agntcy-hax add form
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**"Component not found in registry"**
+
+- Check component name spelling
+- Verify registry source is accessible
+- Check network connection for GitHub registry
+
+**"npm install failed"**
+
+- Check npm configuration
+- Verify package names in registry
+- Check for conflicting dependencies
+
+**"Path aliases not working"**
+
+- Ensure tsconfig.json/jsconfig.json exists
+- Check baseUrl and paths configuration
+- Restart TypeScript language server
+
+### File Type System
+
+Components use typed file system:
+
+- `registry:component` - React components (.tsx)
+- `registry:hook` - Action hooks (.ts/.tsx)
+- `registry:types` - Type definitions (.ts)
+- `registry:index` - Export files (.ts)
+- `registry:description` - Metadata (.ts)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see the [LICENSE](../LICENSE) file for details.
+````
