@@ -26,7 +26,11 @@
     "dependencies": [],
     "registryDependencies": [],
     "files": [
-      { "name": "generated-ui-wrapper.tsx", "type": "registry:component" }
+      {
+        "name": "generated-ui-wrapper.tsx",
+        "type": "registry:component",
+        "path": "hax/components/generated-ui-wrapper.tsx"
+      }
     ]
   },
   "table": {

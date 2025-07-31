@@ -65,6 +65,7 @@ export interface GitHubRegistryMetadata {
     files: Array<{
       name: string
       type: RegistryFileType
+      path?: string
     }>
   }
 }

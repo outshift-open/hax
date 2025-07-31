@@ -90,10 +90,12 @@ async function fetchGitHubComponentFromMetadata(
 
     // Fetch all files specified in metadata
     for (const fileInfo of metadata.files) {
+      // Use explicit path if provided, otherwise infer from registry type
       const filePath =
-        type === "artifacts"
+        (fileInfo as any).path ||
+        (type === "artifacts"
           ? `hax/artifacts/${name}/${fileInfo.name}`
-          : `hax/components/ui/${fileInfo.name}`
+          : `hax/components/ui/${fileInfo.name}`)
 
       const fileUrl = `${baseUrl}${filePath}`
       const fileContent = await fetchGitHubFile(fileUrl)
