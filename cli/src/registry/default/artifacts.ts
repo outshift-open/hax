@@ -34,6 +34,11 @@ export const artifacts: RegistryItem[] = [
         type: "registry:index",
         content: readComponentFile("hax/artifacts/form/index.ts"),
       },
+      {
+        path: "hax/artifacts/form/description.ts",
+        type: "registry:description",
+        content: readComponentFile("hax/artifacts/form/description.ts"),
+      },
     ],
   },
   {
@@ -69,6 +74,11 @@ export const artifacts: RegistryItem[] = [
         type: "registry:index",
         content: readComponentFile("hax/artifacts/timeline/index.ts"),
       },
+      {
+        path: "hax/artifacts/timeline/description.ts",
+        type: "registry:description",
+        content: readComponentFile("hax/artifacts/timeline/description.ts"),
+      },
     ],
   },
   {
@@ -103,6 +113,11 @@ export const artifacts: RegistryItem[] = [
         path: "hax/artifacts/mindmap/index.ts",
         type: "registry:index",
         content: readComponentFile("hax/artifacts/mindmap/index.ts"),
+      },
+      {
+        path: "hax/artifacts/mindmap/description.ts",
+        type: "registry:description",
+        content: readComponentFile("hax/artifacts/mindmap/description.ts"),
       },
     ],
   },

@@ -17,7 +17,7 @@ export const addCommand = new Command("add")
     }
     logger.break()
     logger.info(
-      `🔮 Adding component ${componentNames.length > 1 ? "s" : ""}: ${componentNames.map((name) => highlighter.primary(name)).join(", ")} from HAX library`,
+      `🔮 Adding component${componentNames.length > 1 ? "s" : ""}: ${componentNames.map((name) => highlighter.primary(name)).join(", ")} from HAX library`,
     )
     logger.break()
 
