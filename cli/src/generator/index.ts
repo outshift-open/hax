@@ -112,6 +112,18 @@ async function copyComponentFiles(
         createdFiles,
       )
     }
+
+    if (file.type === REGISTRY_FILE_TYPES.DESCRIPTION) {
+      const targetDir = path.join(config.artifacts.path, name)
+      fs.mkdirSync(targetDir, { recursive: true })
+      const targetPath = path.join(targetDir, path.basename(file.path))
+      writeFileIfNotExists(
+        targetPath,
+        file.content,
+        `description file`,
+        createdFiles,
+      )
+    }
   }
 }
 

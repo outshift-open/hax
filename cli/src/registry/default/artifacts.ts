@@ -117,6 +117,7 @@ export const artifacts: RegistryItem[] = [
       "@copilotkit/react-core",
       "@monaco-editor/react",
       "monaco-editor",
+      "@types/monaco-editor",
     ],
     registryDependencies: ["select", "generated-ui-wrapper"],
     files: [

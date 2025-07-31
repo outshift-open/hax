@@ -45,7 +45,7 @@ export const uiComponents: RegistryItem[] = [
   {
     name: "generated-ui-wrapper",
     type: "registry:ui",
-
+    dependencies: [],
     files: [
       {
         path: "hax/components/ui/generated-ui-wrapper.tsx",
