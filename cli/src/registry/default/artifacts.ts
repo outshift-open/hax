@@ -115,6 +115,8 @@ export const artifacts: RegistryItem[] = [
       "tailwind-merge",
       "zod",
       "@copilotkit/react-core",
+      "@monaco-editor/react",
+      "monaco-editor",
     ],
     registryDependencies: ["select", "generated-ui-wrapper"],
     files: [

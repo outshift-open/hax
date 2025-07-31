@@ -61,7 +61,9 @@
       "clsx",
       "tailwind-merge",
       "zod",
-      "@copilotkit/react-core"
+      "@copilotkit/react-core",
+      "@monaco-editor/react",
+      "monaco-editor"
     ],
     "registryDependencies": ["select", "generated-ui-wrapper"],
     "files": [
