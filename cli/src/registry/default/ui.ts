@@ -42,4 +42,18 @@ export const uiComponents: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "generated-ui-wrapper",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "hax/components/ui/generated-ui-wrapper.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/components/ui/generated-ui-wrapper.tsx",
+        ),
+      },
+    ],
+  },
 ]

@@ -106,4 +106,43 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "code-editor",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
+    registryDependencies: ["select"],
+    files: [
+      {
+        path: "hax/artifacts/code-editor/code-editor.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/artifacts/code-editor/code-editor.tsx"),
+      },
+      {
+        path: "hax/artifacts/code-editor/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/artifacts/code-editor/action.ts"),
+      },
+      {
+        path: "hax/artifacts/code-editor/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/code-editor/types.ts"),
+      },
+      {
+        path: "hax/artifacts/code-editor/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/code-editor/index.ts"),
+      },
+      {
+        path: "hax/artifacts/code-editor/description.ts",
+        type: "registry:description",
+        content: readComponentFile("hax/artifacts/code-editor/description.ts"),
+      },
+    ],
+  },
 ]
