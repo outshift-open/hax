@@ -20,5 +20,13 @@
     ],
     "registryDependencies": [],
     "files": [{ "name": "select.tsx", "type": "registry:component" }]
+  },
+  "generated-ui-wrapper": {
+    "type": "registry:ui",
+    "dependencies": [],
+    "registryDependencies": [],
+    "files": [
+      { "name": "generated-ui-wrapper.tsx", "type": "registry:component" }
+    ]
   }
 }

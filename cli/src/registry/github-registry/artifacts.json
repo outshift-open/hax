@@ -63,7 +63,7 @@
       "zod",
       "@copilotkit/react-core"
     ],
-    "registryDependencies": ["select"],
+    "registryDependencies": ["select", "generated-ui-wrapper"],
     "files": [
       { "name": "code-editor.tsx", "type": "registry:component" },
       { "name": "action.ts", "type": "registry:hook" },

@@ -20,6 +20,7 @@ export const RegistryFileTypeSchema = z.enum([
   "registry:types",
   "registry:hook",
   "registry:index",
+  "registry:description",
 ])
 export type RegistryFileType = z.infer<typeof RegistryFileTypeSchema>
 
@@ -125,6 +126,7 @@ export const REGISTRY_FILE_TYPES = {
   TYPES: "registry:types",
   HOOK: "registry:hook",
   INDEX: "registry:index",
+  DESCRIPTION: "registry:description",
 } as const
 
 export const REGISTRY_SOURCES = {

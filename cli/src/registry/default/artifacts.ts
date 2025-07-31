@@ -116,7 +116,7 @@ export const artifacts: RegistryItem[] = [
       "zod",
       "@copilotkit/react-core",
     ],
-    registryDependencies: ["select"],
+    registryDependencies: ["select", "generated-ui-wrapper"],
     files: [
       {
         path: "hax/artifacts/code-editor/code-editor.tsx",
