@@ -1,4 +1,5 @@
 {
+  "_comment": "Updated Monaco dependencies - removed non-existent @types/monaco-editor",
   "form": {
     "type": "registry:artifacts",
     "dependencies": [
