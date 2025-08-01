@@ -1,0 +1,119 @@
+{
+  "form": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core"
+    ],
+    "registryDependencies": ["button", "input", "select"],
+    "files": [
+      { "name": "form.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  },
+  "timeline": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "date-fns",
+      "lucide-react"
+    ],
+    "registryDependencies": [],
+    "files": [
+      { "name": "timeline.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  },
+  "mindmap": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "@xyflow/react",
+      "elkjs"
+    ],
+    "registryDependencies": [],
+    "files": [
+      { "name": "mindmap.tsx", "type": "registry:component" },
+      { "name": "action.tsx", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  },
+  "code-editor": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "@monaco-editor/react",
+      "monaco-editor"
+    ],
+    "registryDependencies": ["select", "generated-ui-wrapper"],
+    "files": [
+      { "name": "code-editor.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  },
+  "details": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react"
+    ],
+    "registryDependencies": ["table", "card"],
+    "files": [
+      { "name": "details.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  },
+  "data-visualizer": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "react-chartjs-2",
+      "chart.js"
+    ],
+    "registryDependencies": [],
+    "files": [
+      { "name": "data-visualizer.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  }
+}

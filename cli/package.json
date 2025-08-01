@@ -1,5 +1,5 @@
 {
-  "name": "agntcy-hax",
+  "name": "agntcy-hax-cli",
   "version": "1.0.0",
   "type": "module",
   "bin": {
@@ -7,21 +7,46 @@
   },
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsup"
+    "build": "tsup",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@copilotkit/react-core": "^1.9.3",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-slot": "^1.2.3",
+    "acorn": "^8.15.0",
+    "acorn-typescript": "^1.4.13",
     "boxen": "^8.0.1",
     "chalk": "^5.4.1",
+    "class-variance-authority": "^0.7.1",
     "cli-table3": "^0.6.5",
+    "clsx": "^2.1.1",
     "commander": "^14.0.0",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.2.1",
     "inquirer": "^12.6.3",
-    "yaml": "^2.8.0"
+    "lucide-react": "^0.534.0",
+    "react": "^19.1.1",
+    "tailwind-merge": "^3.3.1",
+    "yaml": "^2.8.0",
+    "zod": "^4.0.13"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
     "@types/node": "^24.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",

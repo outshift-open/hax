@@ -1,0 +1,48 @@
+{
+  "button": {
+    "type": "registry:ui",
+    "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "button.tsx", "type": "registry:component" }]
+  },
+  "input": {
+    "type": "registry:ui",
+    "dependencies": ["class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "input.tsx", "type": "registry:component" }]
+  },
+  "select": {
+    "type": "registry:ui",
+    "dependencies": [
+      "@radix-ui/react-select",
+      "class-variance-authority",
+      "lucide-react"
+    ],
+    "registryDependencies": [],
+    "files": [{ "name": "select.tsx", "type": "registry:component" }]
+  },
+  "generated-ui-wrapper": {
+    "type": "registry:ui",
+    "dependencies": [],
+    "registryDependencies": [],
+    "files": [
+      {
+        "name": "generated-ui-wrapper.tsx",
+        "type": "registry:component",
+        "path": "hax/components/generated-ui-wrapper.tsx"
+      }
+    ]
+  },
+  "table": {
+    "type": "registry:ui",
+    "dependencies": ["class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "table.tsx", "type": "registry:component" }]
+  },
+  "card": {
+    "type": "registry:ui",
+    "dependencies": ["class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "card.tsx", "type": "registry:component" }]
+  }
+}
