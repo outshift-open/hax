@@ -13,7 +13,7 @@ export interface FormField {
   type: "text" | "email" | "number" | "select" | "checkbox" | "textarea";
   label: string;
   placeholder?: string;
-  options?: string[];
+  options?: string[] | Array<{ value: string; label: string }>;
   required?: boolean;
   name?: string;
   rows?: number;
@@ -100,11 +100,17 @@ export function HAXForm({
                         />
                       </SelectTrigger>
                       <SelectContent>
-                        {field.options?.map((option) => (
-                          <SelectItem key={option} value={option}>
-                            {option}
-                          </SelectItem>
-                        ))}
+                        {field.options?.map((option) =>
+                          typeof option === "string" ? (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ) : (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          )
+                        )}
                       </SelectContent>
                     </Select>
                   ) : field.type === "checkbox" ? (
