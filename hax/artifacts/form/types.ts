@@ -4,7 +4,12 @@ export const FormFieldZod = z.object({
   type: z.enum(["text", "email", "number", "select", "checkbox", "textarea"]),
   label: z.string(),
   placeholder: z.string().optional(),
-  options: z.array(z.string()).optional(),
+  options: z
+    .union([
+      z.array(z.string()),
+      z.array(z.object({ value: z.string(), label: z.string() })),
+    ])
+    .optional(),
   required: z.boolean().optional(),
   name: z.string().optional(),
   rows: z.number().optional(),

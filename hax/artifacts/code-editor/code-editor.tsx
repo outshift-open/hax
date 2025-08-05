@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GeneratedUiWrapper } from "@/components/ui/generated-ui-wrapper";
+import { GeneratedUiWrapper } from "@/components/generated-ui-wrapper";
 import {
   Select,
   SelectContent,
