@@ -1,5 +1,5 @@
 import { Command } from "commander"
-import { logger } from "@/utils/logger"
+import { logger, highlighter } from "@/utils/logger"
 import { readConfig, updateConfig } from "@/config"
 import { RegistrySource } from "@/types"
 
@@ -77,7 +77,7 @@ repo
       const officialRepo = config.registries.sources.official
       if (officialRepo) {
         const isDefault = config.registries.default === "official"
-        const marker = isDefault ? "⭐" : "  "
+        const marker = isDefault ? highlighter.accent("[default]") : "         "
         logger.info(
           `${marker} official: ${officialRepo.repo} (${officialRepo.branch})`,
         )
@@ -88,15 +88,24 @@ repo
     logger.info("\n📦 Configured Repositories:")
     Object.entries(config.registries.sources).forEach(([name, source]) => {
       const isDefault = name === config.registries!.default
-      const marker = isDefault ? "⭐" : "  "
+      const marker = isDefault ? highlighter.accent("[default]") : "         "
       const repoType = name === "official" ? " (official)" : ""
       logger.info(
         `${marker} ${name}: ${source.repo} (${source.branch})${repoType}`,
       )
     })
 
+    const defaultRepo = config.registries.default
+    const fallbackOrder = config.registries.fallback.filter(
+      (repo) => repo !== defaultRepo,
+    )
+    const actualOrder = [defaultRepo, ...fallbackOrder]
+
     logger.info(
       `\n🔄 Fallback order: ${config.registries.fallback.join(" → ")}`,
+    )
+    logger.info(
+      `🎯 Default priority: ${actualOrder.join(" → ")} (${highlighter.accent("[default]")} = checked first)`,
     )
   })
 
