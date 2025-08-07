@@ -62,11 +62,26 @@ repo
   .action(() => {
     const config = readConfig()
 
-    if (
-      !config.registries?.sources ||
-      Object.keys(config.registries.sources).length === 0
-    ) {
+    if (!config.registries?.sources) {
+      logger.info("No repositories configured")
+      return
+    }
+
+    const customRepos = Object.entries(config.registries.sources).filter(
+      ([name]) => name !== "official",
+    )
+
+    if (customRepos.length === 0) {
       logger.info("No custom repositories configured")
+      logger.info("\n📦 Official Repository:")
+      const officialRepo = config.registries.sources.official
+      if (officialRepo) {
+        const isDefault = config.registries.default === "official"
+        const marker = isDefault ? "⭐" : "  "
+        logger.info(
+          `${marker} official: ${officialRepo.repo} (${officialRepo.branch})`,
+        )
+      }
       return
     }
 
@@ -74,7 +89,10 @@ repo
     Object.entries(config.registries.sources).forEach(([name, source]) => {
       const isDefault = name === config.registries!.default
       const marker = isDefault ? "⭐" : "  "
-      logger.info(`${marker} ${name}: ${source.repo} (${source.branch})`)
+      const repoType = name === "official" ? " (official)" : ""
+      logger.info(
+        `${marker} ${name}: ${source.repo} (${source.branch})${repoType}`,
+      )
     })
 
     logger.info(
