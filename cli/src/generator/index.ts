@@ -132,7 +132,11 @@ async function copyComponentFiles(
   }
 }
 
-export async function generateComponent(name: string, config: HaxConfig) {
+export async function generateComponent(
+  name: string,
+  config: HaxConfig,
+  sourceRepo?: string,
+) {
   // Input validation
   if (!name || typeof name !== "string" || name.trim().length === 0) {
     throw new Error("Component name is required and must be a non-empty string")
@@ -155,7 +159,7 @@ export async function generateComponent(name: string, config: HaxConfig) {
     config.components = []
   }
 
-  const component = await getRegistryItem(componentName)
+  const component = await getRegistryItem(componentName, sourceRepo, config)
   if (!component) {
     throw new Error(
       `Component "${componentName}" not found in registry. Available components can be listed with 'hax list'.`,
@@ -281,10 +285,11 @@ async function installUIComponent(name: string, _config: HaxConfig) {
     }
 
     // Determine target directory based on component name
-    const targetDir = name === "generated-ui-wrapper" 
-      ? path.resolve(DIRECTORIES.COMPONENTS)
-      : path.resolve(DIRECTORIES.UI_COMPONENTS)
-    
+    const targetDir =
+      name === "generated-ui-wrapper"
+        ? path.resolve(DIRECTORIES.COMPONENTS)
+        : path.resolve(DIRECTORIES.UI_COMPONENTS)
+
     fs.mkdirSync(targetDir, { recursive: true })
     const targetPath = path.join(targetDir, path.basename(file.path))
     writeFileIfNotExists(targetPath, file.content, `UI component file`, [])

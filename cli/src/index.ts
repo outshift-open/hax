@@ -5,6 +5,9 @@ import { initCommand } from "@/commands/init"
 import { listCommand } from "@/commands/list"
 import { addCommand } from "@/commands/add"
 import { logger } from "./utils/logger"
+import { repo } from "./commands/repository"
+import { configCommand } from "./commands/config"
+import { admin } from "./commands/admin"
 
 const program = new Command()
 
@@ -17,6 +20,9 @@ program
 program.addCommand(initCommand)
 program.addCommand(addCommand)
 program.addCommand(listCommand)
+program.addCommand(repo)
+program.addCommand(configCommand)
+program.addCommand(admin)
 
 // Parse CLI args
 program.parse(process.argv)

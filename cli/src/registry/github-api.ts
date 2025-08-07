@@ -6,8 +6,10 @@ import { ENV_CONFIG } from "@/config/env"
 export async function getGitHubRegistryItem(
   name: string,
   branch: string,
+  customRepo?: string,
 ): Promise<RegistryItem | null> {
-  const metadata = await fetchGitHubRegistryMetadata("artifacts", branch)
+  const repo = customRepo || ENV_CONFIG.github.repo
+  const metadata = await fetchGitHubRegistryMetadata("artifacts", branch, repo)
   if (!metadata || !metadata[name]) {
     logger.debug(`Component "${name}" not found in GitHub artifacts metadata`)
     return null
@@ -20,6 +22,7 @@ export async function getGitHubRegistryItem(
     "artifacts",
     componentMeta,
     branch,
+    repo,
   )
 }
 
@@ -48,9 +51,11 @@ export async function getGitHubRegistryDependency(
 async function fetchGitHubRegistryMetadata(
   type: "artifacts" | "ui",
   branch: string,
+  repo?: string,
 ): Promise<GitHubRegistryMetadata | null> {
   try {
-    const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
+    const targetRepo = repo || ENV_CONFIG.github.repo
+    const baseUrl = REGISTRY_SOURCES.GITHUB(targetRepo, branch)
     const metadataUrl = `${baseUrl}cli/src/registry/github-registry/${type}.json`
 
     const response = await fetchGitHubFile(metadataUrl)
@@ -73,9 +78,13 @@ async function fetchGitHubComponentFromMetadata(
   type: "artifacts" | "ui",
   metadata: GitHubRegistryMetadata[string],
   branch: string,
+  repo?: string,
 ): Promise<RegistryItem | null> {
   try {
-    const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
+    const baseUrl = REGISTRY_SOURCES.GITHUB(
+      repo || ENV_CONFIG.github.repo,
+      branch,
+    )
     const registryItem: RegistryItem = {
       name,
       type: metadata.type,

@@ -3,12 +3,14 @@ import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, highlighter, printPanelBox } from "../utils/logger"
 import { generateComponentMessage } from "../utils/text"
+import { getRegistryItem } from "@/registry/api"
 import fs from "fs"
 
 export const addCommand = new Command("add")
   .argument("[components...]", "Component name(s) to add")
   .description("Add an existing HAX component from the library to your project")
-  .action(async (componentNames: string[]) => {
+  .option("--repo <repository>", "Specific repository to pull from")
+  .action(async (componentNames: string[], options) => {
     if (componentNames.length === 0) {
       logger.error(
         "No component name provided. Please specify a component to add.",
@@ -36,8 +38,11 @@ export const addCommand = new Command("add")
     // First validate all components exist before creating any directories
     for (const componentName of componentNames) {
       try {
-        const { getRegistryItem } = await import("@/registry/api")
-        const component = await getRegistryItem(componentName)
+        const component = await getRegistryItem(
+          componentName,
+          options.repo,
+          config,
+        )
         if (!component) {
           validationErrors.push(componentName)
           errorCount++
@@ -70,7 +75,7 @@ export const addCommand = new Command("add")
     for (const componentName of componentNames) {
       try {
         logger.info(`Adding ${componentName}...`)
-        await generateComponent(componentName, config)
+        await generateComponent(componentName, config, options.repo)
         successCount++
       } catch (err) {
         logger.error(`Error adding ${componentName}: ${(err as Error).message}`)
