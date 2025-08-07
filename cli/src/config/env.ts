@@ -26,14 +26,6 @@ export const ENV_CONFIG = {
     defaultBranch: process.env.HAX_GITHUB_DEFAULT_BRANCH || "main",
     token: process.env.HAX_GITHUB_TOKEN || "",
   },
-  registries: {
-    official: {
-      type: "github" as const,
-      repo: process.env.HAX_GITHUB_REPO || "cisco-eti/agntcy-hax",
-      branch: process.env.HAX_GITHUB_DEFAULT_BRANCH || "main",
-      name: "official",
-    },
-  },
   cdn: {
     baseUrl: process.env.HAX_CDN_BASE_URL || "",
   },
