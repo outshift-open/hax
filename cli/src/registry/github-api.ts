@@ -7,9 +7,15 @@ export async function getGitHubRegistryItem(
   name: string,
   branch: string,
   customRepo?: string,
+  token?: string,
 ): Promise<RegistryItem | null> {
   const repo = customRepo || ENV_CONFIG.github.repo
-  const metadata = await fetchGitHubRegistryMetadata("artifacts", branch, repo)
+  const metadata = await fetchGitHubRegistryMetadata(
+    "artifacts",
+    branch,
+    repo,
+    token,
+  )
   if (!metadata || !metadata[name]) {
     logger.debug(`Component "${name}" not found in GitHub artifacts metadata`)
     return null
@@ -23,6 +29,7 @@ export async function getGitHubRegistryItem(
     componentMeta,
     branch,
     repo,
+    token,
   )
 }
 
@@ -52,13 +59,14 @@ async function fetchGitHubRegistryMetadata(
   type: "artifacts" | "ui",
   branch: string,
   repo?: string,
+  token?: string,
 ): Promise<GitHubRegistryMetadata | null> {
   try {
     const targetRepo = repo || ENV_CONFIG.github.repo
     const baseUrl = REGISTRY_SOURCES.GITHUB(targetRepo, branch)
     const metadataUrl = `${baseUrl}cli/src/registry/github-registry/${type}.json`
 
-    const response = await fetchGitHubFile(metadataUrl)
+    const response = await fetchGitHubFile(metadataUrl, token)
     if (!response) {
       logger.debug(`No GitHub registry metadata found at ${metadataUrl}`)
       return null
@@ -79,6 +87,7 @@ async function fetchGitHubComponentFromMetadata(
   metadata: GitHubRegistryMetadata[string],
   branch: string,
   repo?: string,
+  token?: string,
 ): Promise<RegistryItem | null> {
   try {
     const baseUrl = REGISTRY_SOURCES.GITHUB(
@@ -107,7 +116,7 @@ async function fetchGitHubComponentFromMetadata(
           : `hax/components/ui/${fileInfo.name}`)
 
       const fileUrl = `${baseUrl}${filePath}`
-      const fileContent = await fetchGitHubFile(fileUrl)
+      const fileContent = await fetchGitHubFile(fileUrl, token)
 
       if (fileContent) {
         registryItem.files.push({
@@ -127,15 +136,19 @@ async function fetchGitHubComponentFromMetadata(
   }
 }
 
-async function fetchGitHubFile(url: string): Promise<string | null> {
+async function fetchGitHubFile(
+  url: string,
+  token?: string,
+): Promise<string | null> {
   try {
     const headers: Record<string, string> = {
       "User-Agent": "agntcy-hax-cli",
     }
 
-    // Add GitHub token if available (for private repositories)
-    if (ENV_CONFIG.github.token) {
-      headers["Authorization"] = `token ${ENV_CONFIG.github.token}`
+    // Use provided token or fallback to environment token
+    const authToken = token || ENV_CONFIG.github.token
+    if (authToken) {
+      headers["Authorization"] = `token ${authToken}`
     }
 
     const response = await fetch(url, { headers })
