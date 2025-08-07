@@ -62,7 +62,10 @@ repo
   .action(() => {
     const config = readConfig()
 
-    if (!config.registries) {
+    if (
+      !config.registries?.sources ||
+      Object.keys(config.registries.sources).length === 0
+    ) {
       logger.info("No custom repositories configured")
       return
     }
