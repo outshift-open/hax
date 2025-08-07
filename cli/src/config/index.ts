@@ -30,6 +30,7 @@ export function readConfig(): HaxConfig {
     if (parsed.zones) config.zones = parsed.zones
     if (parsed.messages) config.messages = parsed.messages
     if (parsed.prompts) config.prompts = parsed.prompts
+    if (parsed.registries) config.registries = parsed.registries
     if (parsed.backend_framework)
       config.backend_framework = parsed.backend_framework
     if (parsed.frontend_framework)
