@@ -43,6 +43,7 @@ export const RegistryItemSchema = z.object({
   dependencies: z.array(z.string()).optional(),
   registryDependencies: z.array(z.string()).optional(),
   files: z.array(RegistryFileSchema),
+  source: z.string().optional(),
 })
 
 export const RegistryIndexSchema = z.array(
@@ -107,6 +108,22 @@ export const HaxConfigSchema = z.object({
       path: z.string(),
     })
     .optional(),
+  registries: z
+    .object({
+      default: z.string(),
+      fallback: z.array(z.string()),
+      sources: z.record(
+        z.string(),
+        z.object({
+          type: z.enum(["github", "local", "npm"]),
+          repo: z.string().optional(),
+          branch: z.string().optional(),
+          token: z.string().optional(),
+          name: z.string(),
+        }),
+      ),
+    })
+    .optional(),
   components: z.array(z.string()).optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
@@ -130,6 +147,20 @@ export const REGISTRY_FILE_TYPES = {
   INDEX: "registry:index",
   DESCRIPTION: "registry:description",
 } as const
+
+export interface RegistrySource {
+  type: "github" | "local" | "npm"
+  repo?: string
+  branch?: string
+  token?: string
+  name: string
+}
+
+export interface RegistryConfig {
+  default: string
+  fallback: string[]
+  sources: Record<string, RegistrySource>
+}
 
 export const REGISTRY_SOURCES = {
   GITHUB: (repo: string, branch: string) =>
