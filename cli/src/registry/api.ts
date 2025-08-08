@@ -21,9 +21,25 @@ export async function getRegistryItem(
     const haxConfig = config || readConfig()
 
     if (haxConfig.registries) {
-      for (const repoName of haxConfig.registries.fallback) {
+      const defaultRepo =
+        haxConfig.registries.default || haxConfig.registries.fallback[0]
+
+      const fallbackOrder = haxConfig.registries.fallback.filter(
+        (repo) => repo !== defaultRepo,
+      )
+      const actualSearchOrder = [defaultRepo, ...fallbackOrder]
+
+      for (const repoName of actualSearchOrder) {
         const item = await getRegistryItemFromSource(name, repoName, haxConfig)
         if (item) {
+          if (repoName === defaultRepo) {
+            logger.info(`Component "${name}" found in repository: ${repoName}`)
+          } else {
+            logger.info(
+              `Component "${name}" not found in ${defaultRepo}, found in repository: ${repoName}`,
+            )
+          }
+
           item.source = repoName
           return item
         }
@@ -52,6 +68,7 @@ async function getRegistryItemFromSource(
         name,
         source.branch || "main",
         source.repo!,
+        source.token,
       )
     }
   }
@@ -65,9 +82,6 @@ async function getRegistryItemFromSource(
     const branch = sourceName.replace("github:", "")
     return await getGitHubRegistryItem(name, branch)
   }
-  logger.debug(
-    `Component "${name}" not found in registry source "${sourceName}"`,
-  )
   return null
 }
 

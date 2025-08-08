@@ -17,7 +17,6 @@ export async function getGitHubRegistryItem(
     token,
   )
   if (!metadata || !metadata[name]) {
-    logger.debug(`Component "${name}" not found in GitHub artifacts metadata`)
     return null
   }
 
@@ -40,7 +39,6 @@ export async function getGitHubRegistryDependency(
   // Fetch metadata and then fetch the component based on metadata
   const metadata = await fetchGitHubRegistryMetadata("ui", branch)
   if (!metadata || !metadata[name]) {
-    logger.debug(`UI component "${name}" not found in GitHub UI metadata`)
     return null
   }
 
@@ -68,7 +66,6 @@ async function fetchGitHubRegistryMetadata(
 
     const response = await fetchGitHubFile(metadataUrl, token)
     if (!response) {
-      logger.debug(`No GitHub registry metadata found at ${metadataUrl}`)
       return null
     }
 
@@ -125,7 +122,6 @@ async function fetchGitHubComponentFromMetadata(
           content: fileContent,
         })
       } else {
-        logger.debug(`Could not fetch file: ${fileUrl}`)
       }
     }
 
@@ -154,19 +150,11 @@ async function fetchGitHubFile(
     const response = await fetch(url, { headers })
 
     if (!response.ok) {
-      if (response.status === 404) {
-        logger.debug(`File not found: ${url}`)
-      } else if (response.status === 401 || response.status === 403) {
-        logger.warn(
-          `Authentication failed (${response.status}). Check your GitHub token permissions.`,
-        )
-      }
       return null
     }
 
     return await response.text()
   } catch (error) {
-    logger.debug(`Failed to fetch file from ${url}: ${error}`)
     return null
   }
 }

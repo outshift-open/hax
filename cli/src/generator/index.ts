@@ -136,6 +136,7 @@ export async function generateComponent(
   name: string,
   config: HaxConfig,
   sourceRepo?: string,
+  preloadedComponent?: RegistryItem,
 ) {
   // Input validation
   if (!name || typeof name !== "string" || name.trim().length === 0) {
@@ -159,7 +160,9 @@ export async function generateComponent(
     config.components = []
   }
 
-  const component = await getRegistryItem(componentName, sourceRepo, config)
+  const component =
+    preloadedComponent ||
+    (await getRegistryItem(componentName, sourceRepo, config))
   if (!component) {
     throw new Error(
       `Component "${componentName}" not found in registry. Available components can be listed with 'hax list'.`,

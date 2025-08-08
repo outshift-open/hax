@@ -63,6 +63,8 @@ agntcy-hax list
 
 The CLI creates a `hax.json` file in your project:
 
+**Basic configuration (after `agntcy-hax init`):**
+
 ```json
 {
   "$schema": "./schema.json",
@@ -74,11 +76,54 @@ The CLI creates a `hax.json` file in your project:
 }
 ```
 
+**Example with multi-repository setup:**
+
+```json
+{
+  "$schema": "./schema.json",
+  "style": "default",
+  "artifacts": {
+    "path": "src/hax/artifacts"
+  },
+  "components": [],
+  "registries": {
+    "default": "official",
+    "fallback": ["official", "internal", "partner"],
+    "sources": {
+      "official": {
+        "type": "github",
+        "repo": "cisco-eti/agntcy-hax",
+        "branch": "main",
+        "name": "official"
+      },
+      "internal": {
+        "type": "github",
+        "repo": "your-org/hax-components",
+        "branch": "main",
+        "name": "internal"
+      },
+      "partner": {
+        "type": "github",
+        "repo": "partner-org/components",
+        "branch": "production",
+        "name": "partner",
+        "token": "optional_auth_token"
+      }
+    }
+  }
+}
+```
+
+> **Note**: Repository names like `internal`, `partner` are example aliases - you can use any name that makes sense for your organization (e.g., `dev`, `staging`, `company-name`, `team-ui`, etc.)
+
 ### Configuration Options
 
 - **artifacts.path**: Where components are installed (default: `src/hax`)
 - **components**: List of installed components (auto-managed)
 - **style**: Component styling variant (default: "default")
+- **registries.default**: Default repository to check first
+- **registries.fallback**: Repository search order for component resolution
+- **registries.sources**: Repository definitions with GitHub details and optional tokens
 
 ## Registry Sources
 
@@ -108,6 +153,46 @@ export HAX_REGISTRY_SOURCE=github:main
 HAX_REGISTRY_SOURCE=github:main agntcy-hax add form
 ```
 
+## Multi-Repository Architecture
+
+HAX CLI supports multiple component repositories for organizational flexibility:
+
+### Use Cases
+
+- **Enterprise Organizations**: Maintain internal component libraries alongside official HAX components
+- **Partner Ecosystems**: Access partner organization components while maintaining fallback to official registry
+- **Development Workflows**: Use development branches for testing while falling back to stable releases
+- **Private Components**: Secure proprietary components with authentication tokens
+
+### Repository Types
+
+1. **Official Repository**: Core HAX components (always available)
+2. **Custom Repositories**: Organization-specific components
+3. **Partner Repositories**: External organization components
+4. **Development Repositories**: Testing and development branches
+
+### Fallback Chain
+
+Components are resolved using intelligent fallback:
+
+```
+Default Repository → Fallback Repository 1 → Fallback Repository 2 → Official
+```
+
+This ensures:
+
+- ✅ Custom components override official ones when available
+- ✅ Graceful degradation when custom repositories are unavailable
+- ✅ Consistent experience across different environments
+- ✅ Explicit control over component sources with `--repo` flag
+
+### Security & Authentication
+
+- **Public Repositories**: No authentication required
+- **Private Repositories**: Secure with GitHub tokens
+- **Per-Repository Tokens**: Different authentication for different repositories
+- **Environment Variables**: Global GitHub token fallback
+
 ## Project Structure
 
 - `cli/`: CLI source code and tooling
@@ -127,10 +212,11 @@ HAX_REGISTRY_SOURCE=github:main agntcy-hax add form
 
 ## How It Works
 
-1. **Registry**: Components are defined in registries with metadata (dependencies, files, types)
-2. **Installation**: CLI downloads component files and installs npm dependencies
-3. **Path Aliases**: Automatically configures TypeScript/JavaScript path mapping
-4. **Dependencies**: Resolves both npm packages and HAX UI component dependencies
+1. **Multi-Repository Registry**: Components are defined across multiple repositories with metadata (dependencies, files, types)
+2. **Intelligent Resolution**: CLI searches repositories in priority order with automatic fallback
+3. **Installation**: Downloads component files from resolved repository and installs npm dependencies
+4. **Path Aliases**: Automatically configures TypeScript/JavaScript path mapping
+5. **Dependencies**: Resolves both npm packages and HAX UI component dependencies across repositories
 
 ## Component Structure
 
@@ -161,6 +247,10 @@ Install one or more components:
 
 ```bash
 agntcy-hax add form timeline
+
+# Install from specific repository
+agntcy-hax add custom-dashboard --repo=testing
+agntcy-hax add salesCustom-timeline --repo=sales
 ```
 
 ### `list`
@@ -169,6 +259,86 @@ Show installed components:
 
 ```bash
 agntcy-hax list
+```
+
+### `repo` - Multi-Repository Management
+
+Manage multiple component repositories for organizational flexibility:
+
+#### Add Custom Repositories
+
+```bash
+# Add internal company repository (example alias name)
+agntcy-hax repo add internal --github your-org/hax-components --branch main
+
+# Add partner organization repository (example alias name)
+agntcy-hax repo add partner --github partner-org/components --branch production
+
+# Add repository with authentication token (example alias name)
+agntcy-hax repo add private --github org/private-repo --branch main --token your_token
+
+# You can use any alias names that make sense for your organization:
+agntcy-hax repo add dev --github your-org/hax-dev --branch development
+agntcy-hax repo add staging --github your-org/hax-staging --branch staging
+agntcy-hax repo add team-ui --github ui-team/components --branch main
+```
+
+#### List Repositories
+
+```bash
+agntcy-hax repo list
+```
+
+Output shows configured repositories with priority order:
+
+```
+📦 Configured Repositories:
+[default] official: cisco-eti/agntcy-hax (main) (official)
+          internal: your-org/hax-components (main)
+          partner: partner-org/components (production)
+
+🔄 Fallback order: official → internal → partner
+🎯 Default priority: official → internal → partner ([default] = checked first)
+```
+
+> **Note**: Repository aliases (`internal`, `partner`) are examples - your actual names will reflect your configuration.
+
+#### Switch Default Repository
+
+```bash
+# Set internal as default (checked first) - example alias
+agntcy-hax repo switch internal
+
+# Switch back to official
+agntcy-hax repo switch official
+
+# Switch to any configured repository alias
+agntcy-hax repo switch dev
+agntcy-hax repo switch staging
+```
+
+### Multi-Repository Component Resolution
+
+The CLI automatically searches repositories in priority order:
+
+**When component is found in default repository:**
+
+```
+Component "form" found in repository: official
+```
+
+**When component requires fallback:**
+
+```
+Component "custom-timeline" not found in official, found in repository: internal
+```
+
+> **Note**: Repository names in examples (`internal`) are aliases you define - your actual output will show your configured repository names.
+
+**Force specific repository:**
+
+```bash
+agntcy-hax add component-name --repo=your-repo-alias
 ```
 
 ## Environment Variables
@@ -232,6 +402,43 @@ npm link
 # Test commands
 agntcy-hax --help
 agntcy-hax add form
+```
+
+### Testing Multi-Repository Functionality
+
+**Setup test repositories:**
+```bash
+# Initialize project
+agntcy-hax init
+
+# Add test repositories
+agntcy-hax repo add testing --github cisco-eti/agntcy-hax --branch test-remote-repo
+agntcy-hax repo add sales --github cisco-eti/agntcy-hax --branch sales-remote-hax
+```
+
+**Test component resolution:**
+```bash
+# Test automatic fallback
+agntcy-hax add custom-timeline    # Should find in testing
+agntcy-hax add salesCustom-dashboard  # Should find in sales
+agntcy-hax add form              # Should find in official
+
+# Test specific repository targeting
+agntcy-hax add custom-dashboard --repo=testing
+agntcy-hax add mindmap --repo=official
+```
+
+**Test repository switching:**
+```bash
+# Test priority changes
+agntcy-hax repo switch testing
+agntcy-hax add salesCustom-timeline  # Should show "not found in testing, found in sales"
+
+agntcy-hax repo switch sales
+agntcy-hax add custom-timeline       # Should show "not found in sales, found in testing"
+
+# View current configuration
+agntcy-hax repo list
 ```
 
 ## Troubleshooting

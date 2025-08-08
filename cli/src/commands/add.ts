@@ -4,6 +4,7 @@ import { readConfig, updateConfig } from "../config"
 import { logger, highlighter, printPanelBox } from "../utils/logger"
 import { generateComponentMessage } from "../utils/text"
 import { getRegistryItem } from "@/registry/api"
+import { RegistryItem } from "@/types"
 import fs from "fs"
 
 export const addCommand = new Command("add")
@@ -34,6 +35,7 @@ export const addCommand = new Command("add")
     let successCount = 0
     let errorCount = 0
     const validationErrors: string[] = []
+    const validatedComponents: Map<string, RegistryItem> = new Map()
 
     // First validate all components exist before creating any directories
     for (const componentName of componentNames) {
@@ -46,6 +48,8 @@ export const addCommand = new Command("add")
         if (!component) {
           validationErrors.push(componentName)
           errorCount++
+        } else {
+          validatedComponents.set(componentName, component)
         }
       } catch {
         validationErrors.push(componentName)
@@ -75,7 +79,13 @@ export const addCommand = new Command("add")
     for (const componentName of componentNames) {
       try {
         logger.info(`Adding ${componentName}...`)
-        await generateComponent(componentName, config, options.repo)
+        const cachedComponent = validatedComponents.get(componentName)
+        await generateComponent(
+          componentName,
+          config,
+          options.repo,
+          cachedComponent,
+        )
         successCount++
       } catch (err) {
         logger.error(`Error adding ${componentName}: ${(err as Error).message}`)
