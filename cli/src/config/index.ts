@@ -26,7 +26,8 @@ export function readConfig(): HaxConfig {
       components: Array.isArray(parsed.components) ? parsed.components : [],
     }
 
-    // Only include optional fields if they exist in the parsed config
+    if (parsed.composers) config.composers = parsed.composers
+    if (parsed.features) config.features = parsed.features
     if (parsed.zones) config.zones = parsed.zones
     if (parsed.messages) config.messages = parsed.messages
     if (parsed.prompts) config.prompts = parsed.prompts

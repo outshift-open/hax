@@ -3,6 +3,7 @@ import path from "path"
 import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
+import { updateConfig } from "@/config"
 import {
   getRegistryItem,
   resolveRegistryDependencies,
@@ -83,7 +84,7 @@ async function copyComponentFiles(
   const getBaseDir = (componentType: string) => {
     switch (componentType) {
       case "registry:composer":
-        return DIRECTORIES.COMPOSERS
+        return config.composers?.path ?? DIRECTORIES.COMPOSERS
       case "registry:artifacts":
       default:
         return config.artifacts.path
@@ -209,11 +210,22 @@ export async function generateComponent(name: string, config: HaxConfig) {
     })
   }
 
-  logger.success(`Added ${componentName} component`)
+  logger.success(`Added ${componentName} ${component.type === "registry:composer" ? "feature" : "component"}`)
 
-  if (!config.components.includes(componentName)) {
-    config.components.push(componentName)
+  // Add to appropriate config array based on type
+  if (component.type === "registry:composer") {
+    if (!config.features) config.features = []
+    if (!config.features.includes(componentName)) {
+      config.features.push(componentName)
+    }
+  } else {
+    if (!config.components.includes(componentName)) {
+      config.components.push(componentName)
+    }
   }
+
+  // Save updated config
+  updateConfig(config)
 }
 
 async function installNPMDependencies(dependencies: string[]) {
