@@ -1,0 +1,14 @@
+{
+  "rules-context": {
+    "type": "registry:composer",
+    "dependencies": ["react", "lucide-react"],
+    "registryDependencies": ["button", "input", "badge"],
+    "files": [
+      { "name": "rules-context.tsx", "type": "registry:component" },
+      { "name": "rules.tsx", "type": "registry:component" },
+      { "name": "localStorage.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" }
+    ]
+  }
+}

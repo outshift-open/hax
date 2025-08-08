@@ -28,6 +28,7 @@ export const RegistryItemTypeSchema = z.enum([
   "registry:artifacts",
   "registry:ui",
   "registry:lib",
+  "registry:composer",
 ])
 export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>
 
@@ -121,6 +122,7 @@ export const DIRECTORIES = {
   COMPONENTS: "src/components",
   LIB: "src/lib",
   BACKEND_TOOLS: "backend/tools",
+  COMPOSERS: "src/hax/composers",
 } as const
 
 export const REGISTRY_FILE_TYPES = {

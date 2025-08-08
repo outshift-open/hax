@@ -78,4 +78,30 @@ export const uiComponents: RegistryItem[] = [
       },
     ],
   },
+
+  {
+    name: "dialog",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority", "@radix-ui/react-dialog"],
+    files: [
+      {
+        path: "hax/components/ui/dialog.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/dialog.tsx"),
+      },
+    ],
+  },
+
+  {
+    name: "label",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority", "@radix-ui/react-label"],
+    files: [
+      {
+        path: "hax/components/ui/label.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/label.tsx"),
+      },
+    ],
+  },
 ]

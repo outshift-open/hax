@@ -80,6 +80,18 @@ async function copyComponentFiles(
   config: HaxConfig,
   createdFiles: string[],
 ) {
+  const getBaseDir = (componentType: string) => {
+    switch (componentType) {
+      case "registry:composer":
+        return DIRECTORIES.COMPOSERS
+      case "registry:artifacts":
+      default:
+        return config.artifacts.path
+    }
+  }
+
+  const baseDir = getBaseDir(component.type)
+
   for (const file of component.files) {
     if (!file.content) {
       logger.warn(`No content found for file: ${file.path}`)
@@ -87,7 +99,7 @@ async function copyComponentFiles(
     }
 
     if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
-      const targetDir = path.join(config.artifacts.path, name)
+      const targetDir = path.join(baseDir, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
@@ -107,7 +119,7 @@ async function copyComponentFiles(
         ] as string[]
       ).includes(file.type)
     ) {
-      const targetDir = path.join(config.artifacts.path, name)
+      const targetDir = path.join(baseDir, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
@@ -119,7 +131,7 @@ async function copyComponentFiles(
     }
 
     if (file.type === REGISTRY_FILE_TYPES.DESCRIPTION) {
-      const targetDir = path.join(config.artifacts.path, name)
+      const targetDir = path.join(baseDir, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
@@ -281,10 +293,11 @@ async function installUIComponent(name: string, _config: HaxConfig) {
     }
 
     // Determine target directory based on component name
-    const targetDir = name === "generated-ui-wrapper" 
-      ? path.resolve(DIRECTORIES.COMPONENTS)
-      : path.resolve(DIRECTORIES.UI_COMPONENTS)
-    
+    const targetDir =
+      name === "generated-ui-wrapper"
+        ? path.resolve(DIRECTORIES.COMPONENTS)
+        : path.resolve(DIRECTORIES.UI_COMPONENTS)
+
     fs.mkdirSync(targetDir, { recursive: true })
     const targetPath = path.join(targetDir, path.basename(file.path))
     writeFileIfNotExists(targetPath, file.content, `UI component file`, [])

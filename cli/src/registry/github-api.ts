@@ -44,9 +44,30 @@ export async function getGitHubRegistryDependency(
   )
 }
 
+// Fetch a registry composer from GitHub
+export async function getGitHubRegistryComposer(
+  name: string,
+  branch: string,
+): Promise<RegistryItem | null> {
+  const metadata = await fetchGitHubRegistryMetadata("composer", branch)
+  if (!metadata || !metadata[name]) {
+    logger.debug(`Composer "${name}" not found in GitHub composer metadata`)
+    return null
+  }
+
+  const componentMeta = metadata[name]
+
+  return await fetchGitHubComponentFromMetadata(
+    name,
+    "composer",
+    componentMeta,
+    branch,
+  )
+}
+
 // Fetch metadata for GitHub registry components
 async function fetchGitHubRegistryMetadata(
-  type: "artifacts" | "ui",
+  type: "artifacts" | "ui" | "composer",
   branch: string,
 ): Promise<GitHubRegistryMetadata | null> {
   try {
@@ -70,7 +91,7 @@ async function fetchGitHubRegistryMetadata(
 
 async function fetchGitHubComponentFromMetadata(
   name: string,
-  type: "artifacts" | "ui",
+  type: "artifacts" | "ui" | "composer",
   metadata: GitHubRegistryMetadata[string],
   branch: string,
 ): Promise<RegistryItem | null> {
@@ -95,7 +116,9 @@ async function fetchGitHubComponentFromMetadata(
         (fileInfo as any).path ||
         (type === "artifacts"
           ? `hax/artifacts/${name}/${fileInfo.name}`
-          : `hax/components/ui/${fileInfo.name}`)
+          : type === "composer"
+            ? `hax/composers/${name}/${fileInfo.name}`
+            : `hax/components/ui/${fileInfo.name}`)
 
       const fileUrl = `${baseUrl}${filePath}`
       const fileContent = await fetchGitHubFile(fileUrl)
