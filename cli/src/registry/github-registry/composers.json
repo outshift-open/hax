@@ -2,7 +2,14 @@
   "rules-context": {
     "type": "registry:composer",
     "dependencies": ["react", "lucide-react"],
-    "registryDependencies": ["button", "input", "badge"],
+    "registryDependencies": [
+      "button",
+      "input",
+      "badge",
+      "dialog",
+      "card",
+      "label"
+    ],
     "files": [
       { "name": "rules-context.tsx", "type": "registry:component" },
       { "name": "rules.tsx", "type": "registry:component" },

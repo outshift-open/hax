@@ -6,7 +6,14 @@ export const composer: RegistryItem[] = [
     name: "rules-context",
     type: "registry:composer",
     dependencies: ["react", "lucide-react"],
-    registryDependencies: ["dialog", "button", "input", "badge"],
+    registryDependencies: [
+      "dialog",
+      "button",
+      "input",
+      "badge",
+      "card",
+      "label",
+    ],
     files: [
       {
         path: "hax/composer/rules/rules-context.tsx",

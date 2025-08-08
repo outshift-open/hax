@@ -44,5 +44,23 @@
     "dependencies": ["class-variance-authority"],
     "registryDependencies": [],
     "files": [{ "name": "card.tsx", "type": "registry:component" }]
+  },
+  "badge": {
+    "type": "registry:ui",
+    "dependencies": ["class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "badge.tsx", "type": "registry:component" }]
+  },
+  "dialog": {
+    "type": "registry:ui",
+    "dependencies": ["@radix-ui/react-dialog", "class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "dialog.tsx", "type": "registry:component" }]
+  },
+  "label": {
+    "type": "registry:ui",
+    "dependencies": ["@radix-ui/react-label", "class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "label.tsx", "type": "registry:component" }]
   }
 }

@@ -80,6 +80,19 @@ export const uiComponents: RegistryItem[] = [
   },
 
   {
+    name: "badge",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/badge.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/badge.tsx"),
+      },
+    ],
+  },
+
+  {
     name: "dialog",
     type: "registry:ui",
     dependencies: ["class-variance-authority", "@radix-ui/react-dialog"],
