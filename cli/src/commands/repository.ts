@@ -125,3 +125,35 @@ repo
     updateConfig(config)
     logger.info(`✅ Switched default repository to "${name}"`)
   })
+
+repo
+  .command("remove")
+  .description("Remove a custom repository")
+  .argument("<name>", "Repository alias name to remove")
+  .action((name: string) => {
+    const config = readConfig()
+
+    if (name === "official") {
+      logger.error("❌ Cannot remove the official repository")
+      return
+    }
+
+    if (!config.registries?.sources[name]) {
+      logger.error(`❌ Repository "${name}" not found`)
+      return
+    }
+
+    delete config.registries.sources[name]
+
+    config.registries.fallback = config.registries.fallback.filter(
+      (repo) => repo !== name,
+    )
+
+    if (config.registries.default === name) {
+      config.registries.default = "official"
+      logger.warn(`⚠️  Reset default repository to "official"`)
+    }
+
+    updateConfig(config)
+    logger.info(`✅ Removed repository "${name}"`)
+  })

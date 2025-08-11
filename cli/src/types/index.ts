@@ -124,7 +124,19 @@ export const HaxConfigSchema = z.object({
       ),
     })
     .optional(),
-  components: z.array(z.string()).optional(),
+  components: z
+    .array(
+      z.union([
+        z.string(),
+        z.object({
+          name: z.string(),
+          source: z.string(),
+          version: z.string().optional(),
+          installedAt: z.string().optional(),
+        }),
+      ]),
+    )
+    .optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
 })

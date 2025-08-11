@@ -16,15 +16,26 @@ export const listCommand = new Command("list")
       return
     }
 
-    logger.info("\n📦 Registered Components:\n")
+    logger.info("\n📦 Installed Components:\n")
 
     const table = new Table({
-      head: [chalk.white("Component Name")],
+      head: [
+        chalk.white("Component"),
+        chalk.white("Source"),
+      ],
       style: { head: ["cyan"] },
     })
 
-    components.forEach((name: string) => {
-      table.push([name])
+    components.forEach((comp: any) => {
+      if (typeof comp === "string") {
+        // Legacy component - try to detect source or just show as installed
+        table.push([comp, chalk.gray("—")])
+      } else {
+        table.push([
+          comp.name,
+          chalk.yellow(comp.source || "—"),
+        ])
+      }
     })
 
     logger.log(table.toString())
