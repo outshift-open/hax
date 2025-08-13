@@ -16,6 +16,7 @@ import {
   REGISTRY_FILE_TYPES,
   DIRECTORIES,
 } from "../types"
+import { getPinnedDependency } from "../config/versions"
 
 async function collectDependencies(component: RegistryItem): Promise<{
   npmDependencies: string[]
@@ -23,9 +24,10 @@ async function collectDependencies(component: RegistryItem): Promise<{
 }> {
   const allDependencies = new Set<string>()
 
-  // Add direct npm dependencies
   if (component.dependencies && component.dependencies.length > 0) {
-    component.dependencies.forEach((dep: string) => allDependencies.add(dep))
+    component.dependencies.forEach((dep: string) =>
+      allDependencies.add(getPinnedDependency(dep)),
+    )
   }
 
   // Resolve registry dependencies
@@ -41,11 +43,10 @@ async function collectDependencies(component: RegistryItem): Promise<{
       component.registryDependencies,
     )
 
-    // Add npm dependencies from registry dependencies
     for (const dep of allRegistryDeps) {
       if (dep.dependencies && dep.dependencies.length > 0) {
         dep.dependencies.forEach((npmDep: string) =>
-          allDependencies.add(npmDep),
+          allDependencies.add(getPinnedDependency(npmDep)),
         )
       }
     }
