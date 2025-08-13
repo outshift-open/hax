@@ -22,29 +22,33 @@ export const composer: RegistryItem[] = [
     ],
     files: [
       {
-        path: "hax/composer/rules/rules-context.tsx",
+        path: "hax/composer/rules-context/rules-context.tsx",
         type: "registry:component",
-        content: readComponentFile("hax/composer/rules/rules-context.tsx"),
+        content: readComponentFile(
+          "hax/composer/rules-context/rules-context.tsx",
+        ),
       },
       {
-        path: "hax/composer/rules/rules.tsx",
+        path: "hax/composer/rules-context/rules.tsx",
         type: "registry:component",
-        content: readComponentFile("hax/composer/rules/rules.tsx"),
+        content: readComponentFile("hax/composer/rules-context/rules.tsx"),
       },
       {
-        path: "hax/composer/rules/localStorage.ts",
+        path: "hax/composer/rules-context/localStorage.ts",
         type: "registry:hook",
-        content: readComponentFile("hax/composer/rules/localStorage.ts"),
+        content: readComponentFile(
+          "hax/composer/rules-context/localStorage.ts",
+        ),
       },
       {
-        path: "hax/composer/rules/types.ts",
+        path: "hax/composer/rules-context/types.ts",
         type: "registry:types",
-        content: readComponentFile("hax/composer/rules/types.ts"),
+        content: readComponentFile("hax/composer/rules-context/types.ts"),
       },
       {
-        path: "hax/composer/rules/index.ts",
+        path: "hax/composer/rules-context/index.ts",
         type: "registry:index",
-        content: readComponentFile("hax/composer/rules/index.ts"),
+        content: readComponentFile("hax/composer/rules-context/index.ts"),
       },
     ],
   },
@@ -73,9 +77,9 @@ export const composer: RegistryItem[] = [
         content: readComponentFile("hax/composer/file-upload/description.ts"),
       },
       {
-        path: "hax/composer/file-upload/action.ts",
+        path: "hax/composer/file-upload/action.tsx",
         type: "registry:hook",
-        content: readComponentFile("hax/composer/file-upload/action.ts"),
+        content: readComponentFile("hax/composer/file-upload/action.tsx"),
       },
       {
         path: "hax/composer/file-upload/types.ts",
@@ -83,9 +87,9 @@ export const composer: RegistryItem[] = [
         content: readComponentFile("hax/composer/file-upload/types.ts"),
       },
       {
-        path: "hax/composer/rules/index.ts",
+        path: "hax/composer/file-upload/index.ts",
         type: "registry:index",
-        content: readComponentFile("hax/composer/rules/index.ts"),
+        content: readComponentFile("hax/composer/file-upload/index.ts"),
       },
     ],
   },

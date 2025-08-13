@@ -72,7 +72,8 @@ async function fetchGitHubRegistryMetadata(
 ): Promise<GitHubRegistryMetadata | null> {
   try {
     const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
-    const metadataUrl = `${baseUrl}cli/src/registry/github-registry/${type}.json`
+    const fileName = type === "composer" ? "composers.json" : `${type}.json`
+    const metadataUrl = `${baseUrl}cli/src/registry/github-registry/${fileName}`
 
     const response = await fetchGitHubFile(metadataUrl)
     if (!response) {
@@ -117,7 +118,7 @@ async function fetchGitHubComponentFromMetadata(
         (type === "artifacts"
           ? `hax/artifacts/${name}/${fileInfo.name}`
           : type === "composer"
-            ? `hax/composers/${name}/${fileInfo.name}`
+            ? `hax/composer/${name}/${fileInfo.name}`
             : `hax/components/ui/${fileInfo.name}`)
 
       const fileUrl = `${baseUrl}${filePath}`

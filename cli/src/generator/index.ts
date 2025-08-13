@@ -24,6 +24,7 @@ async function collectDependencies(component: RegistryItem): Promise<{
 }> {
   const allDependencies = new Set<string>()
 
+  // Add direct npm dependencies with version pinning
   if (component.dependencies && component.dependencies.length > 0) {
     component.dependencies.forEach((dep: string) =>
       allDependencies.add(getPinnedDependency(dep)),
@@ -43,6 +44,7 @@ async function collectDependencies(component: RegistryItem): Promise<{
       component.registryDependencies,
     )
 
+    // Add npm dependencies from registry dependencies with version pinning
     for (const dep of allRegistryDeps) {
       if (dep.dependencies && dep.dependencies.length > 0) {
         dep.dependencies.forEach((npmDep: string) =>
@@ -195,11 +197,15 @@ export async function generateComponent(name: string, config: HaxConfig) {
     )
   }
 
-  // Collectand install all dependencies
+  // Collect and install all dependencies
   const { npmDependencies, registryDependencies } =
     await collectDependencies(component)
 
-  await installDependencies(npmDependencies, registryDependencies, config)
+  await installDependencies(
+    npmDependencies,
+    registryDependencies,
+    config,
+  )
 
   await copyComponentFiles(component, componentName, config, createdFiles)
 

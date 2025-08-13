@@ -43,7 +43,8 @@ export const addCommand = new Command("add")
           validationErrors.push(componentName)
           errorCount++
         } else {
-          componentsByType[component.type] = componentsByType[component.type] || []
+          componentsByType[component.type] =
+            componentsByType[component.type] || []
           componentsByType[component.type].push(componentName)
         }
       } catch {
