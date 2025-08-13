@@ -13,7 +13,6 @@ export const removeCommand = new Command("remove")
     const config = readConfig()
     const components = config.components || []
 
-    // Find the component
     const componentIndex = components.findIndex((comp: any) => {
       if (typeof comp === "string") {
         return comp === componentName
@@ -29,16 +28,16 @@ export const removeCommand = new Command("remove")
     }
 
     const component = components[componentIndex]
-    const componentSource = typeof component === "string" 
-      ? "unknown" 
-      : component.source || "unknown"
+    const componentSource =
+      typeof component === "string" ? "unknown" : component.source || "unknown"
 
     // Show component info
     logger.info(`📦 Found component: ${componentName}`)
     logger.info(`   Source: ${componentSource}`)
-    logger.info(`   Type: ${typeof component === "string" ? "legacy" : "tracked"}`)
+    logger.info(
+      `   Type: ${typeof component === "string" ? "legacy" : "tracked"}`,
+    )
 
-    // Confirmation (unless --force)
     if (!options.force) {
       const answers = await inquirer.prompt([
         {
@@ -55,14 +54,18 @@ export const removeCommand = new Command("remove")
       }
     }
 
-    // Remove from config
     components.splice(componentIndex, 1)
     config.components = components
     updateConfig(config)
 
-    // Remove component files
-    const componentPath = path.join(process.cwd(), "src", "hax", "artifacts", componentName)
-    
+    const componentPath = path.join(
+      process.cwd(),
+      "src",
+      "hax",
+      "artifacts",
+      componentName,
+    )
+
     if (fs.existsSync(componentPath)) {
       try {
         fs.rmSync(componentPath, { recursive: true, force: true })
@@ -76,8 +79,7 @@ export const removeCommand = new Command("remove")
     }
 
     logger.success(`✅ Component "${componentName}" removed successfully`)
-    
-    // Show updated list
+
     const remainingComponents = config.components || []
     if (remainingComponents.length > 0) {
       logger.info(`\n📦 Remaining components: ${remainingComponents.length}`)
