@@ -26,7 +26,7 @@ def hello():
     return """
     <html>
         <body>
-        <p>Platform Demo Hello World</p>
+        <p>Platform Demo hax Hello World</p>
         <ul>
             <li><a href='/env'>Env Vars</a></li>
             <li><a href='/metrics'>Metrics</a></li>
@@ -43,7 +43,7 @@ def env_var():
     return """
     <html>
         <body>
-        <p>Platform Demo Hello World Environment Vars</p>
+        <p>Platform Demo hax Hello World Environment Vars</p>
         <ul>
             <li>CONFIGMAP_TEST: {}</li>
             <li>CONFIGMAP_DEFAULT_EXAMPLE: {}</li>
