@@ -1,0 +1,17 @@
+{{- if  .Values.imageSignatureVerification }}
+apiVersion: policy.sigstore.dev/v1alpha1
+kind: ClusterImagePolicy
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  images:
+  - glob: "{{ .Values.dockerPreamable }}/{{ .Values.dimage }}@*"
+  authorities:
+  - name: {{ .Release.Name }}-1
+    key:
+      data: |
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJJRLpOAcGTGiOdz28Jkp1BHoEiOO
+        4SIJFWWFyXmw/Db4bNJmwLaeNAbikvDtZ0V15xwhhqV/YYHDLMcdiPS6nA==
+        -----END PUBLIC KEY-----
+{{- end }}

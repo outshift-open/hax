@@ -1,0 +1,2 @@
+- [Please follow this general contribution guide for SRE repos](https://wwwin-github.cisco.com/pages/eti/eti-platform-docs/development/contribution_guide/)
+- For pushing git tags/branches to this repo, please reach out to [SRE team](mailto:eti-sre-admins@cisco.com)

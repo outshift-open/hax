@@ -1,0 +1,39 @@
+# *************** ETI SRE Project Jenkins Library ***************
+# Terminology defined based on:
+# https://cisco.sharepoint.com/sites/Inclusive-Language/SitePages/Terminology-Recommendations.aspx
+# *************** *************** *************** ***************
+
+rules:
+  - name: whitelist
+    terms:
+      - whitelist
+    alternatives:
+      - permit(list)
+      - allow(list)
+
+  - name: master
+    terms:
+      - master
+    alternatives:
+      - primary
+      - control
+      - active
+      - source
+      - parent
+      - main
+
+  - name: slave
+    terms:
+      - slave
+    alternatives:
+      - secondary
+      - subordinate
+      - data
+      - standby
+      - subsidiary
+      - replica
+      - worker
+      - child
+      - helper
+      - follower
+pushgateway: "https://opentelemetry.eticloud.io/v1/metrics"

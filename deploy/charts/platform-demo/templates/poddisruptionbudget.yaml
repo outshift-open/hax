@@ -1,0 +1,11 @@
+{{- if eq .Values.podDisruptionBudget.enabled true }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+{{- end -}}

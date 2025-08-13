@@ -1,0 +1,216 @@
+name: platform-demo CI workflow
+
+on:
+  # we want pull requests so we can build(test) but not push to image registry
+  push:
+    branches:
+      - 'main'
+
+    # only build when important files change
+    #paths:
+    #  - 'app/**'
+    #  - '.github/workflows/ci.yaml'
+    #tags:
+    #  - "[0-9]+.[0-9]+.[0-9]+"
+  pull_request:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+# Grant read access for GITHUB_TOKEN on all jobs
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+  packages: write # needed to push docker image to gar or ecr
+
+jobs:
+  ################################## Code Checkout ##############################
+  ###############################################################################
+  checkout-unit-tests:
+    name: checkout & unit test
+    runs-on:
+      group: ${{ vars.DEFAULT_ARC_RUNNERS }}
+    container:
+      image:  ${{ vars.DEFAULT_CONTAINER_RUNNER }}
+      options: --user root
+      credentials:
+        username: ${{ secrets.GHCR_USERNAME }}
+        password: ${{ secrets.GHCR_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # The branch, tag or SHA to checkout, otherwise, uses the default branch.
+          ref: ${{ github.ref }}
+          # Relative path under $GITHUB_WORKSPACE to place the repository
+          path: ''
+          # Whether to execute `git clean -ffdx && git reset --hard HEAD` before fetching
+          # Default: true
+          clean: true
+          # Whether to download Git-LFS files
+          # Default: false
+          lfs: ''
+          # Whether to checkout submodules: `true` to checkout submodules or `recursive` to
+          # recursively checkout submodules.
+          # Default: false
+          submodules: ''
+
+  ################################## Unit Test ##################################
+  ###############################################################################
+
+      - name: Unit Tests
+        run: |
+          ls -l /usr/local/bin
+          #chmod +x scripts/unit-test.sh
+          bash scripts/unit-test.sh
+
+  #################### Docker build & push ######################
+  ###############################################################################
+  call-docker-build-push:
+    name: Call Docker Build Panoptica Scan & Push
+    needs: [ checkout-unit-tests ]
+    uses: cisco-eti/gh-reusable-workflows/.github/workflows/build-push-docker.yaml@production
+
+    secrets:
+      # Only needed if with:ecr-enabled or with:gar-enabled is true below
+      vault-approle-role-id: ${{ secrets.VAULT_APPROLE_ROLE_ID }}
+      vault-approle-secret-id: ${{ secrets.VAULT_APPROLE_SECRET_ID }}
+      # These two secrets are ONLY needed when you are trying to access GAR/GCR in a venture specific project (e.g. 'k8sec-dev' for example).
+      # The values should be consistent with the vault namespace (set by 'VAULT_VENTURE_NAMESPACE' var)
+      # vault-venture-approle-role-id: ${{secrets.VAULT_SECURECN_APPROLE_ROLE_ID}}
+      # vault-venture-approle-secret-id: ${{secrets.VAULT_SECURECN_APPROLE_SECRET_ID}}
+      #######
+      ghcr-username: ${{ secrets.GHCR_USERNAME }}
+      ghcr-token: ${{ secrets.GHCR_TOKEN }}
+      ghcr-org-token: ${{ secrets.GHCR_TOKEN }}
+
+    with:
+      ### REQUIRED
+      runner-group: ${{ vars.DEFAULT_ARC_RUNNERS }}
+      ### Docker image name
+      image-name: "${{ github.event.repository.name }}"
+
+      ### path to where docker should copy files into image
+      ### defaults to root of repository (.)
+      # context: .
+
+      ### Dockerfile alternate name. Default is Dockerfile (relative to context path)
+      dockerfile: Dockerfile
+      ### REQUIRED
+      ### ENABLE ONE OR BOTH REGISTRIES
+      ### tell docker where to push.
+      ecr-enabled: true
+      ghcr-enabled: true
+      ghcr-org-registry: ${{ vars.GHCR_REGISTRY }}
+
+  ################################# Corona & blackduck ###########################
+  ################################################################################
+  # call-corona-blackduck-scan:
+  #   name: Call Corona & Blackduck scan
+  #   if: github.ref == 'refs/heads/main'
+  #   needs: [ call-docker-build-push ]
+  #   uses: cisco-eti/gh-reusable-workflows/.github/workflows/corona-blackduck-scan.yaml@production
+
+  #   secrets:
+  #     vault-approle-role-id: ${{ secrets.VAULT_APPROLE_ROLE_ID }}
+  #     vault-approle-secret-id: ${{ secrets.VAULT_APPROLE_SECRET_ID }}
+  #     # GHCR Login for docker build runner
+  #     ghcr-username: ${{ secrets.GHCR_USERNAME }}
+  #     ghcr-token: ${{ secrets.GHCR_TOKEN }}
+  #     # GHCR Login for docker scan
+  #     ghcr-org-username: ${{ secrets.GHCR_USERNAME }}
+  #     ghcr-org-token: ${{ secrets.GHCR_TOKEN }}
+
+  #   with:
+  #     runner: ${{ vars.DEFAULT_ARC_RUNNERS }}
+  #     runner-docker-image: ${{ vars.DEFAULT_CONTAINER_RUNNER }}
+  #     enable-corona: true
+  #     enable-blackduck: true
+  #     corona-product-name: ${{ vars.CORONA_PRODUCT_NAME }}
+  #     corona-product-id: ${{ vars.CORONA_PRODUCT_ID }}
+  #     corona-release-id: ${{ vars.CORONA_RELEASE_ID }}
+  #     corona-csdl-id: ${{ vars.CORONA_CSDL_ID }}
+  #     corona-security-contact: ${{ vars.CORONA_SECURITY_CONTACT }}
+  #     corona-engineering-contact: ${{ vars.CORONA_ENGINEERING_CONTACT }}
+  #     corona-image-admins: ${{ vars.CORONA_IMAGE_ADMINS }}
+  #     ghcr-org-registry: ${{ vars.GHCR_REGISTRY }}
+  #     # optional
+  #     image-name: "eti-sre/${{ github.event.repository.name }}"
+  #     #image-tag: ""
+
+  ################################## SonarQube  Scan ##############################
+  #################################################################################
+  #call-sonar-scan:
+  #  name: Call SonarQube scan
+  #  needs: [ call-corona-blackduck-scan ]
+  #  uses: cisco-eti/gh-reusable-workflows/.github/workflows/sonar-scan.yaml@production
+  #  with:
+  #    sonar-properties-file: "./build/sonar-project.properties"
+  #  secrets:
+  #    vault-approle-role-id: ${{ secrets.VAULT_APPROLE_ROLE_ID }}
+  #    vault-approle-secret-id: ${{ secrets.VAULT_APPROLE_SECRET_ID }}
+  #    ghcr-username: ${{ secrets.GHCR_USERNAME }}
+  #    ghcr-token: ${{ secrets.GHCR_TOKEN }}
+
+  ################################## Helm Publish #################################
+  #################################################################################
+  call-helm-publish:
+    name: Helm publish
+    needs: [ call-docker-build-push ]
+    uses: cisco-eti/gh-reusable-workflows/.github/workflows/helm-publish.yaml@production
+    with:
+      runner-group: ${{ vars.DEFAULT_ARC_RUNNERS }}
+      enable-private-ecr: false
+      enable-public-ecr: false
+      chart-path: "deploy/charts/${{ github.event.repository.name }}"
+      #ecr-public-registry-alias: ${{ vars.ECR_PUBLIC_REGISTRY_ALIAS}}
+      enable-chartmuseum: true
+    secrets:
+      # GHCR Login for docker build runner
+      ghcr-username: ${{ secrets.GHCR_USERNAME }}
+      ghcr-token: ${{ secrets.GHCR_TOKEN }}
+      vault-approle-role-id: ${{ secrets.VAULT_APPROLE_ROLE_ID }}
+      vault-approle-secret-id: ${{ secrets.VAULT_APPROLE_SECRET_ID }}
+
+  ################################## Trigger Deployment ###########################
+  #################################################################################
+  call-trigger-cd:
+    name: Trigger CD
+    needs: [ call-helm-publish ]
+    uses: cisco-eti/gh-reusable-workflows/.github/workflows/trigger-deploy.yaml@production
+    with:
+      deployment-repo: "${{ github.repository }}-deployment"
+      # Always we update "a" and "b" deployment values file, value is optional arg
+      client-payload: '{"app-repository": "${{ github.repository }}", "values-file-path": "applications/${{ github.event.repository.name }}", "property-path": "tagversion", "value": ""}'
+
+    secrets:
+      # GHCR Login for docker build runner
+      ghcr-username: ${{ secrets.GHCR_USERNAME }}
+      ghcr-token: ${{ secrets.GHCR_TOKEN }}
+      # GHCR Login for docker scan
+      ghcr-org-username: ${{ secrets.GHCR_USERNAME }}
+      ghcr-org-token: ${{ secrets.GHCR_TOKEN }}
+      vault-approle-role-id: ${{ secrets.VAULT_APPROLE_ROLE_ID }}
+      vault-approle-secret-id: ${{ secrets.VAULT_APPROLE_SECRET_ID }}
+
+  ################################## Send Status for PR Checks ###########################
+  ########################################################################################
+  # This Job is REQUIRED, it is what allows for the WHOLE workflow to show up in the PR status checks as a requirement for branch rules
+  reusable-workflow-ci-status:
+    name: Reusable Workflow CI Status
+    # This should be an array of ALL active jobs that are used/run
+    needs: [ checkout-unit-tests,call-docker-build-push, call-helm-publish, call-trigger-cd ]
+    if: always()
+    runs-on:
+      group: ${{ vars.DEFAULT_ARC_RUNNERS }}
+    steps:
+      - name: report failure
+        if: ${{ cancelled() || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'failure') }}
+        run: |
+          echo -e "\033[31m*** WORKFLOW FAILED ***\033[0m"
+          exit 1
+      - name: report success
+        run: |
+          echo -e "\033[1;36m*** WORKFLOW SUCCESS ***\033[0m"
+          exit 0

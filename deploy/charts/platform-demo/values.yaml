@@ -1,0 +1,104 @@
+# Default values for configserver-chart.
+# This is a YAML-formatted file.
+#
+# This file provides project specific variables and is joined with another value file
+# in MasterDeployments or MinikubeDeployment repos.
+#
+# When helm is launched it will be done so like this:
+#
+#  helm template -f <valuesfile> <chartlocation>  > outputfile
+#
+# and the output will be redirected to a yaml file which will then be manually kubectl applied
+
+# local variables for this deployment can go here
+
+imageSignatureVerification: false
+
+deployment:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  imagePullSecrets:
+    - name: regcred
+ingress:
+  apiVersion: networking.k8s.io/v1
+  ingressClassName: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt
+
+serviceName: platform-demo
+namespace: platform-demo
+dockerPreamable: 626007623524.dkr.ecr.us-east-2.amazonaws.com
+servicePort: "5000"
+metricsPort: "5001"
+
+# Pod security Standards
+# https://kubernetes.io/docs/concepts/security/pod-security-standards/
+# https://snyk.io/blog/10-kubernetes-security-context-settings-you-should-understand/
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsUser: 1001
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  capabilities:
+    drop: ["ALL"]
+  seccompProfile:
+    type: "RuntimeDefault"
+
+# Probes: liveness, readiness and startup
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 5000
+  # initialDelaySeconds - Should be set to a duration slightly longer than the application takes to start.
+  # If this is set too low, it may restart the pod before the application has a chance to serve traffic.
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 1
+  successThreshold: 1
+  timeoutSeconds: 1
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 5000
+  # initialDelaySeconds - Should be set to a duration slightly longer than the application takes to start.
+  # If this is set too low, it may restart the pod before the application has a chance to serve traffic.
+  initialDelaySeconds: 15
+  periodSeconds: 5
+  timeoutSeconds: 1
+  failureThreshold: 1
+  successThreshold: 1
+
+startupProbe: {}
+
+configmap:
+  CONFIGMAP_TEST: "test_static_value"
+  CONFIGMAP_DEFAULT_EXAMPLE: "default_value_foo"
+  CONFIGMAP_OVERLAY_EXAMPLE: "default_value_bar"
+  SERVICE_NAME: "platform-demo"
+  LOG_LEVEL: "INFO"
+  # desired simulated uptime for mocked upstream dependencies to demonstrate service health endpoint
+  MOCK_DB_UPTIME: "99.9"
+  MOCK_FOO_UPTIME: "99.5"
+  ELASTIC_ENDPOINT: "elastic-dev-1.kb.us-east-2.aws.elastic-cloud.com"
+  METRICS_DASHBOARD_URL: SET_IN_DEPLOYMENT_REPO
+
+grafana:
+  folderName: applications
+  appInstance: kube-prometheus-stack
+  appName: grafana
+  sidecar:
+    dashboards:
+      label: "grafana_dashboard"
+
+# Environment-specific values
+tagversion: SET_IN_DEPLOYMENT_REPO      # Defer to deployment repo to capture appropriate version for target environment
+dimage: SET_IN_DEPLOYMENT_REPO          # Defer to deployment repo to capture appropriate image name for dev/staging/prod
+domainName: SET_IN_DEPLOYMENT_REPO      # Defer to deployment repo to capture appropriate domain name for dev/staging/prod
+replicas: 2                             # Default replica count; override in deployment repo for env-specific replica count
+
+#### PDB ####
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

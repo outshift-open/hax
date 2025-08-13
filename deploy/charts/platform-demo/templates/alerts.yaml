@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Values.serviceName }}-prometheus-alerts
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: kube-prometheus-stack
+    release: one-eye-prometheus-operator
+spec:
+  groups:
+  - name: {{ .Values.serviceName }}
+    rules:
+    - alert: {{ .Values.serviceName }}-down
+      annotations:
+        description: {{ .Values.serviceName }} health-check reports service is down
+        runbook_url: https://wwwin-github.cisco.com/pages/eti/eti-platform-docs/services/helloworld-apps/platform-demo/operator-guide
+        summary: {{ .Values.serviceName }} health-check reports service is down
+      expr: health_self_state{service_name="{{ .Values.serviceName }}", health_check_type="SELF", health_check_name="{{ .Values.serviceName }}"} >= 3
+      for: 1m
+      labels:
+        severity: warning
+        service: {{ .Values.serviceName }}

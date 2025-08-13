@@ -1,0 +1,23 @@
+{{- $files := .Files.Glob "dashboards/*.json" }}
+{{ if $files }}
+apiVersion: v1
+kind: ConfigMapList
+items:
+{{- range $path, $fileContents := $files }}
+{{- $dashboardName := printf "%s-%s" (regexReplaceAll "(^.*/)(.*)\\.json$" $path "${2}") $.Values.serviceName }}
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name:  {{ $dashboardName | trunc 63 | trimSuffix "-" }}
+    namespace: {{ $.Values.namespace }}
+    labels:
+      app.kubernetes.io/instance: {{ $.Values.grafana.appInstance }}
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: {{ $.Values.grafana.appName }}
+      grafana_dashboard: "local"
+    annotations:
+      grafana_folder: "/tmp/dashboards/applications"
+  data:
+    {{ $dashboardName }}.json: {{ $.Files.Get $path  | replace "<SERVICE_NAME>" $.Values.serviceName | toJson }}
+{{- end }}
+{{- end }}
