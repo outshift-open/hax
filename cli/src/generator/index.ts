@@ -3,6 +3,7 @@ import path from "path"
 import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
+import { updateConfig } from "@/config"
 import {
   getRegistryItem,
   resolveRegistryDependencies,
@@ -79,7 +80,18 @@ async function copyComponentFiles(
   name: string,
   config: HaxConfig,
   createdFiles: string[],
+  source?: string,
 ) {
+  const getBaseDir = (componentType: string) => {
+    switch (componentType) {
+      case "registry:artifacts":
+      default:
+        return config.artifacts.path
+    }
+  }
+
+  const baseDir = getBaseDir(component.type)
+
   for (const file of component.files) {
     if (!file.content) {
       logger.warn(`No content found for file: ${file.path}`)
@@ -87,12 +99,17 @@ async function copyComponentFiles(
     }
 
     if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
-      const targetDir = path.join(config.artifacts.path, name)
+      const targetDir = path.join(baseDir, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
+
+      // Add source attribution comment to the top of component files
+      const sourceAttribution = `// HAX Component: ${name}\n// Source: ${source || "main"}\n// Generated: ${new Date().toISOString().split("T")[0]}\n\n`
+      const contentWithAttribution = sourceAttribution + (file.content || "")
+
       writeFileIfNotExists(
         targetPath,
-        file.content,
+        contentWithAttribution,
         `component file`,
         createdFiles,
       )
@@ -107,7 +124,7 @@ async function copyComponentFiles(
         ] as string[]
       ).includes(file.type)
     ) {
-      const targetDir = path.join(config.artifacts.path, name)
+      const targetDir = path.join(baseDir, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
@@ -119,7 +136,7 @@ async function copyComponentFiles(
     }
 
     if (file.type === REGISTRY_FILE_TYPES.DESCRIPTION) {
-      const targetDir = path.join(config.artifacts.path, name)
+      const targetDir = path.join(baseDir, name)
       fs.mkdirSync(targetDir, { recursive: true })
       const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
@@ -135,8 +152,8 @@ async function copyComponentFiles(
 export async function generateComponent(
   name: string,
   config: HaxConfig,
-  sourceRepo?: string,
-  preloadedComponent?: RegistryItem,
+  repo?: string,
+  cachedComponent?: RegistryItem,
 ) {
   // Input validation
   if (!name || typeof name !== "string" || name.trim().length === 0) {
@@ -160,9 +177,7 @@ export async function generateComponent(
     config.components = []
   }
 
-  const component =
-    preloadedComponent ||
-    (await getRegistryItem(componentName, sourceRepo, config))
+  const component = await getRegistryItem(componentName)
   if (!component) {
     throw new Error(
       `Component "${componentName}" not found in registry. Available components can be listed with 'hax list'.`,
@@ -193,7 +208,7 @@ export async function generateComponent(
 
   await installDependencies(npmDependencies, registryDependencies, config)
 
-  await copyComponentFiles(component, componentName, config, createdFiles)
+  await copyComponentFiles(component, componentName, config, createdFiles, repo)
 
   await ensureUtilsFile(config, createdFiles)
 
@@ -206,9 +221,23 @@ export async function generateComponent(
 
   logger.success(`Added ${componentName} component`)
 
-  if (!config.components.includes(componentName)) {
-    config.components.push(componentName)
+  // Add component with source attribution
+  const componentRecord = {
+    name: componentName,
+    source: repo || "main",
+    installedAt: new Date().toISOString(),
   }
+
+  // Ensure backward compatibility with existing string format
+  const existingIndex = config.components.findIndex((c: any) =>
+    typeof c === "string" ? c === componentName : c.name === componentName,
+  )
+  if (existingIndex === -1) {
+    config.components.push(componentRecord)
+  } else {
+    config.components[existingIndex] = componentRecord
+  }
+  updateConfig(config)
 }
 
 async function installNPMDependencies(dependencies: string[]) {
