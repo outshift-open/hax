@@ -26,8 +26,8 @@ ingress:
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt
 
-serviceName: platform-demo
-namespace: platform-demo
+serviceName: hax
+namespace: hax
 dockerPreamable: 626007623524.dkr.ecr.us-east-2.amazonaws.com
 servicePort: "5000"
 metricsPort: "5001"
@@ -76,7 +76,7 @@ configmap:
   CONFIGMAP_TEST: "test_static_value"
   CONFIGMAP_DEFAULT_EXAMPLE: "default_value_foo"
   CONFIGMAP_OVERLAY_EXAMPLE: "default_value_bar"
-  SERVICE_NAME: "platform-demo"
+  SERVICE_NAME: "hax"
   LOG_LEVEL: "INFO"
   # desired simulated uptime for mocked upstream dependencies to demonstrate service health endpoint
   MOCK_DB_UPTIME: "99.9"

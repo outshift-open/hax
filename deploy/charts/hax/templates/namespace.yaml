@@ -5,7 +5,7 @@ metadata:
 {{- if  .Values.namespace }}
   name: {{ .Values.namespace }}
 {{- else }}
-  name: platform-demo
+  name: hax
 {{- end }}
   labels:
 {{- if  .Values.imageSignatureVerification }}
