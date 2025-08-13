@@ -8,6 +8,7 @@ export async function getGitHubRegistryItem(
   branch: string,
   customRepo?: string,
   token?: string,
+  githubUrl?: string,
 ): Promise<RegistryItem | null> {
   const repo = customRepo || ENV_CONFIG.github.repo
   const metadata = await fetchGitHubRegistryMetadata(
@@ -15,6 +16,7 @@ export async function getGitHubRegistryItem(
     branch,
     repo,
     token,
+    githubUrl,
   )
   if (!metadata || !metadata[name]) {
     return null
@@ -25,10 +27,11 @@ export async function getGitHubRegistryItem(
   return await fetchGitHubComponentFromMetadata(
     name,
     "artifacts",
-    componentMeta,
+    metadata,
     branch,
     repo,
     token,
+    githubUrl,
   )
 }
 
@@ -36,7 +39,6 @@ export async function getGitHubRegistryDependency(
   name: string,
   branch: string,
 ): Promise<RegistryItem | null> {
-  // Fetch metadata and then fetch the component based on metadata
   const metadata = await fetchGitHubRegistryMetadata("ui", branch)
   if (!metadata || !metadata[name]) {
     return null
@@ -44,12 +46,7 @@ export async function getGitHubRegistryDependency(
 
   const componentMeta = metadata[name]
 
-  return await fetchGitHubComponentFromMetadata(
-    name,
-    "ui",
-    componentMeta,
-    branch,
-  )
+  return await fetchGitHubComponentFromMetadata(name, "ui", metadata, branch)
 }
 
 // Fetch metadata for GitHub registry components
@@ -58,10 +55,11 @@ async function fetchGitHubRegistryMetadata(
   branch: string,
   repo?: string,
   token?: string,
+  githubUrl?: string,
 ): Promise<GitHubRegistryMetadata | null> {
   try {
     const targetRepo = repo || ENV_CONFIG.github.repo
-    const baseUrl = REGISTRY_SOURCES.GITHUB(targetRepo, branch)
+    const baseUrl = REGISTRY_SOURCES.GITHUB(targetRepo, branch, githubUrl)
     const metadataUrl = `${baseUrl}cli/src/registry/github-registry/${type}.json`
 
     const response = await fetchGitHubFile(metadataUrl, token)
@@ -81,54 +79,34 @@ async function fetchGitHubRegistryMetadata(
 async function fetchGitHubComponentFromMetadata(
   name: string,
   type: "artifacts" | "ui",
-  metadata: GitHubRegistryMetadata[string],
+  metadata: GitHubRegistryMetadata,
   branch: string,
   repo?: string,
   token?: string,
-): Promise<RegistryItem | null> {
-  try {
-    const baseUrl = REGISTRY_SOURCES.GITHUB(
-      repo || ENV_CONFIG.github.repo,
-      branch,
-    )
-    const registryItem: RegistryItem = {
-      name,
-      type: metadata.type,
-      dependencies:
-        metadata.dependencies.length > 0 ? metadata.dependencies : undefined,
-      registryDependencies:
-        metadata.registryDependencies.length > 0
-          ? metadata.registryDependencies
-          : undefined,
-      files: [],
+  githubUrl?: string,
+): Promise<any> {
+  const component = metadata[name]
+  if (!component) {
+    throw new Error(`Component "${name}" not found in registry`)
+  }
+
+  const componentFiles: any = {}
+  const targetRepo = repo || ENV_CONFIG.github.repo
+  const baseUrl = REGISTRY_SOURCES.GITHUB(targetRepo, branch, githubUrl)
+
+  for (const [fileName, filePath] of Object.entries(component.files)) {
+    const fileUrl = `${baseUrl}${filePath}`
+    const fileContent = await fetchGitHubFile(fileUrl, token)
+    if (fileContent === null) {
+      throw new Error(`Failed to fetch file: ${fileName}`)
     }
+    componentFiles[fileName] = fileContent
+  }
 
-    // Fetch all files specified in metadata
-    for (const fileInfo of metadata.files) {
-      // Use explicit path if provided, otherwise infer from registry type
-      const filePath =
-        (fileInfo as any).path ||
-        (type === "artifacts"
-          ? `hax/artifacts/${name}/${fileInfo.name}`
-          : `hax/components/ui/${fileInfo.name}`)
-
-      const fileUrl = `${baseUrl}${filePath}`
-      const fileContent = await fetchGitHubFile(fileUrl, token)
-
-      if (fileContent) {
-        registryItem.files.push({
-          path: filePath,
-          type: fileInfo.type,
-          content: fileContent,
-        })
-      } else {
-      }
-    }
-
-    return registryItem.files.length > 0 ? registryItem : null
-  } catch (error) {
-    logger.error(`Failed to fetch GitHub component "${name}": ${error}`)
-    return null
+  return {
+    name,
+    ...component,
+    files: componentFiles,
   }
 }
 

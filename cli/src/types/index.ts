@@ -165,6 +165,7 @@ export interface RegistrySource {
   repo?: string
   branch?: string
   token?: string
+  githubUrl?: string
   name: string
 }
 
@@ -175,8 +176,14 @@ export interface RegistryConfig {
 }
 
 export const REGISTRY_SOURCES = {
-  GITHUB: (repo: string, branch: string) =>
-    `https://raw.githubusercontent.com/${repo}/${branch}/`,
+  GITHUB: (repo: string, branch: string, githubUrl?: string) => {
+    const baseGitHubUrl = githubUrl || "https://github.com"
+    const rawUrl = baseGitHubUrl.replace(
+      "github.com",
+      "raw.githubusercontent.com",
+    )
+    return `${rawUrl}/${repo}/${branch}/`
+  },
   LOCAL: "file://",
   NPM: "",
   CDN: "",

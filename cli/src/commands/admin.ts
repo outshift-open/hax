@@ -14,6 +14,7 @@ admin
   .option("--github <repo>", "GitHub repository to initialize")
   .option("--path <path>", "Local path to initialize", ".")
   .option("--create-remote", "Create GitHub repository and push files")
+  .option("--private", "Create private repository (default: public)")
   .option("--token <token>", "GitHub token for repository creation")
   .action(async (options) => {
     if (!options.github) {
@@ -26,6 +27,7 @@ admin
       options.path,
       options.createRemote,
       options.token,
+      options.private,
     )
   })
 
@@ -61,8 +63,9 @@ admin
   .description("Validate registry configuration and structure")
   .option("--path <path>", "Path to registry", ".")
   .option("--remote <url>", "Remote registry URL to validate")
+  .option("--token <token>", "GitHub token for private repository access")
   .action(async (options) => {
-    await validateRegistry(options.path, options.remote)
+    await validateRegistry(options.path, options.remote, options.token)
   })
 
 admin
@@ -80,6 +83,7 @@ async function initializeRepository(
   outputPath: string,
   createRemote?: boolean,
   token?: string,
+  isPrivate?: boolean,
 ) {
   logger.info(
     `🚀 Initializing HAX registry for: ${highlighter.primary(githubRepo)}`,
@@ -188,9 +192,9 @@ agntcy-hax add <component-name>
 
   logger.success("✅ Repository structure created successfully!")
 
-  // GitHub repository creation and push
+  // GitHub repository creation
   if (createRemote) {
-    await createAndPushToGitHub(githubRepo, repoPath, token)
+    await createAndPushToGitHub(githubRepo, repoPath, token, isPrivate)
   } else {
     printPanelBox(
       `${highlighter.success("🎉 HAX Registry Initialized!")}\n` +
@@ -210,7 +214,7 @@ async function generateTemplate(
   name: string,
   outputPath: string,
 ) {
-  logger.info(`🎨 Generating ${type} template: ${highlighter.primary(name)}`)
+  logger.info(`Generating ${type} template: ${highlighter.primary(name)}`)
 
   const templateDir = path.join(outputPath, type, name)
   fs.mkdirSync(templateDir, { recursive: true })
@@ -259,7 +263,7 @@ export function use${toPascalCase(name)}Action() {
     description: "Manage ${name} functionality",
     parameters: [],
     handler: async () => {
-      // Implementation here
+      // Include implementation here
     },
   })
 }
@@ -346,13 +350,16 @@ export function ${toPascalCase(name)}UI() {
   fs.writeFileSync(path.join(outputDir, `${name}-ui.tsx`), uiContent)
 }
 
-async function validateRegistry(registryPath: string, remoteUrl?: string) {
+async function validateRegistry(
+  registryPath: string,
+  remoteUrl?: string,
+  token?: string,
+) {
   logger.info(`🔍 Validating registry at: ${highlighter.info(registryPath)}`)
 
   const errors: string[] = []
   const warnings: string[] = []
 
-  // Check directory structure
   const requiredDirs = ["cli/src/registry/github-registry", "hax"]
 
   requiredDirs.forEach((dir) => {
@@ -362,7 +369,6 @@ async function validateRegistry(registryPath: string, remoteUrl?: string) {
     }
   })
 
-  // Check registry files
   const registryFiles = ["artifacts.json", "ui.json", "composers.json"]
   const registryDir = path.join(
     registryPath,
@@ -398,15 +404,25 @@ async function validateRegistry(registryPath: string, remoteUrl?: string) {
         const [, owner, repo] = githubMatch
         const baseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/`
 
-        // Check if registry files exist remotely
         const remoteFiles = ["artifacts.json", "ui.json", "composers.json"]
+        const githubToken = token || process.env.GITHUB_TOKEN
+
         for (const file of remoteFiles) {
           const fileUrl = `${baseUrl}cli/src/registry/github-registry/${file}`
           try {
-            const response = await fetch(fileUrl)
+            const fetchOptions: RequestInit = {}
+
+            if (githubToken) {
+              fetchOptions.headers = {
+                Authorization: `token ${githubToken}`,
+                Accept: "application/vnd.github.v3.raw",
+              }
+            }
+
+            const response = await fetch(fileUrl, fetchOptions)
             if (response.ok) {
               const content = await response.text()
-              JSON.parse(content) // Validate JSON
+              JSON.parse(content)
               logger.debug(`✅ Remote ${file} is valid`)
             } else if (response.status === 404) {
               warnings.push(`Remote file not found: ${file}`)
@@ -427,7 +443,6 @@ async function validateRegistry(registryPath: string, remoteUrl?: string) {
     }
   }
 
-  // Report results
   if (errors.length > 0) {
     logger.error("❌ Registry validation failed:")
     errors.forEach((error) => logger.error(`  • ${error}`))
@@ -466,10 +481,6 @@ async function manageAccess(
       )
 
       try {
-        // For GitHub repositories, this would typically involve:
-        // 1. Adding user as collaborator
-        // 2. Setting appropriate permissions
-
         const answers = await inquirer.prompt([
           {
             type: "list",
@@ -604,6 +615,7 @@ async function createAndPushToGitHub(
   githubRepo: string,
   repoPath: string,
   token?: string,
+  isPrivate?: boolean,
 ) {
   const [owner, repo] = githubRepo.split("/")
   const githubToken = token || process.env.GITHUB_TOKEN
@@ -642,7 +654,7 @@ async function createAndPushToGitHub(
         body: JSON.stringify({
           name: repo,
           description: `HAX Component Registry - ${githubRepo}`,
-          private: false,
+          private: !!isPrivate,
           auto_init: false,
         }),
       })

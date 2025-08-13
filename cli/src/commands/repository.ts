@@ -11,26 +11,30 @@ repo
   .command("add")
   .description("Add a custom repository")
   .argument("<name>", "Repository alias name (e.g., 'internal', 'partner')")
-  .option("--github <repo>", "GitHub repository (owner/repo)")
+  .option("--repo <repo>", "GitHub repository (owner/repo)")
   .option("--branch <branch>", "Branch to use", "main")
   .option("--token <token>", "GitHub token for private repos")
+  .option(
+    "--github-url <url>",
+    "Custom GitHub Enterprise URL (e.g., https://github.yourcompany.com)",
+  )
   .action(async (name: string, options) => {
-    if (!options.github) {
-      logger.error("--github option is required")
+    if (!options.repo) {
+      logger.error("--repo option is required")
       return
     }
     const config = readConfig()
 
     if (!config.registries) {
       config.registries = {
-        default: "official",
-        fallback: ["official"],
+        default: "main",
+        fallback: ["main"],
         sources: {
-          official: {
+          main: {
             type: "github",
             repo: "cisco-eti/agntcy-hax",
             branch: "main",
-            name: "official",
+            name: "main",
           },
         },
       }
@@ -38,7 +42,7 @@ repo
 
     const newSource: RegistrySource = {
       type: "github",
-      repo: options.github,
+      repo: options.repo,
       branch: options.branch,
       name: name,
     }
@@ -47,13 +51,17 @@ repo
       newSource.token = options.token
     }
 
+    if (options.githubUrl) {
+      newSource.githubUrl = options.githubUrl
+    }
+
     config.registries.sources[name] = newSource
     if (!config.registries.fallback.includes(name)) {
       config.registries.fallback.push(name)
     }
 
     updateConfig(config)
-    logger.info(`✅ Added repository "${name}" (${options.github})`)
+    logger.info(`✅ Added repository "${name}" (${options.repo})`)
   })
 
 repo
@@ -89,24 +97,11 @@ repo
     Object.entries(config.registries.sources).forEach(([name, source]) => {
       const isDefault = name === config.registries!.default
       const marker = isDefault ? highlighter.accent("[default]") : "         "
-      const repoType = name === "official" ? " (official)" : ""
+      const repoType = name === "main" ? " (main)" : ""
       logger.info(
         `${marker} ${name}: ${source.repo} (${source.branch})${repoType}`,
       )
     })
-
-    const defaultRepo = config.registries.default
-    const fallbackOrder = config.registries.fallback.filter(
-      (repo) => repo !== defaultRepo,
-    )
-    const actualOrder = [defaultRepo, ...fallbackOrder]
-
-    logger.info(
-      `\n🔄 Fallback order: ${config.registries.fallback.join(" → ")}`,
-    )
-    logger.info(
-      `🎯 Default priority: ${actualOrder.join(" → ")} (${highlighter.accent("[default]")} = checked first)`,
-    )
   })
 
 repo
