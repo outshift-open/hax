@@ -17,5 +17,17 @@
       { "name": "types.ts", "type": "registry:types" },
       { "name": "index.ts", "type": "registry:index" }
     ]
+  },
+  "file-upload": {
+    "type": "registry:composer",
+    "dependencies": ["react", "lucide-react"],
+    "registryDependencies": [],
+    "files": [
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" },
+      { "name": "file-upload.constant.ts", "type": "registry:constants" }
+    ]
   }
 }

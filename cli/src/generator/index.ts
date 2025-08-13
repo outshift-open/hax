@@ -117,6 +117,7 @@ async function copyComponentFiles(
           REGISTRY_FILE_TYPES.TYPES,
           REGISTRY_FILE_TYPES.HOOK,
           REGISTRY_FILE_TYPES.INDEX,
+          REGISTRY_FILE_TYPES.CONSTANTS,
         ] as string[]
       ).includes(file.type)
     ) {
@@ -210,7 +211,9 @@ export async function generateComponent(name: string, config: HaxConfig) {
     })
   }
 
-  logger.success(`Added ${componentName} ${component.type === "registry:composer" ? "feature" : "component"}`)
+  logger.success(
+    `Added ${componentName} ${component.type === "registry:composer" ? "feature" : "component"}`,
+  )
 
   // Add to appropriate config array based on type
   if (component.type === "registry:composer") {

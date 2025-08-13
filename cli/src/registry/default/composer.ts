@@ -5,7 +5,13 @@ export const composer: RegistryItem[] = [
   {
     name: "rules-context",
     type: "registry:composer",
-    dependencies: ["react", "lucide-react"],
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
     registryDependencies: [
       "dialog",
       "button",
@@ -34,6 +40,47 @@ export const composer: RegistryItem[] = [
         path: "hax/composer/rules/types.ts",
         type: "registry:types",
         content: readComponentFile("hax/composer/rules/types.ts"),
+      },
+      {
+        path: "hax/composer/rules/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/composer/rules/index.ts"),
+      },
+    ],
+  },
+  {
+    name: "file-upload",
+    type: "registry:composer",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
+    registryDependencies: [],
+    files: [
+      {
+        path: "hax/composer/file-upload/file-upload.constant.ts",
+        type: "registry:constants",
+        content: readComponentFile(
+          "hax/composer/file-upload/file-upload.constant.ts",
+        ),
+      },
+      {
+        path: "hax/composer/file-upload/description.ts",
+        type: "registry:description",
+        content: readComponentFile("hax/composer/file-upload/description.ts"),
+      },
+      {
+        path: "hax/composer/file-upload/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/composer/file-upload/action.ts"),
+      },
+      {
+        path: "hax/composer/file-upload/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/composer/file-upload/types.ts"),
       },
       {
         path: "hax/composer/rules/index.ts",
