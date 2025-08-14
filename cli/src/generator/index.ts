@@ -25,7 +25,7 @@ async function collectDependencies(component: RegistryItem): Promise<{
 }> {
   const allDependencies = new Set<string>()
 
-  // Add direct npm dependencies with version pinning
+  // Add direct npm dependencies
   if (component.dependencies && component.dependencies.length > 0) {
     component.dependencies.forEach((dep: string) =>
       allDependencies.add(getPinnedDependency(dep)),

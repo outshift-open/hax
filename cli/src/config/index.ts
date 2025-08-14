@@ -23,9 +23,7 @@ export function readConfig(): HaxConfig {
       $schema: parsed.$schema ?? "https://hax.dev/schema.json",
       style: parsed.style ?? "default",
       components: Array.isArray(parsed.components) ? parsed.components : [],
-      features: Array.isArray(parsed.features)
-        ? parsed.features
-        : [],
+      features: Array.isArray(parsed.features) ? parsed.features : [],
     }
 
     if (parsed.artifacts) config.artifacts = parsed.artifacts

@@ -1,3 +1,12 @@
+/**
+ * Version management and dependency pinning for HAX CLI
+ *
+ * This file manages specific version constraints for critical dependencies
+ * to ensure compatibility and prevent version conflicts. The CLI will
+ * automatically pin these packages to their specified versions when
+ * installing components that depend on them.
+ */
+
 export const COPILOTKIT_VERSION = "1.9.3"
 
 export const PINNED_DEPENDENCIES = {

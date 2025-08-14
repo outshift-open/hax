@@ -64,7 +64,7 @@ export const addCommand = new Command("add")
       return
     }
 
-    // Update the initial message based on what we're adding
+    // Update the initial message based on what is being added
     const hasArtifacts = componentsByType["registry:artifacts"].length > 0
     const hasComposers = componentsByType["registry:composer"].length > 0
     const hasUI = componentsByType["registry:ui"].length > 0
