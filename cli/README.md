@@ -81,11 +81,21 @@ The CLI creates a `hax.json` file in your project:
 {
   "$schema": "./schema.json",
   "style": "default",
+  "components": [
+    "code-editor",
+    "data-visualizer",
+    "timeline",
+    "form",
+    "mindmap",
+    "details"
+  ],
+  "features": ["rules-context", "chat-commands", "file-upload"],
   "artifacts": {
     "path": "src/hax/artifacts"
   },
-  "components": ["timeline", "code-editor", "data-visualizer"],
-  "composers": ["chat-commands", "file-upload", "rules-context"]
+  "composers": {
+    "path": "src/hax/composers"
+  }
 }
 ```
 

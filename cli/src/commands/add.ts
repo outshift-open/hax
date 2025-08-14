@@ -3,7 +3,6 @@ import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, highlighter, printPanelBox } from "../utils/logger"
 import { generateComponentMessage } from "../utils/text"
-import { getComposersPath } from "../utils/paths"
 import fs from "fs"
 
 export const addCommand = new Command("add")
@@ -83,15 +82,18 @@ export const addCommand = new Command("add")
     logger.break()
 
     // Ensure artifacts path exists if we have artifacts
-    if (hasArtifacts && !fs.existsSync(config.artifacts.path)) {
-      logger.warn(
-        `Artifacts path '${config.artifacts.path}' does not exist. It will be created.`,
-      )
-      fs.mkdirSync(config.artifacts.path, { recursive: true })
+    if (hasArtifacts) {
+      const artifactsPath = config.artifacts?.path ?? "src/hax/artifacts"
+      if (!fs.existsSync(artifactsPath)) {
+        logger.warn(
+          `Artifacts path '${artifactsPath}' does not exist. It will be created.`,
+        )
+        fs.mkdirSync(artifactsPath, { recursive: true })
+      }
     }
 
     if (hasComposers) {
-      const composersPath = getComposersPath(config.artifacts.path)
+      const composersPath = config.composers?.path ?? "src/hax/composers"
       if (!fs.existsSync(composersPath)) {
         logger.warn(
           `Composers path '${composersPath}' does not exist. It will be created.`,

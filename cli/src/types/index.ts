@@ -91,10 +91,16 @@ export type ProjectConfig = z.infer<typeof ProjectConfigSchema>
 export const HaxConfigSchema = z.object({
   $schema: z.string().optional(),
   style: z.string(),
-  artifacts: z.object({
-    path: z.string(),
-  }),
-  composers: z.array(z.string()).optional(),
+  artifacts: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
+  composers: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
   zones: z
     .object({
       path: z.string(),
@@ -111,6 +117,7 @@ export const HaxConfigSchema = z.object({
     })
     .optional(),
   components: z.array(z.string()).optional(),
+  features: z.array(z.string()).optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
 })

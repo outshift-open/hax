@@ -88,10 +88,10 @@ async function copyComponentFiles(
   const getBaseDir = (componentType: string) => {
     switch (componentType) {
       case "registry:composer":
-        return getComposersPath(config.artifacts.path)
+        return config.composers?.path ?? "src/hax/composers"
       case "registry:artifacts":
       default:
-        return config.artifacts.path
+        return config.artifacts?.path ?? "src/hax/artifacts"
     }
   }
 
@@ -224,11 +224,19 @@ export async function generateComponent(name: string, config: HaxConfig) {
 
   // Add to appropriate config array based on type
   if (component.type === "registry:composer") {
-    if (!config.composers) config.composers = []
-    if (!config.composers.includes(componentName)) {
-      config.composers.push(componentName)
+    // Set up composers config if first composer
+    if (!config.composers) {
+      config.composers = { path: "src/hax/composers" }
+    }
+    if (!config.features) config.features = []
+    if (!config.features.includes(componentName)) {
+      config.features.push(componentName)
     }
   } else {
+    // Set up artifacts config if first artifact
+    if (!config.artifacts) {
+      config.artifacts = { path: "src/hax/artifacts" }
+    }
     if (!config.components.includes(componentName)) {
       config.components.push(componentName)
     }
