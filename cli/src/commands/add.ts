@@ -3,6 +3,7 @@ import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, highlighter, printPanelBox } from "../utils/logger"
 import { generateComponentMessage } from "../utils/text"
+import { getComposersPath } from "../utils/paths"
 import fs from "fs"
 
 export const addCommand = new Command("add")
@@ -89,9 +90,8 @@ export const addCommand = new Command("add")
       fs.mkdirSync(config.artifacts.path, { recursive: true })
     }
 
-    // Ensure composers path exists if we have composers
     if (hasComposers) {
-      const composersPath = config.composers?.path ?? "src/hax/composers"
+      const composersPath = getComposersPath(config.artifacts.path)
       if (!fs.existsSync(composersPath)) {
         logger.warn(
           `Composers path '${composersPath}' does not exist. It will be created.`,

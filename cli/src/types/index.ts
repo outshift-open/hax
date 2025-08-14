@@ -94,11 +94,7 @@ export const HaxConfigSchema = z.object({
   artifacts: z.object({
     path: z.string(),
   }),
-  composers: z
-    .object({
-      path: z.string(),
-    })
-    .optional(),
+  composers: z.array(z.string()).optional(),
   zones: z
     .object({
       path: z.string(),
@@ -115,7 +111,6 @@ export const HaxConfigSchema = z.object({
     })
     .optional(),
   components: z.array(z.string()).optional(),
-  features: z.array(z.string()).optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
 })
@@ -139,6 +134,9 @@ export const REGISTRY_FILE_TYPES = {
   INDEX: "registry:index",
   DESCRIPTION: "registry:description",
   CONSTANTS: "registry:constants",
+  LIB: "registry:lib",
+  MIDDLEWARE: "registry:middleware",
+  STATE: "registry:state",
 } as const
 
 export const REGISTRY_SOURCES = {

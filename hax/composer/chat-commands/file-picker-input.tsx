@@ -6,7 +6,7 @@ import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import { filePickerInputId, validExtensions } from "./file-upload.constant";
 
 interface FilePickerInputProps {
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   isBrowsingFiles: boolean;
   onFileSelection: (files: FileList) => void;
   onBrowsingStateChange: (browsing: boolean) => void;
@@ -70,7 +70,7 @@ export function FilePickerInput({
     <>
       <Input
         id={filePickerInputId}
-        ref={fileInputRef}
+        ref={fileInputRef as React.RefObject<HTMLInputElement>}
         type="file"
         multiple={multiple}
         accept={validExtensions.join(",")}

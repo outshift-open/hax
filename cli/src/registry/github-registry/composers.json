@@ -36,14 +36,13 @@
     "type": "registry:composer",
     "dependencies": [
       "react",
-      "lucide-react",
-      "@radix-ui/react-dropdown-menu",
       "clsx",
       "tailwind-merge",
       "zod",
-      "@copilotkit/react-core"
+      "@copilotkit/react-core",
+      "@copilotkit/runtime"
     ],
-    "registryDependencies": ["dropdown-menu", "loading-spinner", "input"],
+    "registryDependencies": ["input", "loading-spinner"],
     "files": [
       { "name": "command-hints.tsx", "type": "registry:component" },
       { "name": "command-suggestions.tsx", "type": "registry:component" },
@@ -55,17 +54,27 @@
         "name": "commands/agent-delegation-command.tsx",
         "type": "registry:component"
       },
-      { "name": "commands/artifact-command.tsx", "type": "registry:component" },
-      { "name": "commands/base-command.tsx", "type": "registry:component" },
-      { "name": "commands/file-command.tsx", "type": "registry:component" },
-      { "name": "commands/url-command.tsx", "type": "registry:component" },
-      { "name": "hooks/useDragAndDrop.ts", "type": "registry:hook" },
-      { "name": "hooks/useFileSelection.ts", "type": "registry:hook" },
+      { "name": "commands/context-command.tsx", "type": "registry:component" },
       {
-        "name": "middleware/commandMiddleware.ts",
-        "type": "registry:middleware"
+        "name": "commands/tool-call-command.tsx",
+        "type": "registry:component"
       },
-      { "name": "state/commandState.ts", "type": "registry:state" }
+      { "name": "commands/index.ts", "type": "registry:index" },
+      { "name": "hooks/useChatCommands.ts", "type": "registry:hook" },
+      { "name": "hooks/useDragAndDrop.ts", "type": "registry:hook" },
+      { "name": "hooks/useLocalContext.ts", "type": "registry:hook" },
+      { "name": "hooks/useSuggestions.ts", "type": "registry:hook" },
+      { "name": "hooks/useTools.ts", "type": "registry:hook" },
+      { "name": "middleware/agent-delegation.ts", "type": "registry:lib" },
+      {
+        "name": "middleware/chat-middleware-adapter.ts",
+        "type": "registry:lib"
+      },
+      { "name": "middleware/middleware-chain.ts", "type": "registry:lib" },
+      { "name": "middleware/tool-call.ts", "type": "registry:lib" },
+      { "name": "middleware/types.ts", "type": "registry:types" },
+      { "name": "middleware/index.ts", "type": "registry:index" },
+      { "name": "state/command-registry.tsx", "type": "registry:component" }
     ]
   }
 }

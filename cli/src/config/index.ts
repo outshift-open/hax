@@ -27,7 +27,7 @@ export function readConfig(): HaxConfig {
     }
 
     if (parsed.composers) config.composers = parsed.composers
-    if (parsed.features) config.features = parsed.features
+
     if (parsed.zones) config.zones = parsed.zones
     if (parsed.messages) config.messages = parsed.messages
     if (parsed.prompts) config.prompts = parsed.prompts

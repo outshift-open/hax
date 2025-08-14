@@ -4,6 +4,7 @@ import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
 import { updateConfig } from "@/config"
+import { getComposersPath } from "@/utils/paths"
 import {
   getRegistryItem,
   resolveRegistryDependencies,
@@ -87,7 +88,7 @@ async function copyComponentFiles(
   const getBaseDir = (componentType: string) => {
     switch (componentType) {
       case "registry:composer":
-        return config.composers?.path ?? DIRECTORIES.COMPOSERS
+        return getComposersPath(config.artifacts.path)
       case "registry:artifacts":
       default:
         return config.artifacts.path
@@ -102,12 +103,18 @@ async function copyComponentFiles(
       continue
     }
 
+    const relativePath = file.path
+      .replace(`hax/composer/${name}/`, "")
+      .replace(`hax/artifacts/${name}/`, "")
+    const targetDir = path.join(baseDir, name)
+    const fullTargetPath = path.join(targetDir, relativePath)
+
+    const targetFileDir = path.dirname(fullTargetPath)
+    fs.mkdirSync(targetFileDir, { recursive: true })
+
     if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
-      const targetDir = path.join(baseDir, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         file.content,
         `component file`,
         createdFiles,
@@ -121,14 +128,14 @@ async function copyComponentFiles(
           REGISTRY_FILE_TYPES.HOOK,
           REGISTRY_FILE_TYPES.INDEX,
           REGISTRY_FILE_TYPES.CONSTANTS,
+          REGISTRY_FILE_TYPES.LIB,
+          REGISTRY_FILE_TYPES.MIDDLEWARE,
+          REGISTRY_FILE_TYPES.STATE,
         ] as string[]
       ).includes(file.type)
     ) {
-      const targetDir = path.join(baseDir, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         file.content,
         `${file.type} file`,
         createdFiles,
@@ -136,11 +143,8 @@ async function copyComponentFiles(
     }
 
     if (file.type === REGISTRY_FILE_TYPES.DESCRIPTION) {
-      const targetDir = path.join(baseDir, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         file.content,
         `description file`,
         createdFiles,
@@ -201,11 +205,7 @@ export async function generateComponent(name: string, config: HaxConfig) {
   const { npmDependencies, registryDependencies } =
     await collectDependencies(component)
 
-  await installDependencies(
-    npmDependencies,
-    registryDependencies,
-    config,
-  )
+  await installDependencies(npmDependencies, registryDependencies, config)
 
   await copyComponentFiles(component, componentName, config, createdFiles)
 
@@ -219,14 +219,14 @@ export async function generateComponent(name: string, config: HaxConfig) {
   }
 
   logger.success(
-    `Added ${componentName} ${component.type === "registry:composer" ? "feature" : "component"}`,
+    `Added ${componentName} ${component.type === "registry:composer" ? "composer" : "component"}`,
   )
 
   // Add to appropriate config array based on type
   if (component.type === "registry:composer") {
-    if (!config.features) config.features = []
-    if (!config.features.includes(componentName)) {
-      config.features.push(componentName)
+    if (!config.composers) config.composers = []
+    if (!config.composers.includes(componentName)) {
+      config.composers.push(componentName)
     }
   } else {
     if (!config.components.includes(componentName)) {
