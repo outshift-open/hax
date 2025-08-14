@@ -31,5 +31,41 @@
       { "name": "description.ts", "type": "registry:description" },
       { "name": "file-upload.constant.ts", "type": "registry:constants" }
     ]
+  },
+  "chat-commands": {
+    "type": "registry:composer",
+    "dependencies": [
+      "react",
+      "lucide-react",
+      "@radix-ui/react-dropdown-menu",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core"
+    ],
+    "registryDependencies": ["dropdown-menu", "loading-spinner", "input"],
+    "files": [
+      { "name": "command-hints.tsx", "type": "registry:component" },
+      { "name": "command-suggestions.tsx", "type": "registry:component" },
+      { "name": "context-items-list.tsx", "type": "registry:component" },
+      { "name": "file-picker-input.tsx", "type": "registry:component" },
+      { "name": "file-upload.constant.ts", "type": "registry:constants" },
+      { "name": "types.ts", "type": "registry:types" },
+      {
+        "name": "commands/agent-delegation-command.tsx",
+        "type": "registry:component"
+      },
+      { "name": "commands/artifact-command.tsx", "type": "registry:component" },
+      { "name": "commands/base-command.tsx", "type": "registry:component" },
+      { "name": "commands/file-command.tsx", "type": "registry:component" },
+      { "name": "commands/url-command.tsx", "type": "registry:component" },
+      { "name": "hooks/useDragAndDrop.ts", "type": "registry:hook" },
+      { "name": "hooks/useFileSelection.ts", "type": "registry:hook" },
+      {
+        "name": "middleware/commandMiddleware.ts",
+        "type": "registry:middleware"
+      },
+      { "name": "state/commandState.ts", "type": "registry:state" }
+    ]
   }
 }

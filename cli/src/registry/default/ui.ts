@@ -117,4 +117,52 @@ export const uiComponents: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "dropdown-menu",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-dropdown-menu", "class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/dropdown-menu.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/dropdown-menu.tsx"),
+      },
+    ],
+  },
+  {
+    name: "loading-spinner",
+    type: "registry:ui",
+    dependencies: [],
+    files: [
+      {
+        path: "hax/components/ui/loading-spinner.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/loading-spinner.tsx"),
+      },
+    ],
+  },
+  {
+    name: "tabs",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-tabs", "class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/tabs.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/tabs.tsx"),
+      },
+    ],
+  },
+  {
+    name: "drawer",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-dialog", "class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/drawer.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/drawer.tsx"),
+      },
+    ],
+  },
 ]

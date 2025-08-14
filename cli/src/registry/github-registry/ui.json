@@ -62,5 +62,32 @@
     "dependencies": ["@radix-ui/react-label", "class-variance-authority"],
     "registryDependencies": [],
     "files": [{ "name": "label.tsx", "type": "registry:component" }]
+  },
+  "dropdown-menu": {
+    "type": "registry:ui",
+    "dependencies": [
+      "@radix-ui/react-dropdown-menu",
+      "class-variance-authority"
+    ],
+    "registryDependencies": [],
+    "files": [{ "name": "dropdown-menu.tsx", "type": "registry:component" }]
+  },
+  "loading-spinner": {
+    "type": "registry:ui",
+    "dependencies": [],
+    "registryDependencies": [],
+    "files": [{ "name": "loading-spinner.tsx", "type": "registry:component" }]
+  },
+  "tabs": {
+    "type": "registry:ui",
+    "dependencies": ["@radix-ui/react-tabs", "class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "tabs.tsx", "type": "registry:component" }]
+  },
+  "drawer": {
+    "type": "registry:ui",
+    "dependencies": ["@radix-ui/react-dialog", "class-variance-authority"],
+    "registryDependencies": [],
+    "files": [{ "name": "drawer.tsx", "type": "registry:component" }]
   }
 }
