@@ -13,3 +13,7 @@ export const ArtifactTabZod = z.discriminatedUnion("type", [
 ]);
 
 export type ArtifactTab = z.infer<typeof ArtifactTabZod>;
+export enum DragAndDropType {
+  DropToZone = "dropToZone",
+  DropToChat = "dropToChat",
+}

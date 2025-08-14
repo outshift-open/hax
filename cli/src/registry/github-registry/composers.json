@@ -24,6 +24,8 @@
     "registryDependencies": [],
     "files": [
       { "name": "action.tsx", "type": "registry:hook" },
+      { "name": "drag-drop-zone.tsx", "type": "registry:component" },
+      { "name": "info-icon.tsx", "type": "registry:component" },
       { "name": "types.ts", "type": "registry:types" },
       { "name": "index.ts", "type": "registry:index" },
       { "name": "description.ts", "type": "registry:description" },
