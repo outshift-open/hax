@@ -109,7 +109,7 @@ The CLI creates a `hax.json` file in your project:
 ### Component Types
 
 - **Artifacts**: Individual UI components for specific visualizations and interactions
-- **Composers**: Enhanced chat interface with slash commands (@, +, /), file upload, and rules for agent behavior.
+- **Composers**: Enhanced chat interface with chat commands (@, +, /), file upload, and rules for agent behavior.
 - **UI Components**: Reusable base components (buttons, inputs, etc.) automatically installed as dependencies
 
 ## Registry Sources
