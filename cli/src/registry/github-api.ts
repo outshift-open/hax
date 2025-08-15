@@ -44,14 +44,36 @@ export async function getGitHubRegistryDependency(
   )
 }
 
+// Fetch a registry composer from GitHub
+export async function getGitHubRegistryComposer(
+  name: string,
+  branch: string,
+): Promise<RegistryItem | null> {
+  const metadata = await fetchGitHubRegistryMetadata("composer", branch)
+  if (!metadata || !metadata[name]) {
+    logger.debug(`Composer "${name}" not found in GitHub composer metadata`)
+    return null
+  }
+
+  const componentMeta = metadata[name]
+
+  return await fetchGitHubComponentFromMetadata(
+    name,
+    "composer",
+    componentMeta,
+    branch,
+  )
+}
+
 // Fetch metadata for GitHub registry components
 async function fetchGitHubRegistryMetadata(
-  type: "artifacts" | "ui",
+  type: "artifacts" | "ui" | "composer",
   branch: string,
 ): Promise<GitHubRegistryMetadata | null> {
   try {
     const baseUrl = REGISTRY_SOURCES.GITHUB(ENV_CONFIG.github.repo, branch)
-    const metadataUrl = `${baseUrl}cli/src/registry/github-registry/${type}.json`
+    const fileName = type === "composer" ? "composers.json" : `${type}.json`
+    const metadataUrl = `${baseUrl}cli/src/registry/github-registry/${fileName}`
 
     const response = await fetchGitHubFile(metadataUrl)
     if (!response) {
@@ -70,7 +92,7 @@ async function fetchGitHubRegistryMetadata(
 
 async function fetchGitHubComponentFromMetadata(
   name: string,
-  type: "artifacts" | "ui",
+  type: "artifacts" | "ui" | "composer",
   metadata: GitHubRegistryMetadata[string],
   branch: string,
 ): Promise<RegistryItem | null> {
@@ -95,7 +117,9 @@ async function fetchGitHubComponentFromMetadata(
         (fileInfo as any).path ||
         (type === "artifacts"
           ? `hax/artifacts/${name}/${fileInfo.name}`
-          : `hax/components/ui/${fileInfo.name}`)
+          : type === "composer"
+            ? `hax/composer/${name}/${fileInfo.name}`
+            : `hax/components/ui/${fileInfo.name}`)
 
       const fileUrl = `${baseUrl}${filePath}`
       const fileContent = await fetchGitHubFile(fileUrl)

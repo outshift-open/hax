@@ -1,10 +1,12 @@
-"use client"
+"use client";
 
-export function LoadingSpinner() {
+export function LoadingSpinner({ contained = false }: { contained?: boolean }) {
   return (
-    <div className="flex min-h-[200px] w-full flex-col items-center justify-center">
+    <div
+      className={`flex ${contained ? "h-full" : "min-h-[200px]"} w-full flex-col items-center justify-center`}
+    >
       <svg
-        className="mb-4 h-10 w-10 animate-spin text-[#828AFF]"
+        className={`${contained ? "" : "mb-4"} h-10 w-10 animate-spin text-[#828AFF]`}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -24,5 +26,5 @@ export function LoadingSpinner() {
         />
       </svg>
     </div>
-  )
+  );
 }

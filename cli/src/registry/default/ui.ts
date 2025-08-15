@@ -78,4 +78,91 @@ export const uiComponents: RegistryItem[] = [
       },
     ],
   },
+
+  {
+    name: "badge",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/badge.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/badge.tsx"),
+      },
+    ],
+  },
+
+  {
+    name: "dialog",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority", "@radix-ui/react-dialog"],
+    files: [
+      {
+        path: "hax/components/ui/dialog.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/dialog.tsx"),
+      },
+    ],
+  },
+
+  {
+    name: "label",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority", "@radix-ui/react-label"],
+    files: [
+      {
+        path: "hax/components/ui/label.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/label.tsx"),
+      },
+    ],
+  },
+  {
+    name: "dropdown-menu",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-dropdown-menu", "class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/dropdown-menu.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/dropdown-menu.tsx"),
+      },
+    ],
+  },
+  {
+    name: "loading-spinner",
+    type: "registry:ui",
+    dependencies: [],
+    files: [
+      {
+        path: "hax/components/ui/loading-spinner.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/loading-spinner.tsx"),
+      },
+    ],
+  },
+  {
+    name: "tabs",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-tabs", "class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/tabs.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/tabs.tsx"),
+      },
+    ],
+  },
+  {
+    name: "drawer",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-dialog", "class-variance-authority"],
+    files: [
+      {
+        path: "hax/components/ui/drawer.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/drawer.tsx"),
+      },
+    ],
+  },
 ]

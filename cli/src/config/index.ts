@@ -15,18 +15,20 @@ export function readConfig(): HaxConfig {
     const raw = fs.readFileSync(CONFIG_FILE, "utf-8")
     const parsed = JSON.parse(raw)
 
-    if (!parsed.style || !parsed.artifacts?.path) {
+    if (!parsed.style) {
       logger.error("Missing required configuration fields")
     }
 
     const config: HaxConfig = {
       $schema: parsed.$schema ?? "https://hax.dev/schema.json",
       style: parsed.style ?? "default",
-      artifacts: parsed.artifacts ?? { path: "src/hax/artifacts" },
       components: Array.isArray(parsed.components) ? parsed.components : [],
+      features: Array.isArray(parsed.features) ? parsed.features : [],
     }
 
-    // Only include optional fields if they exist in the parsed config
+    if (parsed.artifacts) config.artifacts = parsed.artifacts
+    if (parsed.composers) config.composers = parsed.composers
+
     if (parsed.zones) config.zones = parsed.zones
     if (parsed.messages) config.messages = parsed.messages
     if (parsed.prompts) config.prompts = parsed.prompts
@@ -94,10 +96,8 @@ export async function createConfig(): Promise<void> {
   const config: HaxConfig = {
     $schema: "./schema.json",
     style: "default",
-    artifacts: {
-      path: `${basePath}/artifacts`,
-    },
     components: [],
+    features: [],
   }
 
   console.log("")
@@ -105,7 +105,7 @@ export async function createConfig(): Promise<void> {
   printPanelBox(
     `${highlighter.warn("📝 Configuration Summary:")}\n` +
       `${highlighter.debug("Base Path:")} ${highlighter.info(basePath)}\n` +
-      `${highlighter.debug("Artifacts Path:")} ${highlighter.accent(config.artifacts.path)}\n`,
+      `${highlighter.debug("Note:")} Artifacts and composers paths will be created when first components are added\n`,
   )
   const confirm = await inquirer.prompt([
     {

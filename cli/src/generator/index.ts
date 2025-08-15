@@ -3,6 +3,8 @@ import path from "path"
 import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
+import { updateConfig } from "@/config"
+import { getComposersPath } from "@/utils/paths"
 import {
   getRegistryItem,
   resolveRegistryDependencies,
@@ -15,6 +17,7 @@ import {
   REGISTRY_FILE_TYPES,
   DIRECTORIES,
 } from "../types"
+import { getPinnedDependency } from "../config/versions"
 
 async function collectDependencies(component: RegistryItem): Promise<{
   npmDependencies: string[]
@@ -24,7 +27,9 @@ async function collectDependencies(component: RegistryItem): Promise<{
 
   // Add direct npm dependencies
   if (component.dependencies && component.dependencies.length > 0) {
-    component.dependencies.forEach((dep: string) => allDependencies.add(dep))
+    component.dependencies.forEach((dep: string) =>
+      allDependencies.add(getPinnedDependency(dep)),
+    )
   }
 
   // Resolve registry dependencies
@@ -40,11 +45,11 @@ async function collectDependencies(component: RegistryItem): Promise<{
       component.registryDependencies,
     )
 
-    // Add npm dependencies from registry dependencies
+    // Add npm dependencies from registry dependencies with version pinning
     for (const dep of allRegistryDeps) {
       if (dep.dependencies && dep.dependencies.length > 0) {
         dep.dependencies.forEach((npmDep: string) =>
-          allDependencies.add(npmDep),
+          allDependencies.add(getPinnedDependency(npmDep)),
         )
       }
     }
@@ -80,18 +85,36 @@ async function copyComponentFiles(
   config: HaxConfig,
   createdFiles: string[],
 ) {
+  const getBaseDir = (componentType: string) => {
+    switch (componentType) {
+      case "registry:composer":
+        return config.composers?.path ?? "src/hax/composers"
+      case "registry:artifacts":
+      default:
+        return config.artifacts?.path ?? "src/hax/artifacts"
+    }
+  }
+
+  const baseDir = getBaseDir(component.type)
+
   for (const file of component.files) {
     if (!file.content) {
       logger.warn(`No content found for file: ${file.path}`)
       continue
     }
 
+    const relativePath = file.path
+      .replace(`hax/composer/${name}/`, "")
+      .replace(`hax/artifacts/${name}/`, "")
+    const targetDir = path.join(baseDir, name)
+    const fullTargetPath = path.join(targetDir, relativePath)
+
+    const targetFileDir = path.dirname(fullTargetPath)
+    fs.mkdirSync(targetFileDir, { recursive: true })
+
     if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
-      const targetDir = path.join(config.artifacts.path, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         file.content,
         `component file`,
         createdFiles,
@@ -104,14 +127,15 @@ async function copyComponentFiles(
           REGISTRY_FILE_TYPES.TYPES,
           REGISTRY_FILE_TYPES.HOOK,
           REGISTRY_FILE_TYPES.INDEX,
+          REGISTRY_FILE_TYPES.CONSTANTS,
+          REGISTRY_FILE_TYPES.LIB,
+          REGISTRY_FILE_TYPES.MIDDLEWARE,
+          REGISTRY_FILE_TYPES.STATE,
         ] as string[]
       ).includes(file.type)
     ) {
-      const targetDir = path.join(config.artifacts.path, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         file.content,
         `${file.type} file`,
         createdFiles,
@@ -119,11 +143,8 @@ async function copyComponentFiles(
     }
 
     if (file.type === REGISTRY_FILE_TYPES.DESCRIPTION) {
-      const targetDir = path.join(config.artifacts.path, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         file.content,
         `description file`,
         createdFiles,
@@ -180,7 +201,7 @@ export async function generateComponent(name: string, config: HaxConfig) {
     )
   }
 
-  // Collectand install all dependencies
+  // Collect and install all dependencies
   const { npmDependencies, registryDependencies } =
     await collectDependencies(component)
 
@@ -197,11 +218,32 @@ export async function generateComponent(name: string, config: HaxConfig) {
     })
   }
 
-  logger.success(`Added ${componentName} component`)
+  logger.success(
+    `Added ${componentName} ${component.type === "registry:composer" ? "composer" : "component"}`,
+  )
 
-  if (!config.components.includes(componentName)) {
-    config.components.push(componentName)
+  // Add to appropriate config array based on type
+  if (component.type === "registry:composer") {
+    // Set up composers config if first composer
+    if (!config.composers) {
+      config.composers = { path: "src/hax/composers" }
+    }
+    if (!config.features) config.features = []
+    if (!config.features.includes(componentName)) {
+      config.features.push(componentName)
+    }
+  } else {
+    // Set up artifacts config if first artifact
+    if (!config.artifacts) {
+      config.artifacts = { path: "src/hax/artifacts" }
+    }
+    if (!config.components.includes(componentName)) {
+      config.components.push(componentName)
+    }
   }
+
+  // Save updated config
+  updateConfig(config)
 }
 
 async function installNPMDependencies(dependencies: string[]) {
@@ -281,10 +323,11 @@ async function installUIComponent(name: string, _config: HaxConfig) {
     }
 
     // Determine target directory based on component name
-    const targetDir = name === "generated-ui-wrapper" 
-      ? path.resolve(DIRECTORIES.COMPONENTS)
-      : path.resolve(DIRECTORIES.UI_COMPONENTS)
-    
+    const targetDir =
+      name === "generated-ui-wrapper"
+        ? path.resolve(DIRECTORIES.COMPONENTS)
+        : path.resolve(DIRECTORIES.UI_COMPONENTS)
+
     fs.mkdirSync(targetDir, { recursive: true })
     const targetPath = path.join(targetDir, path.basename(file.path))
     writeFileIfNotExists(targetPath, file.content, `UI component file`, [])

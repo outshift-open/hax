@@ -1,0 +1,80 @@
+{
+  "rules-context": {
+    "type": "registry:composer",
+    "dependencies": ["react", "lucide-react"],
+    "registryDependencies": [
+      "button",
+      "input",
+      "badge",
+      "dialog",
+      "card",
+      "label"
+    ],
+    "files": [
+      { "name": "rules-context.tsx", "type": "registry:component" },
+      { "name": "rules.tsx", "type": "registry:component" },
+      { "name": "localStorage.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" }
+    ]
+  },
+  "file-upload": {
+    "type": "registry:composer",
+    "dependencies": ["react", "lucide-react"],
+    "registryDependencies": [],
+    "files": [
+      { "name": "action.tsx", "type": "registry:hook" },
+      { "name": "drag-drop-zone.tsx", "type": "registry:component" },
+      { "name": "info-icon.tsx", "type": "registry:component" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" },
+      { "name": "file-upload.constant.ts", "type": "registry:constants" }
+    ]
+  },
+  "chat-commands": {
+    "type": "registry:composer",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "@copilotkit/runtime"
+    ],
+    "registryDependencies": ["input", "loading-spinner"],
+    "files": [
+      { "name": "command-hints.tsx", "type": "registry:component" },
+      { "name": "command-suggestions.tsx", "type": "registry:component" },
+      { "name": "context-items-list.tsx", "type": "registry:component" },
+      { "name": "file-picker-input.tsx", "type": "registry:component" },
+      { "name": "file-upload.constant.ts", "type": "registry:constants" },
+      { "name": "types.ts", "type": "registry:types" },
+      {
+        "name": "commands/agent-delegation-command.tsx",
+        "type": "registry:component"
+      },
+      { "name": "commands/context-command.tsx", "type": "registry:component" },
+      {
+        "name": "commands/tool-call-command.tsx",
+        "type": "registry:component"
+      },
+      { "name": "commands/index.ts", "type": "registry:index" },
+      { "name": "hooks/useChatCommands.ts", "type": "registry:hook" },
+      { "name": "hooks/useDragAndDrop.ts", "type": "registry:hook" },
+      { "name": "hooks/useLocalContext.ts", "type": "registry:hook" },
+      { "name": "hooks/useSuggestions.ts", "type": "registry:hook" },
+      { "name": "hooks/useTools.ts", "type": "registry:hook" },
+      { "name": "middleware/agent-delegation.ts", "type": "registry:lib" },
+      {
+        "name": "middleware/chat-middleware-adapter.ts",
+        "type": "registry:lib"
+      },
+      { "name": "middleware/middleware-chain.ts", "type": "registry:lib" },
+      { "name": "middleware/tool-call.ts", "type": "registry:lib" },
+      { "name": "middleware/types.ts", "type": "registry:types" },
+      { "name": "middleware/index.ts", "type": "registry:index" },
+      { "name": "state/command-registry.tsx", "type": "registry:component" }
+    ]
+  }
+}

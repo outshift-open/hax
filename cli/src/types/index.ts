@@ -21,6 +21,7 @@ export const RegistryFileTypeSchema = z.enum([
   "registry:hook",
   "registry:index",
   "registry:description",
+  "registry:constants",
 ])
 export type RegistryFileType = z.infer<typeof RegistryFileTypeSchema>
 
@@ -28,6 +29,7 @@ export const RegistryItemTypeSchema = z.enum([
   "registry:artifacts",
   "registry:ui",
   "registry:lib",
+  "registry:composer",
 ])
 export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>
 
@@ -89,9 +91,16 @@ export type ProjectConfig = z.infer<typeof ProjectConfigSchema>
 export const HaxConfigSchema = z.object({
   $schema: z.string().optional(),
   style: z.string(),
-  artifacts: z.object({
-    path: z.string(),
-  }),
+  artifacts: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
+  composers: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
   zones: z
     .object({
       path: z.string(),
@@ -108,6 +117,7 @@ export const HaxConfigSchema = z.object({
     })
     .optional(),
   components: z.array(z.string()).optional(),
+  features: z.array(z.string()).optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
 })
@@ -121,6 +131,7 @@ export const DIRECTORIES = {
   COMPONENTS: "src/components",
   LIB: "src/lib",
   BACKEND_TOOLS: "backend/tools",
+  COMPOSERS: "src/hax/composers",
 } as const
 
 export const REGISTRY_FILE_TYPES = {
@@ -129,6 +140,10 @@ export const REGISTRY_FILE_TYPES = {
   HOOK: "registry:hook",
   INDEX: "registry:index",
   DESCRIPTION: "registry:description",
+  CONSTANTS: "registry:constants",
+  LIB: "registry:lib",
+  MIDDLEWARE: "registry:middleware",
+  STATE: "registry:state",
 } as const
 
 export const REGISTRY_SOURCES = {
