@@ -44,6 +44,14 @@ agntcy-hax add form
 agntcy-hax add code-editor data-visualizer
 ```
 
+Add Composers (chat features) to your project
+
+```bash
+agntcy-hax add chat-commands file-upload rules-context
+agntcy-hax add chat-commands
+
+```
+
 List available components:
 
 ```bash
@@ -59,6 +67,12 @@ agntcy-hax list
 - **details** - Statistics and data display component
 - **data-visualizer** - Data visualization wrapper
 
+### Available Composers
+
+- **chat-commands** - Interactive chat interface with command suggestions, file picker, and context management
+- **file-upload** - Complete file upload flow with drag-and-drop, progress indicators, and error handling
+- **rules-context** - Rule configuration and management interface with validation and persistence
+
 ## Configuration
 
 The CLI creates a `hax.json` file in your project:
@@ -69,10 +83,21 @@ The CLI creates a `hax.json` file in your project:
 {
   "$schema": "./schema.json",
   "style": "default",
+  "components": [
+    "code-editor",
+    "data-visualizer",
+    "timeline",
+    "form",
+    "mindmap",
+    "details"
+  ],
+  "features": ["rules-context", "chat-commands", "file-upload"],
   "artifacts": {
     "path": "src/hax/artifacts"
   },
-  "components": []
+  "composers": {
+    "path": "src/hax/composers"
+  }
 }
 ```
 
@@ -118,12 +143,19 @@ The CLI creates a `hax.json` file in your project:
 
 ### Configuration Options
 
-- **artifacts.path**: Where components are installed (default: `src/hax`)
+- **artifacts.path**: Where artifact components are installed (default: `src/hax/artifacts`)
 - **components**: List of installed components (auto-managed)
+- **composers**: List of installed composer components (stored in `src/hax/composers`)
 - **style**: Component styling variant (default: "default")
 - **registries.default**: Default repository to check first
 - **registries.fallback**: Repository search order for component resolution
 - **registries.sources**: Repository definitions with GitHub details and optional tokens
+
+### Component Types
+
+- **Artifacts**: Individual UI components for specific visualizations and interactions
+- **Composers**: Enhanced chat interface with chat commands (@, +, /), file upload, and rules for agent behavior.
+- **UI Components**: Reusable base components (buttons, inputs, etc.) automatically installed as dependencies
 
 ## Registry Sources
 

@@ -21,6 +21,7 @@ export const RegistryFileTypeSchema = z.enum([
   "registry:hook",
   "registry:index",
   "registry:description",
+  "registry:constants",
 ])
 export type RegistryFileType = z.infer<typeof RegistryFileTypeSchema>
 
@@ -28,6 +29,7 @@ export const RegistryItemTypeSchema = z.enum([
   "registry:artifacts",
   "registry:ui",
   "registry:lib",
+  "registry:composer",
 ])
 export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>
 
@@ -90,9 +92,16 @@ export type ProjectConfig = z.infer<typeof ProjectConfigSchema>
 export const HaxConfigSchema = z.object({
   $schema: z.string().optional(),
   style: z.string(),
-  artifacts: z.object({
-    path: z.string(),
-  }),
+  artifacts: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
+  composers: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
   zones: z
     .object({
       path: z.string(),
@@ -119,24 +128,12 @@ export const HaxConfigSchema = z.object({
           repo: z.string().optional(),
           branch: z.string().optional(),
           token: z.string().optional(),
-          name: z.string(),
         }),
       ),
     })
     .optional(),
-  components: z
-    .array(
-      z.union([
-        z.string(),
-        z.object({
-          name: z.string(),
-          source: z.string(),
-          version: z.string().optional(),
-          installedAt: z.string().optional(),
-        }),
-      ]),
-    )
-    .optional(),
+  components: z.array(z.string()).optional(),
+  features: z.array(z.string()).optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
 })
@@ -150,6 +147,7 @@ export const DIRECTORIES = {
   COMPONENTS: "src/components",
   LIB: "src/lib",
   BACKEND_TOOLS: "backend/tools",
+  COMPOSERS: "src/hax/composers",
 } as const
 
 export const REGISTRY_FILE_TYPES = {
@@ -158,32 +156,15 @@ export const REGISTRY_FILE_TYPES = {
   HOOK: "registry:hook",
   INDEX: "registry:index",
   DESCRIPTION: "registry:description",
+  CONSTANTS: "registry:constants",
+  LIB: "registry:lib",
+  MIDDLEWARE: "registry:middleware",
+  STATE: "registry:state",
 } as const
 
-export interface RegistrySource {
-  type: "github" | "local" | "npm"
-  repo?: string
-  branch?: string
-  token?: string
-  githubUrl?: string
-  name: string
-}
-
-export interface RegistryConfig {
-  default: string
-  fallback: string[]
-  sources: Record<string, RegistrySource>
-}
-
 export const REGISTRY_SOURCES = {
-  GITHUB: (repo: string, branch: string, githubUrl?: string) => {
-    const baseGitHubUrl = githubUrl || "https://github.com"
-    const rawUrl = baseGitHubUrl.replace(
-      "github.com",
-      "raw.githubusercontent.com",
-    )
-    return `${rawUrl}/${repo}/${branch}/`
-  },
+  GITHUB: (repo: string, branch: string) =>
+    `https://raw.githubusercontent.com/${repo}/${branch}/`,
   LOCAL: "file://",
   NPM: "",
   CDN: "",

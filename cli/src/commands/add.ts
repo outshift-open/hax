@@ -19,10 +19,6 @@ export const addCommand = new Command("add")
       return
     }
     logger.break()
-    logger.info(
-      `🔮 Adding component${componentNames.length > 1 ? "s" : ""}: ${componentNames.map((name) => highlighter.primary(name)).join(", ")} from HAX library`,
-    )
-    logger.break()
 
     let config
     try {
@@ -37,7 +33,13 @@ export const addCommand = new Command("add")
     const validationErrors: string[] = []
     const validatedComponents: Map<string, RegistryItem> = new Map()
 
-    // First validate all components exist before creating any directories
+    const componentsByType: { [key: string]: string[] } = {
+      "registry:artifacts": [],
+      "registry:composer": [],
+      "registry:ui": [],
+    }
+
+    // First validate all components exist and categorize by type
     for (const componentName of componentNames) {
       try {
         const component = await getRegistryItem(
@@ -50,6 +52,10 @@ export const addCommand = new Command("add")
           errorCount++
         } else {
           validatedComponents.set(componentName, component)
+
+          componentsByType[component.type] =
+            componentsByType[component.type] || []
+          componentsByType[component.type].push(componentName)
         }
       } catch {
         validationErrors.push(componentName)
@@ -68,12 +74,42 @@ export const addCommand = new Command("add")
       return
     }
 
-    // Ensure artifacts path exists and create it if not (only after validation passes)
-    if (!fs.existsSync(config.artifacts.path)) {
-      logger.warn(
-        `Artifacts path '${config.artifacts.path}' does not exist. It will be created.`,
-      )
-      fs.mkdirSync(config.artifacts.path, { recursive: true })
+    // Update the initial message based on what is being added
+    const hasArtifacts = componentsByType["registry:artifacts"].length > 0
+    const hasComposers = componentsByType["registry:composer"].length > 0
+    const hasUI = componentsByType["registry:ui"].length > 0
+
+    let typeDescription = "component"
+    if (hasComposers && !hasArtifacts && !hasUI) {
+      typeDescription = "feature"
+    } else if (hasArtifacts && hasComposers) {
+      typeDescription = "component/feature"
+    }
+
+    logger.info(
+      `🔮 Adding ${typeDescription}${componentNames.length > 1 ? "s" : ""}: ${componentNames.map((name) => highlighter.primary(name)).join(", ")} from HAX library`,
+    )
+    logger.break()
+
+    // Ensure artifacts path exists if we have artifacts
+    if (hasArtifacts) {
+      const artifactsPath = config.artifacts?.path ?? "src/hax/artifacts"
+      if (!fs.existsSync(artifactsPath)) {
+        logger.warn(
+          `Artifacts path '${artifactsPath}' does not exist. It will be created.`,
+        )
+        fs.mkdirSync(artifactsPath, { recursive: true })
+      }
+    }
+
+    if (hasComposers) {
+      const composersPath = config.composers?.path ?? "src/hax/composers"
+      if (!fs.existsSync(composersPath)) {
+        logger.warn(
+          `Composers path '${composersPath}' does not exist. It will be created.`,
+        )
+        fs.mkdirSync(composersPath, { recursive: true })
+      }
     }
 
     for (const componentName of componentNames) {

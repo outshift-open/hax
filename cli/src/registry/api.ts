@@ -5,6 +5,7 @@ import { ENV_CONFIG } from "@/config/env"
 import {
   getGitHubRegistryItem,
   getGitHubRegistryDependency,
+  getGitHubRegistryComposer,
 } from "./github-api"
 import { readConfig } from "@/config"
 
@@ -74,13 +75,32 @@ async function getRegistryItemFromSource(
   }
 
   if (sourceName === "local") {
-    const { artifacts } = await import("@/registry/default/artifacts")
-    return (
-      artifacts.find((item: { name: string }) => item.name === name) || null
-    )
+    try {
+      const { artifacts } = await import("@/registry/default/artifacts")
+      const artifact = artifacts.find(
+        (item: { name: string }) => item.name === name,
+      )
+      if (artifact) return artifact
+
+      try {
+        const { composer } = await import("@/registry/default/composer")
+        const composerItem = composer.find(
+          (item: { name: string }) => item.name === name,
+        )
+        return composerItem || null
+      } catch {
+        return null
+      }
+    } catch {
+      return null
+    }
   } else if (sourceName.startsWith("github:")) {
     const branch = sourceName.replace("github:", "")
-    return await getGitHubRegistryItem(name, branch)
+
+    const artifact = await getGitHubRegistryItem(name, branch)
+    if (artifact) return artifact
+
+    return await getGitHubRegistryComposer(name, branch)
   }
   return null
 }

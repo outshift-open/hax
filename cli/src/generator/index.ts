@@ -4,6 +4,7 @@ import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
 import { updateConfig } from "@/config"
+import { getComposersPath } from "@/utils/paths"
 import {
   getRegistryItem,
   resolveRegistryDependencies,
@@ -16,6 +17,7 @@ import {
   REGISTRY_FILE_TYPES,
   DIRECTORIES,
 } from "../types"
+import { getPinnedDependency } from "../config/versions"
 
 async function collectDependencies(component: RegistryItem): Promise<{
   npmDependencies: string[]
@@ -25,7 +27,9 @@ async function collectDependencies(component: RegistryItem): Promise<{
 
   // Add direct npm dependencies
   if (component.dependencies && component.dependencies.length > 0) {
-    component.dependencies.forEach((dep: string) => allDependencies.add(dep))
+    component.dependencies.forEach((dep: string) =>
+      allDependencies.add(getPinnedDependency(dep)),
+    )
   }
 
   // Resolve registry dependencies
@@ -41,11 +45,11 @@ async function collectDependencies(component: RegistryItem): Promise<{
       component.registryDependencies,
     )
 
-    // Add npm dependencies from registry dependencies
+    // Add npm dependencies from registry dependencies with version pinning
     for (const dep of allRegistryDeps) {
       if (dep.dependencies && dep.dependencies.length > 0) {
         dep.dependencies.forEach((npmDep: string) =>
-          allDependencies.add(npmDep),
+          allDependencies.add(getPinnedDependency(npmDep)),
         )
       }
     }
@@ -84,9 +88,11 @@ async function copyComponentFiles(
 ) {
   const getBaseDir = (componentType: string) => {
     switch (componentType) {
+      case "registry:composer":
+        return config.composers?.path ?? "src/hax/composers"
       case "registry:artifacts":
       default:
-        return config.artifacts.path
+        return config.artifacts?.path ?? "src/hax/artifacts"
     }
   }
 
@@ -98,17 +104,22 @@ async function copyComponentFiles(
       continue
     }
 
-    if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
-      const targetDir = path.join(baseDir, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
+    const relativePath = file.path
+      .replace(`hax/composer/${name}/`, "")
+      .replace(`hax/artifacts/${name}/`, "")
+    const targetDir = path.join(baseDir, name)
+    const fullTargetPath = path.join(targetDir, relativePath)
 
+    const targetFileDir = path.dirname(fullTargetPath)
+    fs.mkdirSync(targetFileDir, { recursive: true })
+
+    if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
       // Add source attribution comment to the top of component files
       const sourceAttribution = `// HAX Component: ${name}\n// Source: ${source || "main"}\n// Generated: ${new Date().toISOString().split("T")[0]}\n\n`
       const contentWithAttribution = sourceAttribution + (file.content || "")
 
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         contentWithAttribution,
         `component file`,
         createdFiles,
@@ -121,14 +132,15 @@ async function copyComponentFiles(
           REGISTRY_FILE_TYPES.TYPES,
           REGISTRY_FILE_TYPES.HOOK,
           REGISTRY_FILE_TYPES.INDEX,
+          REGISTRY_FILE_TYPES.CONSTANTS,
+          REGISTRY_FILE_TYPES.LIB,
+          REGISTRY_FILE_TYPES.MIDDLEWARE,
+          REGISTRY_FILE_TYPES.STATE,
         ] as string[]
       ).includes(file.type)
     ) {
-      const targetDir = path.join(baseDir, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         file.content,
         `${file.type} file`,
         createdFiles,
@@ -136,11 +148,8 @@ async function copyComponentFiles(
     }
 
     if (file.type === REGISTRY_FILE_TYPES.DESCRIPTION) {
-      const targetDir = path.join(baseDir, name)
-      fs.mkdirSync(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, path.basename(file.path))
       writeFileIfNotExists(
-        targetPath,
+        fullTargetPath,
         file.content,
         `description file`,
         createdFiles,
@@ -202,7 +211,7 @@ export async function generateComponent(
     )
   }
 
-  // Collectand install all dependencies
+  // Collect and install all dependencies
   const { npmDependencies, registryDependencies } =
     await collectDependencies(component)
 
@@ -219,24 +228,32 @@ export async function generateComponent(
     })
   }
 
-  logger.success(`Added ${componentName} component`)
-
-  // Add component with source attribution
-  const componentRecord = {
-    name: componentName,
-    source: repo || "main",
-    installedAt: new Date().toISOString(),
-  }
-
-  // Ensure backward compatibility with existing string format
-  const existingIndex = config.components.findIndex((c: any) =>
-    typeof c === "string" ? c === componentName : c.name === componentName,
+  logger.success(
+    `Added ${componentName} ${component.type === "registry:composer" ? "composer" : "component"}`,
   )
-  if (existingIndex === -1) {
-    config.components.push(componentRecord)
+
+  // Add to appropriate config array based on type
+  if (component.type === "registry:composer") {
+    // Set up composers config if first composer
+    if (!config.composers) {
+      config.composers = { path: "src/hax/composers" }
+    }
+    if (!config.features) config.features = []
+    if (!config.features.includes(componentName)) {
+      config.features.push(componentName)
+    }
   } else {
-    config.components[existingIndex] = componentRecord
+    // Set up artifacts config if first artifact
+    if (!config.artifacts) {
+      config.artifacts = { path: "src/hax/artifacts" }
+    }
+    if (!config.components) config.components = []
+    if (!config.components.includes(componentName)) {
+      config.components.push(componentName)
+    }
   }
+
+  // Save updated config
   updateConfig(config)
 }
 
