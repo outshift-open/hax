@@ -1,7 +1,6 @@
 import { Command } from "commander"
 import { logger, highlighter } from "@/utils/logger"
 import { readConfig, updateConfig } from "@/config"
-import { RegistrySource } from "@/types"
 
 export const repo = new Command()
   .name("repo")
@@ -11,7 +10,7 @@ repo
   .command("add")
   .description("Add a custom repository")
   .argument("<name>", "Repository alias name (e.g., 'internal', 'partner')")
-  .option("--repo <repo>", "GitHub repository (owner/repo)")
+  .option("--github <repo>", "GitHub repository (owner/repo)")
   .option("--branch <branch>", "Branch to use", "main")
   .option("--token <token>", "GitHub token for private repos")
   .option(
@@ -19,8 +18,8 @@ repo
     "Custom GitHub Enterprise URL (e.g., https://github.yourcompany.com)",
   )
   .action(async (name: string, options) => {
-    if (!options.repo) {
-      logger.error("--repo option is required")
+    if (!options.github) {
+      logger.error("--github option is required")
       return
     }
     const config = readConfig()
@@ -34,17 +33,15 @@ repo
             type: "github",
             repo: "cisco-eti/agntcy-hax",
             branch: "main",
-            name: "main",
           },
         },
       }
     }
 
-    const newSource: RegistrySource = {
+    const newSource: any = {
       type: "github",
-      repo: options.repo,
+      repo: options.github,
       branch: options.branch,
-      name: name,
     }
 
     if (options.token) {
@@ -55,13 +52,13 @@ repo
       newSource.githubUrl = options.githubUrl
     }
 
-    config.registries.sources[name] = newSource
-    if (!config.registries.fallback.includes(name)) {
-      config.registries.fallback.push(name)
+    config.registries!.sources[name] = newSource
+    if (!config.registries!.fallback.includes(name)) {
+      config.registries!.fallback.push(name)
     }
 
     updateConfig(config)
-    logger.info(`✅ Added repository "${name}" (${options.repo})`)
+    logger.info(`✅ Added repository "${name}" (${options.github})`)
   })
 
 repo
