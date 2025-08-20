@@ -114,12 +114,11 @@ export const addCommand = new Command("add")
 
     for (const componentName of componentNames) {
       try {
-        logger.info(`Adding ${componentName}...`)
         const cachedComponent = validatedComponents.get(componentName)
         await generateComponent(
           componentName,
           config,
-          options.repo,
+
           cachedComponent,
         )
         successCount++

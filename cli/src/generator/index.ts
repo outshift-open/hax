@@ -161,7 +161,6 @@ async function copyComponentFiles(
 export async function generateComponent(
   name: string,
   config: HaxConfig,
-  repo?: string,
   cachedComponent?: RegistryItem,
 ) {
   // Input validation
@@ -186,7 +185,7 @@ export async function generateComponent(
     config.components = []
   }
 
-  const component = await getRegistryItem(componentName)
+  const component = cachedComponent || (await getRegistryItem(componentName))
   if (!component) {
     throw new Error(
       `Component "${componentName}" not found in registry. Available components can be listed with 'hax list'.`,
@@ -217,7 +216,13 @@ export async function generateComponent(
 
   await installDependencies(npmDependencies, registryDependencies, config)
 
-  await copyComponentFiles(component, componentName, config, createdFiles, repo)
+  await copyComponentFiles(
+    component,
+    componentName,
+    config,
+    createdFiles,
+    component.source,
+  )
 
   await ensureUtilsFile(config, createdFiles)
 
