@@ -69,7 +69,7 @@ async function getRegistryItemFromSource(
         name,
         source.branch || "main",
         source.repo!,
-        source.token,
+        undefined,
       )
     }
   }

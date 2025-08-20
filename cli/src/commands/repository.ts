@@ -12,7 +12,10 @@ repo
   .argument("<name>", "Repository alias name (e.g., 'internal', 'partner')")
   .option("--github <repo>", "GitHub repository (owner/repo)")
   .option("--branch <branch>", "Branch to use", "main")
-  .option("--token <token>", "GitHub token for private repos")
+  .option(
+    "--token <token>",
+    "GitHub token for authentication (not stored, use GITHUB_TOKEN env var instead)",
+  )
   .option(
     "--github-url <url>",
     "Custom GitHub Enterprise URL (e.g., https://github.yourcompany.com)",
@@ -42,10 +45,6 @@ repo
       type: "github",
       repo: options.github,
       branch: options.branch,
-    }
-
-    if (options.token) {
-      newSource.token = options.token
     }
 
     if (options.githubUrl) {

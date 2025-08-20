@@ -116,13 +116,6 @@ export async function validateRegistry(
     if (missingDirErrors.length > 0) {
       logger.error("")
       logger.error("💡 Tip: Are you in the right directory?")
-      logger.error(
-        "   This command should be run from the root of a HAX registry repository.",
-      )
-      logger.error("   Expected structure:")
-      logger.error("   ├── cli/src/registry/github-registry/")
-      logger.error("   ├── hax/")
-      logger.error("   └── README.md")
     }
   } else {
     logger.success("✅ Registry validation passed!")
