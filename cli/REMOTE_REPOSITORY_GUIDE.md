@@ -313,13 +313,10 @@ curl -H "Authorization: token $GITHUB_TOKEN" \
   https://your-enterprise-github.com/api/v3/user
 ```
 
-**Expected behavior**: With the improved implementation, you should see:
+**Expected behavior**: You should see:
 
 1. **First file from enterprise GitHub**: One "Enterprise GitHub API access restricted (403), using SSH for all files" message
 2. **Repository clone**: One "📡 Fetching from enterprise GitHub via SSH: owner/repo" message
-3. **All subsequent files**: Instant access from cached clone with no additional messages
-
-The CLI automatically detects and remembers when enterprise GitHub restricts API access, so subsequent files skip the API attempt entirely.
 
 ## Quick Reference
 
@@ -389,6 +386,7 @@ agntcy-hax add artifact analytics-component  # Now pulls from intranet by defaul
 - When API access is restricted (403 errors), the HAX CLI automatically falls back to SSH-based Git access
 - **First time access**: The CLI will clone the repository via SSH and cache it locally for the session
 - **Subsequent files**: All additional files from the same repository will be read from the cached clone (much faster)
+  Note: SSH clones are cached for the CLI session for performance. If the remote repository is updated during your session, restart the CLI or use a new terminal to get the latest changes.
 - **Clean logging**: You'll see one "📡 Fetching from enterprise GitHub via SSH" message per repository, not per file
 
 **Performance tip**: If you know your enterprise GitHub restricts API access, you can skip the API attempt entirely by not setting `GITHUB_TOKEN` - this will go straight to SSH and be faster.
