@@ -3,145 +3,275 @@ import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, highlighter, printPanelBox } from "../utils/logger"
 import { generateComponentMessage } from "../utils/text"
-import { getRegistryItem } from "@/registry/api"
+import {
+  getGitHubRegistryItem,
+  getGitHubRegistryComposer,
+} from "@/registry/github-api"
 import { RegistryItem } from "@/types"
 import fs from "fs"
 
-export const addCommand = new Command("add")
-  .argument("[components...]", "Component name(s) to add")
-  .description("Add an existing HAX component from the library to your project")
+export const addCommand = new Command("add").description(
+  "Add HAX components from the library to your project",
+)
+
+addCommand
+  .command("artifact")
+  .argument("<components...>", "Artifact component name(s) to add")
+  .description("Add artifact components from the registry")
   .option("--repo <repository>", "Specific repository to pull from")
+  .option("--token <token>", "GitHub token for private repository access")
   .action(async (componentNames: string[], options) => {
-    if (componentNames.length === 0) {
-      logger.error(
-        "No component name provided. Please specify a component to add.",
+    await handleAdd(componentNames, options, "artifact")
+  })
+
+addCommand
+  .command("composer")
+  .argument("<components...>", "Composer component name(s) to add")
+  .description("Add composer components from the registry")
+  .option("--repo <repository>", "Specific repository to pull from")
+  .option("--token <token>", "GitHub token for private repository access")
+  .action(async (componentNames: string[], options) => {
+    await handleAdd(componentNames, options, "composer")
+  })
+
+async function handleAdd(
+  componentNames: string[],
+  options: any,
+  type: "artifact" | "composer",
+) {
+  if (componentNames.length === 0) {
+    logger.error(
+      "No component name provided. Please specify a component to add.",
+    )
+    return
+  }
+  logger.break()
+
+  let config
+  try {
+    config = readConfig()
+  } catch (err) {
+    logger.error(`Error: ${(err as Error).message}`)
+    return
+  }
+
+  let token: string | undefined = options.token
+
+  let successCount = 0
+  let errorCount = 0
+
+  const typeLabel = type === "artifact" ? "component" : "composer"
+  const typeLabelPlural = type === "artifact" ? "components" : "composers"
+
+  if (componentNames.length === 1) {
+    logger.info(`🔮 Adding ${typeLabel}: ${componentNames[0]} from HAX library`)
+  } else {
+    logger.info(
+      `🔮 Adding ${typeLabelPlural}: ${componentNames.join(", ")} from HAX library`,
+    )
+  }
+  logger.break()
+
+  // Ensure directory exists
+  if (type === "artifact") {
+    const artifactsPath = config.artifacts?.path ?? "src/hax/artifacts"
+    if (!fs.existsSync(artifactsPath)) {
+      logger.info(
+        `Artifacts path '${artifactsPath}' does not exist. It will be created.`,
       )
-      return
     }
-    logger.break()
+  } else {
+    const composersPath = config.composers?.path ?? "src/hax/composers"
+    if (!fs.existsSync(composersPath)) {
+      logger.info(
+        `Composers path '${composersPath}' does not exist. It will be created.`,
+      )
+    }
+  }
 
-    let config
+  for (const componentName of componentNames) {
     try {
-      config = readConfig()
-    } catch (err) {
-      logger.error(`Error: ${(err as Error).message}`)
-      return
-    }
+      let component: RegistryItem | null = null
+      let foundInRepo: string | null = null
 
-    let successCount = 0
-    let errorCount = 0
-    const validationErrors: string[] = []
-    const validatedComponents: Map<string, RegistryItem> = new Map()
-
-    const componentsByType: { [key: string]: string[] } = {
-      "registry:artifacts": [],
-      "registry:composer": [],
-      "registry:ui": [],
-    }
-
-    // First validate all components exist and categorize by type
-    for (const componentName of componentNames) {
-      try {
-        const component = await getRegistryItem(
-          componentName,
-          options.repo,
-          config,
-        )
-        if (!component) {
-          validationErrors.push(componentName)
-          errorCount++
-        } else {
-          validatedComponents.set(componentName, component)
-
-          componentsByType[component.type] =
-            componentsByType[component.type] || []
-          componentsByType[component.type].push(componentName)
+      // If specific repo is requested, only check that one
+      if (options.repo) {
+        const source = config.registries?.sources?.[options.repo]
+        if (source) {
+          if (type === "artifact") {
+            component = await getGitHubRegistryItem(
+              componentName,
+              source.branch || "main",
+              source.repo!,
+              token || source.token,
+              source.githubUrl,
+            )
+          } else {
+            component = await getGitHubRegistryComposer(
+              componentName,
+              source.branch || "main",
+              source.repo!,
+              token || source.token,
+              source.githubUrl,
+            )
+          }
+          if (component) {
+            foundInRepo = options.repo
+          }
         }
-      } catch {
-        validationErrors.push(componentName)
-        errorCount++
+      } else {
+        // Try default repository first
+        const defaultRepo = config.registries?.default || "main"
+        const defaultSource = config.registries?.sources?.[defaultRepo]
+
+        if (defaultSource) {
+          if (type === "artifact") {
+            component = await getGitHubRegistryItem(
+              componentName,
+              defaultSource.branch || "main",
+              defaultSource.repo!,
+              token || defaultSource.token,
+              defaultSource.githubUrl,
+            )
+          } else {
+            component = await getGitHubRegistryComposer(
+              componentName,
+              defaultSource.branch || "main",
+              defaultSource.repo!,
+              token || defaultSource.token,
+              defaultSource.githubUrl,
+            )
+          }
+          if (component) {
+            foundInRepo = defaultRepo
+          }
+        }
+
+        // If not found in default, try fallback repositories
+        if (!component && config.registries?.fallback) {
+          for (const fallbackRepo of config.registries.fallback) {
+            const fallbackSource = config.registries.sources?.[fallbackRepo]
+            if (!fallbackSource) continue
+
+            logger.debug(`Checking fallback repository: ${fallbackRepo}`)
+
+            if (type === "artifact") {
+              component = await getGitHubRegistryItem(
+                componentName,
+                fallbackSource.branch || "main",
+                fallbackSource.repo!,
+                token || fallbackSource.token,
+                fallbackSource.githubUrl,
+              )
+            } else {
+              component = await getGitHubRegistryComposer(
+                componentName,
+                fallbackSource.branch || "main",
+                fallbackSource.repo!,
+                token || fallbackSource.token,
+                fallbackSource.githubUrl,
+              )
+            }
+
+            if (component) {
+              foundInRepo = fallbackRepo
+              logger.info(
+                `📦 Found ${componentName} in fallback repository: ${fallbackRepo}`,
+              )
+              break
+            }
+          }
+        }
       }
+
+      if (!component) {
+        logger.error(
+          `${typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1)} "${componentName}" not found in registry`,
+        )
+        errorCount++
+        continue
+      }
+
+      // Set source information for dependency resolution
+      const sourceRepo =
+        foundInRepo || options.repo || config.registries?.default || "main"
+      component.source = sourceRepo
+
+      await generateComponent(componentName, config, component)
+
+      // Store components with source information and set up config structure
+      if (type === "artifact") {
+        // Set up artifacts config if first artifact
+        if (!config.artifacts) {
+          config.artifacts = { path: "src/hax/artifacts" }
+        }
+        if (!config.components) config.components = []
+        const existingComponent = config.components.find((comp: any) =>
+          typeof comp === "string"
+            ? comp === componentName
+            : comp.name === componentName,
+        )
+        if (!existingComponent) {
+          config.components.push({
+            name: componentName,
+            source: sourceRepo,
+          })
+        }
+      } else {
+        // Set up composers config if first composer
+        if (!config.composers) {
+          config.composers = { path: "src/hax/composers" }
+        }
+        if (!config.features) config.features = []
+        const existingFeature = config.features.find((feat: any) =>
+          typeof feat === "string"
+            ? feat === componentName
+            : feat.name === componentName,
+        )
+        if (!existingFeature) {
+          config.features.push({
+            name: componentName,
+            source: sourceRepo,
+          })
+        }
+      }
+
+      successCount++
+      logger.success(`Added ${componentName} ${typeLabel}`)
+    } catch (error) {
+      logger.error(`Error adding ${typeLabel} "${componentName}": ${error}`)
+      errorCount++
     }
+  }
+
+  if (successCount > 0) {
+    try {
+      updateConfig(config)
+    } catch (error) {
+      logger.warn(`Warning: Could not update config file: ${error}`)
+    }
+  }
+
+  logger.break()
+
+  if (successCount > 0 && errorCount === 0) {
+    const message =
+      successCount === 1
+        ? `✨ Successfully added 1 ${typeLabel}!`
+        : `✨ Successfully added ${successCount} ${typeLabelPlural}!`
+
+    printPanelBox(`${message}\n📦 Components are ready to use`)
+  } else if (successCount > 0 && errorCount > 0) {
+    logger.info(`✅ Successfully added ${successCount} ${typeLabelPlural}`)
+    logger.error(`❌ Failed to add ${errorCount} ${typeLabelPlural}`)
+  } else {
+    logger.error(`❌ Failed to add any ${typeLabelPlural}`)
 
     if (errorCount > 0) {
       logger.break()
-      const componentText =
-        componentNames.length === 1 ? "component" : "components"
-      const doesText = componentNames.length === 1 ? "does" : "do"
-      const errorMsg = `Error adding ${componentText}. Component${componentNames.length === 1 ? "" : "s"} ${doesText} not exist in registry. Please confirm that ${componentText} ${componentNames.length === 1 ? "is" : "are"} valid.`
-
-      logger.error(errorMsg)
-      return
+      logger.error(
+        `Error adding ${typeLabel}. Component does not exist in registry. Please confirm that component is valid. If using a private repository, ensure GITHUB_TOKEN is set or use --token flag.`,
+      )
     }
-
-    // Update the initial message based on what is being added
-    const hasArtifacts = componentsByType["registry:artifacts"].length > 0
-    const hasComposers = componentsByType["registry:composer"].length > 0
-    const hasUI = componentsByType["registry:ui"].length > 0
-
-    let typeDescription = "component"
-    if (hasComposers && !hasArtifacts && !hasUI) {
-      typeDescription = "feature"
-    } else if (hasArtifacts && hasComposers) {
-      typeDescription = "component/feature"
-    }
-
-    logger.info(
-      `🔮 Adding ${typeDescription}${componentNames.length > 1 ? "s" : ""}: ${componentNames.map((name) => highlighter.primary(name)).join(", ")} from HAX library`,
-    )
-    logger.break()
-
-    // Ensure artifacts path exists if we have artifacts
-    if (hasArtifacts) {
-      const artifactsPath = config.artifacts?.path ?? "src/hax/artifacts"
-      if (!fs.existsSync(artifactsPath)) {
-        logger.warn(
-          `Artifacts path '${artifactsPath}' does not exist. It will be created.`,
-        )
-        fs.mkdirSync(artifactsPath, { recursive: true })
-      }
-    }
-
-    if (hasComposers) {
-      const composersPath = config.composers?.path ?? "src/hax/composers"
-      if (!fs.existsSync(composersPath)) {
-        logger.warn(
-          `Composers path '${composersPath}' does not exist. It will be created.`,
-        )
-        fs.mkdirSync(composersPath, { recursive: true })
-      }
-    }
-
-    for (const componentName of componentNames) {
-      try {
-        const cachedComponent = validatedComponents.get(componentName)
-        await generateComponent(
-          componentName,
-          config,
-
-          cachedComponent,
-        )
-        successCount++
-      } catch (err) {
-        logger.error(`Error adding ${componentName}: ${(err as Error).message}`)
-        errorCount++
-      }
-    }
-
-    try {
-      updateConfig(config)
-    } catch (err) {
-      logger.error(`Error updating config: ${(err as Error).message}`)
-    }
-
-    logger.break()
-
-    if (successCount > 0) {
-      const successMsg = generateComponentMessage(successCount, "success")
-
-      printPanelBox(successMsg)
-    } else {
-      const errorMsg = generateComponentMessage(0, "error")
-      logger.error(errorMsg)
-    }
-  })
+  }
+}

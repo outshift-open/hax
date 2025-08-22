@@ -48,6 +48,15 @@ export const RegistryItemSchema = z.object({
   source: z.string().optional(),
 })
 
+export const RegistrySourceSchema = z.object({
+  type: z.enum(["github", "local", "npm"]),
+  repo: z.string().optional(),
+  branch: z.string().optional(),
+  token: z.string().optional(),
+  githubUrl: z.string().optional(),
+  isEnterprise: z.boolean().optional(),
+})
+
 export const RegistryIndexSchema = z.array(
   z.object({
     name: z.string(),
@@ -57,6 +66,7 @@ export const RegistryIndexSchema = z.array(
 
 export type RegistryFile = z.infer<typeof RegistryFileSchema>
 export type RegistryItem = z.infer<typeof RegistryItemSchema>
+export type RegistrySource = z.infer<typeof RegistrySourceSchema>
 export type RegistryIndex = z.infer<typeof RegistryIndexSchema>
 
 // GitHub registry metadata types
@@ -88,6 +98,14 @@ export const ProjectConfigSchema = z
 
 export type CompilerOptions = z.infer<typeof CompilerOptionsSchema>
 export type ProjectConfig = z.infer<typeof ProjectConfigSchema>
+
+export const ComponentItemSchema = z.union([
+  z.string(),
+  z.object({
+    name: z.string(),
+    source: z.string(),
+  }),
+])
 
 export const HaxConfigSchema = z.object({
   $schema: z.string().optional(),
@@ -128,16 +146,18 @@ export const HaxConfigSchema = z.object({
           repo: z.string().optional(),
           branch: z.string().optional(),
           token: z.string().optional(),
+          githubUrl: z.string().optional(),
         }),
       ),
     })
     .optional(),
-  components: z.array(z.string()).optional(),
-  features: z.array(z.string()).optional(),
+  components: z.array(ComponentItemSchema).optional(),
+  features: z.array(ComponentItemSchema).optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
 })
 
+export type ComponentItem = z.infer<typeof ComponentItemSchema>
 export type HaxConfig = z.infer<typeof HaxConfigSchema>
 
 export const CONFIG_FILE = "hax.json"

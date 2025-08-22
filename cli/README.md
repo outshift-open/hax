@@ -25,7 +25,7 @@ npm link
 ```bash
 # .env file
 HAX_REGISTRY_SOURCE=github:component-integration
-HAX_GITHUB_TOKEN=your_github_token_here
+GITHUB_TOKEN=your_github_token_here
 ```
 
 Get your GitHub token from: https://github.com/settings/tokens  
@@ -40,15 +40,15 @@ agntcy-hax init
 Add components to your project:
 
 ```bash
-agntcy-hax add form
-agntcy-hax add code-editor data-visualizer
+agntcy-hax add artifact form
+agntcy-hax add artifact code-editor data-visualizer
 ```
 
 Add Composers (chat features) to your project
 
 ```bash
-agntcy-hax add chat-commands file-upload rules-context
-agntcy-hax add chat-commands
+agntcy-hax add composer chat-commands file-upload rules-context
+agntcy-hax add composer chat-commands
 
 ```
 
@@ -132,14 +132,14 @@ The CLI creates a `hax.json` file in your project:
         "repo": "partner-org/components",
         "branch": "production",
         "name": "partner",
-        "token": "optional_auth_token"
+
       }
     }
   }
-}
+
 ```
 
-> **Note**: Repository names like `internal`, `partner` are example aliases - you can use any name that makes sense for your organization (e.g., `dev`, `staging`, `company-name`, `team-ui`, etc.)
+**Note**: Repository names like `internal`, `partner` are example aliases - you can use any name that makes sense for your organization (e.g., `dev`, `staging`, `company-name`, `team-ui`, etc.)
 
 ### Configuration Options
 
@@ -182,7 +182,7 @@ Set via environment variable:
 export HAX_REGISTRY_SOURCE=github:main
 
 # Or run with environment variable
-HAX_REGISTRY_SOURCE=github:main agntcy-hax add form
+HAX_REGISTRY_SOURCE=github:main agntcy-hax add artifact form
 ```
 
 ## Multi-Repository Architecture
@@ -278,11 +278,11 @@ agntcy-hax init
 Install one or more components:
 
 ```bash
-agntcy-hax add form timeline
+agntcy-hax add artifact form timeline
 
 # Install from specific repository
-agntcy-hax add custom-dashboard --repo=testing
-agntcy-hax add salesCustom-timeline --repo=sales
+agntcy-hax add artifact custom-dashboard --repo=testing
+agntcy-hax add artifact salesCustom-timeline --repo=sales
 ```
 
 ### `list`
@@ -293,103 +293,9 @@ Show installed components:
 agntcy-hax list
 ```
 
-### `repo` - Multi-Repository Management
+## `repo` Remote Repository Management & Admin Features
 
-Manage multiple component repositories for organizational flexibility:
-
-#### Add Custom Repositories
-
-```bash
-# Add internal company repository (example alias name)
-agntcy-hax repo add internal --github your-org/hax-components --branch main
-
-# Add partner organization repository (example alias name)
-agntcy-hax repo add partner --github partner-org/components --branch production
-
-# Add repository with authentication token (example alias name)
-agntcy-hax repo add private --github org/private-repo --branch main --token your_token
-
-# You can use any alias names that make sense for your organization:
-agntcy-hax repo add dev --github your-org/hax-dev --branch development
-agntcy-hax repo add staging --github your-org/hax-staging --branch staging
-agntcy-hax repo add team-ui --github ui-team/components --branch main
-```
-
-#### List Repositories
-
-```bash
-agntcy-hax repo list
-```
-
-Output shows configured repositories with priority order:
-
-```
-📦 Configured Repositories:
-[default] official: cisco-eti/agntcy-hax (main) (official)
-          internal: your-org/hax-components (main)
-          partner: partner-org/components (production)
-
-🔄 Fallback order: official → internal → partner
-🎯 Default priority: official → internal → partner ([default] = checked first)
-```
-
-> **Note**: Repository aliases (`internal`, `partner`) are examples - your actual names will reflect your configuration.
-
-#### Switch Default Repository
-
-```bash
-# Set internal as default (checked first) - example alias
-agntcy-hax repo switch internal
-
-# Switch back to official
-agntcy-hax repo switch official
-
-# Switch to any configured repository alias
-agntcy-hax repo switch dev
-agntcy-hax repo switch staging
-```
-
-### Multi-Repository Component Resolution
-
-The CLI automatically searches repositories in priority order:
-
-**When component is found in default repository:**
-
-```
-Component "form" found in repository: official
-```
-
-**When component requires fallback:**
-
-```
-Component "custom-timeline" not found in official, found in repository: internal
-```
-
-> **Note**: Repository names in examples (`internal`) are aliases you define - your actual output will show your configured repository names.
-
-**Force specific repository:**
-
-```bash
-agntcy-hax add component-name --repo=your-repo-alias
-```
-
-## Environment Variables
-
-Configure via environment variables:
-
-````bash
-## Environment Variables
-
-Configure via environment variables:
-
-```bash
-# Registry source - use environment variable
-export HAX_REGISTRY_SOURCE=github:main
-
-# GitHub configuration (for private repos)
-export HAX_GITHUB_REPO=your-org/your-repo
-export HAX_GITHUB_TOKEN=your_token_here
-````
+For enterprise setups, multi-repository management, and administrative features, see the [Remote Repository Guide](REMOTE_REPOSITORY_GUIDE.md).
 
 ````
 
@@ -409,7 +315,7 @@ export HAX_GITHUB_TOKEN=your_token_here
    ```bash
    # Edit .env file
    HAX_REGISTRY_SOURCE=github:component-integration
-   HAX_GITHUB_TOKEN=your_actual_github_token
+   GITHUB_TOKEN=your_actual_github_token
    ```
 
 **Testing the CLI in other projects:**

@@ -24,7 +24,7 @@ export const ENV_CONFIG = {
   github: {
     repo: process.env.HAX_GITHUB_REPO || "cisco-eti/agntcy-hax",
     defaultBranch: process.env.HAX_GITHUB_DEFAULT_BRANCH || "main",
-    token: process.env.HAX_GITHUB_TOKEN || "",
+    token: process.env.GITHUB_TOKEN || process.env.HAX_GITHUB_TOKEN || "",
   },
   cdn: {
     baseUrl: process.env.HAX_CDN_BASE_URL || "",

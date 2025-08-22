@@ -119,9 +119,9 @@ export async function manageAccess(
             return
           }
 
-          // Remove collaborator using GitHub API
           const [owner, repoName] = repo.split("/")
-          const response = await fetch(
+
+          const collaboratorResponse = await fetch(
             `https://api.github.com/repos/${owner}/${repoName}/collaborators/${user}`,
             {
               method: "DELETE",
@@ -132,11 +132,57 @@ export async function manageAccess(
             },
           )
 
-          if (response.ok) {
+          if (collaboratorResponse.ok) {
             logger.success(`✅ Access revoked for ${user}`)
-          } else {
-            const error = await response.text()
-            logger.error(`❌ Failed to revoke access: ${error}`)
+            return
+          }
+
+          try {
+            const invitationsResponse = await fetch(
+              `https://api.github.com/repos/${owner}/${repoName}/invitations`,
+              {
+                headers: {
+                  Authorization: `token ${githubToken}`,
+                  Accept: "application/vnd.github.v3+json",
+                },
+              },
+            )
+
+            if (invitationsResponse.ok) {
+              const invitations = await invitationsResponse.json()
+              const userInvitation = invitations.find(
+                (inv: any) => inv.invitee?.login === user,
+              )
+
+              if (userInvitation) {
+                const cancelResponse = await fetch(
+                  `https://api.github.com/repos/${owner}/${repoName}/invitations/${userInvitation.id}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      Authorization: `token ${githubToken}`,
+                      Accept: "application/vnd.github.v3+json",
+                    },
+                  },
+                )
+
+                if (cancelResponse.ok) {
+                  logger.success(`✅ Pending invitation cancelled for ${user}`)
+                } else {
+                  const error = await cancelResponse.text()
+                  logger.error(`❌ Failed to cancel invitation: ${error}`)
+                }
+              } else {
+                logger.error(
+                  `❌ No collaborator or pending invitation found for ${user}`,
+                )
+              }
+            } else {
+              const error = await invitationsResponse.text()
+              logger.error(`❌ Failed to check invitations: ${error}`)
+            }
+          } catch (inviteError) {
+            logger.error(`❌ Failed to cancel invitation: ${inviteError}`)
           }
         } else {
           logger.info("Access revocation cancelled")

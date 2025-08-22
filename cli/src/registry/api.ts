@@ -13,10 +13,11 @@ export async function getRegistryItem(
   name: string,
   source?: string,
   config?: HaxConfig,
+  token?: string,
 ): Promise<RegistryItem | null> {
   try {
     if (source) {
-      return await getRegistryItemFromSource(name, source, config)
+      return await getRegistryItemFromSource(name, source, config, token)
     }
 
     const haxConfig = config || readConfig()
@@ -31,7 +32,12 @@ export async function getRegistryItem(
       const actualSearchOrder = [defaultRepo, ...fallbackOrder]
 
       for (const repoName of actualSearchOrder) {
-        const item = await getRegistryItemFromSource(name, repoName, haxConfig)
+        const item = await getRegistryItemFromSource(
+          name,
+          repoName,
+          haxConfig,
+          token,
+        )
         if (item) {
           if (repoName === defaultRepo) {
             logger.info(`Component "${name}" found in repository: ${repoName}`)
@@ -41,7 +47,9 @@ export async function getRegistryItem(
             )
           }
 
-          item.source = repoName
+          if (!item.source) {
+            item.source = repoName
+          }
           return item
         }
       }
@@ -58,6 +66,7 @@ async function getRegistryItemFromSource(
   name: string,
   sourceName: string,
   config?: HaxConfig,
+  token?: string,
 ): Promise<RegistryItem | null> {
   const haxConfig = config || readConfig()
 
@@ -65,11 +74,23 @@ async function getRegistryItemFromSource(
     const source = haxConfig.registries.sources[sourceName]
 
     if (source.type === "github") {
-      return await getGitHubRegistryItem(
+      // Try artifacts first
+      const artifact = await getGitHubRegistryItem(
         name,
         source.branch || "main",
         source.repo!,
-        undefined,
+        token,
+        source.githubUrl,
+      )
+      if (artifact) return artifact
+
+      // Try composers if artifact not found
+      return await getGitHubRegistryComposer(
+        name,
+        source.branch || "main",
+        source.repo!,
+        token,
+        source.githubUrl,
       )
     }
   }
@@ -150,7 +171,13 @@ async function getRegistryDependencyFromSource(
     const source = haxConfig.registries.sources[sourceName]
 
     if (source.type === "github") {
-      return await getGitHubRegistryDependency(name, source.branch || "main")
+      return await getGitHubRegistryDependency(
+        name,
+        source.branch || "main",
+        source.repo,
+        source.token,
+        source.githubUrl,
+      )
     }
   }
 
