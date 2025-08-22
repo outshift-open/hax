@@ -7,6 +7,9 @@ import {
 } from "@/types"
 import { ENV_CONFIG } from "@/config/env"
 import { spawn } from "child_process"
+import fs from "fs"
+import path from "path"
+import os from "os"
 
 // Cache for SSH-cloned repositories to avoid re-cloning
 // Track enterprise domains that have API restrictions to skip future API attempts
@@ -16,18 +19,12 @@ const sshCloneCache = new Map<string, string>()
 const enterpriseApiRestricted = new Set<string>()
 
 export function cleanupSshCache() {
-  import("fs")
-    .then((fs) => {
-      for (const [key, tempDir] of sshCloneCache.entries()) {
-        try {
-          fs.rmSync(tempDir, { recursive: true, force: true })
-        } catch (error) {}
-      }
-      sshCloneCache.clear()
-    })
-    .catch(() => {
-      // Ignore import errors
-    })
+  for (const [key, tempDir] of sshCloneCache.entries()) {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true })
+    } catch (error) {}
+  }
+  sshCloneCache.clear()
 }
 
 process.on("exit", cleanupSshCache)
@@ -350,10 +347,6 @@ async function fetchViaSshGit(
   branch: string,
   filePath: string,
 ): Promise<string | null> {
-  const fs = await import("fs")
-  const path = await import("path")
-  const os = await import("os")
-
   return new Promise((resolve) => {
     const cacheKey = `${domain}/${owner}/${repo}/${branch}`
 

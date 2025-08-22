@@ -1,5 +1,6 @@
 import fs from "fs"
 import path from "path"
+import { execSync } from "child_process"
 import { logger, printPanelBox, highlighter } from "@/utils/logger"
 
 export async function initializeRepository(
@@ -194,8 +195,6 @@ export async function createAndPushToGitHub(
     }
 
     logger.info("📦 Initializing git repository and pushing...")
-
-    const { execSync } = await import("child_process")
 
     execSync("git init", { cwd: repoPath, stdio: "pipe" })
     execSync("git add .", { cwd: repoPath, stdio: "pipe" })

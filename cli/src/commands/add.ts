@@ -2,7 +2,6 @@ import { Command } from "commander"
 import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, highlighter, printPanelBox } from "../utils/logger"
-import { generateComponentMessage } from "../utils/text"
 import {
   getGitHubRegistryItem,
   getGitHubRegistryComposer,
