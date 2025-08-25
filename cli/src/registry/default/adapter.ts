@@ -3,7 +3,7 @@ import { readComponentFile } from "@/utils/registry"
 
 export const adapter: RegistryItem[] = [
   {
-    name: "adapter",
+    name: "base-adapter",
     type: "registry:adapter",
     dependencies: [
       "@copilotkit/shared",
@@ -13,9 +13,9 @@ export const adapter: RegistryItem[] = [
     registryDependencies: [],
     files: [
       {
-        path: "hax/adapter/adapter.ts",
+        path: "hax/adapter/base-adapter.ts",
         type: "registry:component",
-        content: readComponentFile("hax/adapter/adapter.ts"),
+        content: readComponentFile("hax/adapter/base-adapter.ts"),
       },
       {
         path: "hax/adapter/agent.type.ts",

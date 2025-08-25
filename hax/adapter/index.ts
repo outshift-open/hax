@@ -1,5 +1,5 @@
-export { HAXAdapter } from "./adapter";
-export type { HAXAdapterOptions, Protocol } from "./adapter";
+export { HAXAdapter } from "./base-adapter";
+export type { HAXAdapterOptions, Protocol } from "./base-adapter";
 export type { CopilotEventStream, ProcessMessageActions } from "./agent.type";
 export {
   logger,
