@@ -120,6 +120,7 @@ async function handleAdd(
         options.repo, // specific repo if provided
         config,
         token,
+        type, // Pass the component type to avoid checking other types
       )
 
       if (!component) {

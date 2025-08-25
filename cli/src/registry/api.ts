@@ -12,13 +12,15 @@ import { readConfig } from "@/config"
 
 export async function getRegistryItem(
   name: string,
-  source?: string,
-  config?: HaxConfig,
+  repo?: string,
+  config?: any,
   token?: string,
-): Promise<RegistryItem | null> {
+  haxType?: "artifact" | "composer" | "adapter",
+): Promise<any> {
   try {
-    if (source) {
-      return await getRegistryItemFromSource(name, source, config, token)
+    if (repo) {
+      const source = `https://github.com/${repo}`
+      return await getRegistryItemFromSource(name, source, config, token, haxType)
     }
 
     const haxConfig = config || readConfig()
@@ -28,7 +30,7 @@ export async function getRegistryItem(
         haxConfig.registries.default || haxConfig.registries.fallback[0]
 
       const fallbackOrder = haxConfig.registries.fallback.filter(
-        (repo) => repo !== defaultRepo,
+        (repo: string) => repo !== defaultRepo,
       )
       const actualSearchOrder = [defaultRepo, ...fallbackOrder]
 
@@ -38,6 +40,7 @@ export async function getRegistryItem(
           repoName,
           haxConfig,
           token,
+          haxType,
         )
         if (item) {
           if (repoName === defaultRepo) {
@@ -56,7 +59,7 @@ export async function getRegistryItem(
       }
     }
 
-    return await getRegistryItemFromSource(name, ENV_CONFIG.registrySource)
+    return await getRegistryItemFromSource(name, ENV_CONFIG.registrySource, undefined, undefined, haxType)
   } catch (error) {
     logger.error(`Failed to fetch component "${name}": ${error}`)
     return null
@@ -68,6 +71,7 @@ async function getRegistryItemFromSource(
   sourceName: string,
   config?: HaxConfig,
   token?: string,
+  haxType?: "artifact" | "composer" | "adapter",
 ): Promise<RegistryItem | null> {
   const haxConfig = config || readConfig()
 
@@ -75,85 +79,117 @@ async function getRegistryItemFromSource(
     const source = haxConfig.registries.sources[sourceName]
 
     if (source.type === "github") {
-      // Try artifacts first
-      const artifact = await getGitHubRegistryArtifact(
-        name,
-        source.branch || "main",
-        source.repo!,
-        token,
-        source.githubUrl,
-      )
-      if (artifact) return artifact
+      // Only check the specific component type if provided
+      if (haxType === "artifact" || !haxType) {
+        const artifact = await getGitHubRegistryArtifact(
+          name,
+          source.branch || "main",
+          source.repo!,
+          token,
+          source.githubUrl,
+        )
+        if (artifact) return artifact
+        if (haxType === "artifact") return null // If specifically looking for artifact and not found, stop here
+      }
 
-      const adapter = await getGitHubRegistryAdapter(
-        name,
-        source.branch || "main",
-        source.repo!,
-        token,
-        source.githubUrl,
-      )
-      if (adapter) return adapter
+      if (haxType === "adapter" || !haxType) {
+        const adapter = await getGitHubRegistryAdapter(
+          name,
+          source.branch || "main",
+          source.repo!,
+          token,
+          source.githubUrl,
+        )
+        if (adapter) return adapter
+        if (haxType === "adapter") return null // If specifically looking for adapter and not found, stop here
+      }
 
-      return await getGitHubRegistryComposer(
-        name,
-        source.branch || "main",
-        source.repo!,
-        token,
-        source.githubUrl,
-      )
+      if (haxType === "composer" || !haxType) {
+        return await getGitHubRegistryComposer(
+          name,
+          source.branch || "main",
+          source.repo!,
+          token,
+          source.githubUrl,
+        )
+      }
+
+      return null
     }
   }
 
   if (sourceName === "local") {
     try {
-      const { artifacts } = await import("@/registry/default/artifacts")
-      const artifact = artifacts.find(
-        (item: { name: string }) => item.name === name,
-      )
-      if (artifact) {
-        artifact.source = "local"
-        return artifact
-      }
-
-      try {
-        const { adapter } = await import("@/registry/default/adapter")
-        const adapterItem = adapter.find(
+      // Only check the specific component type if provided
+      if (haxType === "artifact" || !haxType) {
+        const { artifacts } = await import("@/registry/default/artifacts")
+        const artifact = artifacts.find(
           (item: { name: string }) => item.name === name,
         )
-        if (adapterItem) {
-          adapterItem.source = "local"
-          return adapterItem
+        if (artifact) {
+          artifact.source = "local"
+          return artifact
         }
-      } catch {
-        // Continue to composer check
+        if (haxType === "artifact") return null // If specifically looking for artifact and not found, stop here
       }
 
-      try {
-        const { composer } = await import("@/registry/default/composer")
-        const composerItem = composer.find(
-          (item: { name: string }) => item.name === name,
-        )
-        if (composerItem) {
-          composerItem.source = "local"
-          return composerItem
+      if (haxType === "adapter" || !haxType) {
+        try {
+          const { adapter } = await import("@/registry/default/adapter")
+          const adapterItem = adapter.find(
+            (item: { name: string }) => item.name === name,
+          )
+          if (adapterItem) {
+            adapterItem.source = "local"
+            return adapterItem
+          }
+          if (haxType === "adapter") return null // If specifically looking for adapter and not found, stop here
+        } catch {
+          if (haxType === "adapter") return null
         }
-        return null
-      } catch {
-        return null
       }
+
+      if (haxType === "composer" || !haxType) {
+        try {
+          const { composer } = await import("@/registry/default/composer")
+          const composerItem = composer.find(
+            (item: { name: string }) => item.name === name,
+          )
+          if (composerItem) {
+            composerItem.source = "local"
+            return composerItem
+          }
+          return null
+        } catch {
+          return null
+        }
+      }
+
+      return null
     } catch {
       return null
     }
   } else if (sourceName.startsWith("github:")) {
     const branch = sourceName.replace("github:", "")
 
-    const artifact = await getGitHubRegistryArtifact(name, branch)
-    if (artifact) return artifact
+    // Only check the specific component type if provided
+    if (haxType === "artifact" || !haxType) {
+      const artifact = await getGitHubRegistryArtifact(name, branch)
+      if (artifact) return artifact
+      if (haxType === "artifact") return null
+    }
 
-    const adapter = await getGitHubRegistryAdapter(name, branch)
-    if (adapter) return adapter
+    if (haxType === "adapter" || !haxType) {
+      const adapter = await getGitHubRegistryAdapter(name, branch)
+      if (adapter) return adapter
+      if (haxType === "adapter") return null
+    }
 
-    return await getGitHubRegistryComposer(name, branch)
+    if (haxType === "composer" || !haxType) {
+      return await getGitHubRegistryComposer(name, branch)
+    }
+
+    return null
   }
   return null
 }
