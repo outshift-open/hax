@@ -20,7 +20,13 @@ export async function getRegistryItem(
   try {
     if (repo) {
       const source = `https://github.com/${repo}`
-      return await getRegistryItemFromSource(name, source, config, token, haxType)
+      return await getRegistryItemFromSource(
+        name,
+        source,
+        config,
+        token,
+        haxType,
+      )
     }
 
     const haxConfig = config || readConfig()
@@ -59,7 +65,13 @@ export async function getRegistryItem(
       }
     }
 
-    return await getRegistryItemFromSource(name, ENV_CONFIG.registrySource, undefined, undefined, haxType)
+    return await getRegistryItemFromSource(
+      name,
+      ENV_CONFIG.registrySource,
+      undefined,
+      undefined,
+      haxType,
+    )
   } catch (error) {
     logger.error(`Failed to fetch component "${name}": ${error}`)
     return null
