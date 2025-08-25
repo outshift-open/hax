@@ -19,7 +19,10 @@ import {
 } from "../types"
 import { getPinnedDependency } from "../config/versions"
 
-async function collectDependencies(component: RegistryItem): Promise<{
+async function collectDependencies(
+  component: RegistryItem,
+  source?: string,
+): Promise<{
   npmDependencies: string[]
   registryDependencies: RegistryItem[]
 }> {
@@ -84,6 +87,7 @@ async function copyComponentFiles(
   name: string,
   config: HaxConfig,
   createdFiles: string[],
+  source?: string,
 ) {
   const getBaseDir = (componentType: string) => {
     switch (componentType) {
@@ -113,9 +117,13 @@ async function copyComponentFiles(
     fs.mkdirSync(targetFileDir, { recursive: true })
 
     if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
+      // Add source attribution comment to the top of component files
+      const sourceAttribution = `// HAX Component: ${name}\n// Source: ${source || "main"}\n// Generated: ${new Date().toISOString().split("T")[0]}\n\n`
+      const contentWithAttribution = sourceAttribution + (file.content || "")
+
       writeFileIfNotExists(
         fullTargetPath,
-        file.content,
+        contentWithAttribution,
         `component file`,
         createdFiles,
       )
@@ -153,7 +161,11 @@ async function copyComponentFiles(
   }
 }
 
-export async function generateComponent(name: string, config: HaxConfig) {
+export async function generateComponent(
+  name: string,
+  config: HaxConfig,
+  cachedComponent?: RegistryItem,
+) {
   // Input validation
   if (!name || typeof name !== "string" || name.trim().length === 0) {
     throw new Error("Component name is required and must be a non-empty string")
@@ -176,10 +188,11 @@ export async function generateComponent(name: string, config: HaxConfig) {
     config.components = []
   }
 
-  const component = await getRegistryItem(componentName)
+  const component = cachedComponent || (await getRegistryItem(componentName))
   if (!component) {
     throw new Error(
-      `Component "${componentName}" not found in registry. Available components can be listed with 'hax list'.`,
+      `Component "${componentName}" not found in registry. ` +
+        `If using a private repository, ensure GITHUB_TOKEN is set or use --token flag.`,
     )
   }
 
@@ -202,12 +215,20 @@ export async function generateComponent(name: string, config: HaxConfig) {
   }
 
   // Collect and install all dependencies
-  const { npmDependencies, registryDependencies } =
-    await collectDependencies(component)
+  const { npmDependencies, registryDependencies } = await collectDependencies(
+    component,
+    component.source,
+  )
 
   await installDependencies(npmDependencies, registryDependencies, config)
 
-  await copyComponentFiles(component, componentName, config, createdFiles)
+  await copyComponentFiles(
+    component,
+    componentName,
+    config,
+    createdFiles,
+    component.source,
+  )
 
   await ensureUtilsFile(config, createdFiles)
 
@@ -217,33 +238,6 @@ export async function generateComponent(name: string, config: HaxConfig) {
       logger.info(`- ${file}`)
     })
   }
-
-  logger.success(
-    `Added ${componentName} ${component.type === "registry:composer" ? "composer" : "component"}`,
-  )
-
-  // Add to appropriate config array based on type
-  if (component.type === "registry:composer") {
-    // Set up composers config if first composer
-    if (!config.composers) {
-      config.composers = { path: "src/hax/composers" }
-    }
-    if (!config.features) config.features = []
-    if (!config.features.includes(componentName)) {
-      config.features.push(componentName)
-    }
-  } else {
-    // Set up artifacts config if first artifact
-    if (!config.artifacts) {
-      config.artifacts = { path: "src/hax/artifacts" }
-    }
-    if (!config.components.includes(componentName)) {
-      config.components.push(componentName)
-    }
-  }
-
-  // Save updated config
-  updateConfig(config)
 }
 
 async function installNPMDependencies(dependencies: string[]) {

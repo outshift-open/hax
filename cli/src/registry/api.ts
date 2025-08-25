@@ -1,83 +1,195 @@
 import { uiComponents } from "@/registry/default/ui"
 import { logger } from "@/utils/logger"
-import { RegistryItem } from "@/types"
+import { HaxConfig, RegistryItem } from "@/types"
 import { ENV_CONFIG } from "@/config/env"
 import {
   getGitHubRegistryItem,
   getGitHubRegistryDependency,
   getGitHubRegistryComposer,
 } from "./github-api"
+import { readConfig } from "@/config"
 
 export async function getRegistryItem(
   name: string,
   source?: string,
+  config?: HaxConfig,
+  token?: string,
 ): Promise<RegistryItem | null> {
   try {
-    const registrySource = source || ENV_CONFIG.registrySource
+    if (source) {
+      return await getRegistryItemFromSource(name, source, config, token)
+    }
 
-    if (registrySource === "local") {
+    const haxConfig = config || readConfig()
+
+    if (haxConfig.registries) {
+      const defaultRepo =
+        haxConfig.registries.default || haxConfig.registries.fallback[0]
+
+      const fallbackOrder = haxConfig.registries.fallback.filter(
+        (repo) => repo !== defaultRepo,
+      )
+      const actualSearchOrder = [defaultRepo, ...fallbackOrder]
+
+      for (const repoName of actualSearchOrder) {
+        const item = await getRegistryItemFromSource(
+          name,
+          repoName,
+          haxConfig,
+          token,
+        )
+        if (item) {
+          if (repoName === defaultRepo) {
+            logger.info(`Component "${name}" found in repository: ${repoName}`)
+          } else {
+            logger.info(
+              `Component "${name}" not found in ${defaultRepo}, found in repository: ${repoName}`,
+            )
+          }
+
+          if (!item.source) {
+            item.source = repoName
+          }
+          return item
+        }
+      }
+    }
+
+    return await getRegistryItemFromSource(name, ENV_CONFIG.registrySource)
+  } catch (error) {
+    logger.error(`Failed to fetch component "${name}": ${error}`)
+    return null
+  }
+}
+
+async function getRegistryItemFromSource(
+  name: string,
+  sourceName: string,
+  config?: HaxConfig,
+  token?: string,
+): Promise<RegistryItem | null> {
+  const haxConfig = config || readConfig()
+
+  if (haxConfig.registries?.sources[sourceName]) {
+    const source = haxConfig.registries.sources[sourceName]
+
+    if (source.type === "github") {
+      // Try artifacts first
+      const artifact = await getGitHubRegistryItem(
+        name,
+        source.branch || "main",
+        source.repo!,
+        token,
+        source.githubUrl,
+      )
+      if (artifact) return artifact
+
+      // Try composers if artifact not found
+      return await getGitHubRegistryComposer(
+        name,
+        source.branch || "main",
+        source.repo!,
+        token,
+        source.githubUrl,
+      )
+    }
+  }
+
+  if (sourceName === "local") {
+    try {
+      const { artifacts } = await import("@/registry/default/artifacts")
+      const artifact = artifacts.find(
+        (item: { name: string }) => item.name === name,
+      )
+      if (artifact) return artifact
+
       try {
-        const { artifacts } = await import("@/registry/default/artifacts")
-        const artifact = artifacts.find(
+        const { composer } = await import("@/registry/default/composer")
+        const composerItem = composer.find(
           (item: { name: string }) => item.name === name,
         )
-        if (artifact) return artifact
-
-        try {
-          const { composer } = await import("@/registry/default/composer")
-          const composerItem = composer.find(
-            (item: { name: string }) => item.name === name,
-          )
-          return composerItem || null
-        } catch {
-          return null
-        }
+        return composerItem || null
       } catch {
         return null
       }
-    } else if (registrySource.startsWith("github:")) {
-      const branch = registrySource.replace("github:", "")
-
-      const artifact = await getGitHubRegistryItem(name, branch)
-      if (artifact) return artifact
-
-      return await getGitHubRegistryComposer(name, branch)
-    } else {
-      logger.error(`Unsupported registry source: ${registrySource}`)
+    } catch {
       return null
     }
-  } catch (error) {
-    logger.error(
-      `Failed to fetch component "${name}": ${error instanceof Error ? error.message : String(error)}`,
-    )
-    return null
+  } else if (sourceName.startsWith("github:")) {
+    const branch = sourceName.replace("github:", "")
+
+    const artifact = await getGitHubRegistryItem(name, branch)
+    if (artifact) return artifact
+
+    return await getGitHubRegistryComposer(name, branch)
   }
+  return null
 }
 
 export async function getRegistryDependency(
   name: string,
   source?: string,
+  config?: HaxConfig,
 ): Promise<RegistryItem | null> {
   try {
-    const registrySource = source || ENV_CONFIG.registrySource
-
-    if (registrySource === "local") {
-      // Look for UI components
-      const uiComponent = await getUIComponent(name)
-      return uiComponent || null
-    } else if (registrySource.startsWith("github:")) {
-      const branch = registrySource.replace("github:", "")
-      return await getGitHubRegistryDependency(name, branch)
-    } else {
-      logger.error(`Unsupported registry source: ${registrySource}`)
-      return null
+    if (source) {
+      return await getRegistryDependencyFromSource(name, source, config)
     }
-  } catch (error) {
-    logger.error(
-      `Failed to fetch registry dependency "${name}": ${error instanceof Error ? error.message : String(error)}`,
+
+    const haxConfig = config || readConfig()
+
+    if (haxConfig.registries) {
+      for (const repoName of haxConfig.registries.fallback) {
+        const item = await getRegistryDependencyFromSource(
+          name,
+          repoName,
+          haxConfig,
+        )
+        if (item) {
+          return item
+        }
+      }
+    }
+    return await getRegistryDependencyFromSource(
+      name,
+      ENV_CONFIG.registrySource,
     )
+  } catch (error) {
+    logger.error(`Failed to fetch registry dependency "${name}": ${error}`)
     return null
   }
+}
+
+async function getRegistryDependencyFromSource(
+  name: string,
+  sourceName: string,
+  config?: HaxConfig,
+): Promise<RegistryItem | null> {
+  const haxConfig = config || readConfig()
+
+  if (haxConfig.registries?.sources[sourceName]) {
+    const source = haxConfig.registries.sources[sourceName]
+
+    if (source.type === "github") {
+      return await getGitHubRegistryDependency(
+        name,
+        source.branch || "main",
+        source.repo,
+        source.token,
+        source.githubUrl,
+      )
+    }
+  }
+
+  if (sourceName === "local") {
+    const uiComponent = await getUIComponent(name)
+    return uiComponent || null
+  } else if (sourceName.startsWith("github:")) {
+    const branch = sourceName.replace("github:", "")
+    return await getGitHubRegistryDependency(name, branch)
+  }
+
+  return null
 }
 
 export async function getUIComponent(name: string) {
@@ -87,19 +199,20 @@ export async function getUIComponent(name: string) {
 export async function resolveRegistryDependencies(
   names: string[],
   source?: string,
+  config?: HaxConfig,
   visited: Set<string> = new Set(),
 ): Promise<RegistryItem[]> {
-  const registrySource = source || ENV_CONFIG.registrySource
   const resolved: RegistryItem[] = []
+  const haxConfig = config || readConfig()
 
   for (const name of names) {
     if (visited.has(name)) continue
     visited.add(name)
 
-    let item = await getRegistryDependency(name, registrySource)
+    let item = await getRegistryDependency(name, source, haxConfig)
     if (!item) {
       // If not found in UI components, check artifacts
-      item = await getRegistryItem(name, registrySource)
+      item = await getRegistryItem(name, source, haxConfig)
     }
 
     if (!item) {
@@ -112,7 +225,8 @@ export async function resolveRegistryDependencies(
     if (item.registryDependencies) {
       const deps = await resolveRegistryDependencies(
         item.registryDependencies,
-        registrySource,
+        source,
+        haxConfig,
         visited,
       )
       resolved.push(...deps)

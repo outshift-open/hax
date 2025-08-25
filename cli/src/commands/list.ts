@@ -16,15 +16,19 @@ export const listCommand = new Command("list")
       return
     }
 
-    logger.info("\n📦 Registered Components:\n")
+    logger.info("\n📦 Installed Components:\n")
 
     const table = new Table({
-      head: [chalk.white("Component Name")],
+      head: [chalk.white("Component"), chalk.white("Source")],
       style: { head: ["cyan"] },
     })
 
-    components.forEach((name: string) => {
-      table.push([name])
+    components.forEach((comp: any) => {
+      if (typeof comp === "string") {
+        table.push([comp, chalk.gray("—")])
+      } else if (comp && typeof comp === "object" && comp.name) {
+        table.push([comp.name, chalk.yellow(comp.source || "—")])
+      }
     })
 
     logger.log(table.toString())

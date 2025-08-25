@@ -42,7 +42,7 @@
       "@copilotkit/react-core",
       "@copilotkit/runtime"
     ],
-    "registryDependencies": ["input", "loading-spinner"],
+    "registryDependencies": ["input", "loading-spinner", "dropdown-menu"],
     "files": [
       { "name": "command-hints.tsx", "type": "registry:component" },
       { "name": "command-suggestions.tsx", "type": "registry:component" },
