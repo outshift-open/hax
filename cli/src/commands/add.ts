@@ -3,8 +3,9 @@ import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, printPanelBox } from "../utils/logger"
 import {
-  getGitHubRegistryItem,
+  getGitHubRegistryArtifact,
   getGitHubRegistryComposer,
+  getGitHubRegistryAdapter,
 } from "@/registry/github-api"
 import { RegistryItem } from "@/types"
 import fs from "fs"
@@ -33,10 +34,20 @@ addCommand
     await handleAdd(componentNames, options, "composer")
   })
 
+addCommand
+  .command("adapter")
+  .argument("<components...>", "Adapter component name(s) to add")
+  .description("Add adapter components from the registry")
+  .option("--repo <repository>", "Specific repository to pull from")
+  .option("--token <token>", "GitHub token for private repository access")
+  .action(async (componentNames: string[], options) => {
+    await handleAdd(componentNames, options, "adapter")
+  })
+
 async function handleAdd(
   componentNames: string[],
   options: any,
-  type: "artifact" | "composer",
+  type: "artifact" | "composer" | "adapter",
 ) {
   if (componentNames.length === 0) {
     logger.error(
@@ -59,8 +70,18 @@ async function handleAdd(
   let successCount = 0
   let errorCount = 0
 
-  const typeLabel = type === "artifact" ? "component" : "composer"
-  const typeLabelPlural = type === "artifact" ? "components" : "composers"
+  const typeLabel =
+    type === "artifact"
+      ? "component"
+      : type === "composer"
+        ? "composer"
+        : "adapter"
+  const typeLabelPlural =
+    type === "artifact"
+      ? "components"
+      : type === "composer"
+        ? "composers"
+        : "adapters"
 
   if (componentNames.length === 1) {
     logger.info(`🔮 Adding ${typeLabel}: ${componentNames[0]} from HAX library`)
@@ -79,11 +100,18 @@ async function handleAdd(
         `Artifacts path '${artifactsPath}' does not exist. It will be created.`,
       )
     }
-  } else {
+  } else if (type === "composer") {
     const composersPath = config.composers?.path ?? "src/hax/composers"
     if (!fs.existsSync(composersPath)) {
       logger.info(
         `Composers path '${composersPath}' does not exist. It will be created.`,
+      )
+    }
+  } else {
+    const adaptersPath = config.adapters?.path ?? "src/hax/adapters"
+    if (!fs.existsSync(adaptersPath)) {
+      logger.info(
+        `Adapters path '${adaptersPath}' does not exist. It will be created.`,
       )
     }
   }
@@ -98,7 +126,15 @@ async function handleAdd(
         const source = config.registries?.sources?.[options.repo]
         if (source) {
           if (type === "artifact") {
-            component = await getGitHubRegistryItem(
+            component = await getGitHubRegistryArtifact(
+              componentName,
+              source.branch || "main",
+              source.repo!,
+              token || source.token,
+              source.githubUrl,
+            )
+          } else if (type === "composer") {
+            component = await getGitHubRegistryComposer(
               componentName,
               source.branch || "main",
               source.repo!,
@@ -106,7 +142,7 @@ async function handleAdd(
               source.githubUrl,
             )
           } else {
-            component = await getGitHubRegistryComposer(
+            component = await getGitHubRegistryAdapter(
               componentName,
               source.branch || "main",
               source.repo!,
@@ -125,7 +161,15 @@ async function handleAdd(
 
         if (defaultSource) {
           if (type === "artifact") {
-            component = await getGitHubRegistryItem(
+            component = await getGitHubRegistryArtifact(
+              componentName,
+              defaultSource.branch || "main",
+              defaultSource.repo!,
+              token || defaultSource.token,
+              defaultSource.githubUrl,
+            )
+          } else if (type === "composer") {
+            component = await getGitHubRegistryComposer(
               componentName,
               defaultSource.branch || "main",
               defaultSource.repo!,
@@ -133,7 +177,7 @@ async function handleAdd(
               defaultSource.githubUrl,
             )
           } else {
-            component = await getGitHubRegistryComposer(
+            component = await getGitHubRegistryAdapter(
               componentName,
               defaultSource.branch || "main",
               defaultSource.repo!,
@@ -155,7 +199,15 @@ async function handleAdd(
             logger.debug(`Checking fallback repository: ${fallbackRepo}`)
 
             if (type === "artifact") {
-              component = await getGitHubRegistryItem(
+              component = await getGitHubRegistryArtifact(
+                componentName,
+                fallbackSource.branch || "main",
+                fallbackSource.repo!,
+                token || fallbackSource.token,
+                fallbackSource.githubUrl,
+              )
+            } else if (type === "composer") {
+              component = await getGitHubRegistryComposer(
                 componentName,
                 fallbackSource.branch || "main",
                 fallbackSource.repo!,
@@ -163,7 +215,7 @@ async function handleAdd(
                 fallbackSource.githubUrl,
               )
             } else {
-              component = await getGitHubRegistryComposer(
+              component = await getGitHubRegistryAdapter(
                 componentName,
                 fallbackSource.branch || "main",
                 fallbackSource.repo!,
@@ -216,7 +268,7 @@ async function handleAdd(
             source: sourceRepo,
           })
         }
-      } else {
+      } else if (type === "composer") {
         // Set up composers config if first composer
         if (!config.composers) {
           config.composers = { path: "src/hax/composers" }
@@ -229,6 +281,23 @@ async function handleAdd(
         )
         if (!existingFeature) {
           config.features.push({
+            name: componentName,
+            source: sourceRepo,
+          })
+        }
+      } else {
+        // Set up adapters config if first adapter
+        if (!config.adapters) {
+          config.adapters = { path: "src/hax/adapters" }
+        }
+        if (!config.installedAdapters) config.installedAdapters = []
+        const existingAdapter = config.installedAdapters.find((adapt: any) =>
+          typeof adapt === "string"
+            ? adapt === componentName
+            : adapt.name === componentName,
+        )
+        if (!existingAdapter) {
+          config.installedAdapters.push({
             name: componentName,
             source: sourceRepo,
           })

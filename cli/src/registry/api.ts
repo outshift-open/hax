@@ -3,9 +3,10 @@ import { logger } from "@/utils/logger"
 import { HaxConfig, RegistryItem } from "@/types"
 import { ENV_CONFIG } from "@/config/env"
 import {
-  getGitHubRegistryItem,
+  getGitHubRegistryArtifact,
   getGitHubRegistryDependency,
   getGitHubRegistryComposer,
+  getGitHubRegistryAdapter,
 } from "./github-api"
 import { readConfig } from "@/config"
 
@@ -75,7 +76,7 @@ async function getRegistryItemFromSource(
 
     if (source.type === "github") {
       // Try artifacts first
-      const artifact = await getGitHubRegistryItem(
+      const artifact = await getGitHubRegistryArtifact(
         name,
         source.branch || "main",
         source.repo!,
@@ -84,7 +85,15 @@ async function getRegistryItemFromSource(
       )
       if (artifact) return artifact
 
-      // Try composers if artifact not found
+      const adapter = await getGitHubRegistryAdapter(
+        name,
+        source.branch || "main",
+        source.repo!,
+        token,
+        source.githubUrl,
+      )
+      if (adapter) return adapter
+
       return await getGitHubRegistryComposer(
         name,
         source.branch || "main",
@@ -118,8 +127,11 @@ async function getRegistryItemFromSource(
   } else if (sourceName.startsWith("github:")) {
     const branch = sourceName.replace("github:", "")
 
-    const artifact = await getGitHubRegistryItem(name, branch)
+    const artifact = await getGitHubRegistryArtifact(name, branch)
     if (artifact) return artifact
+
+    const adapter = await getGitHubRegistryAdapter(name, branch)
+    if (adapter) return adapter
 
     return await getGitHubRegistryComposer(name, branch)
   }

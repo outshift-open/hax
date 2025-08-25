@@ -24,10 +24,14 @@ export function readConfig(): HaxConfig {
       style: parsed.style ?? "default",
       components: Array.isArray(parsed.components) ? parsed.components : [],
       features: Array.isArray(parsed.features) ? parsed.features : [],
+      installedAdapters: Array.isArray(parsed.installedAdapters)
+        ? parsed.installedAdapters
+        : [],
     }
 
     if (parsed.artifacts) config.artifacts = parsed.artifacts
     if (parsed.composers) config.composers = parsed.composers
+    if (parsed.adapters) config.adapters = parsed.adapters
 
     if (parsed.zones) config.zones = parsed.zones
     if (parsed.messages) config.messages = parsed.messages

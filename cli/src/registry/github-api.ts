@@ -32,7 +32,7 @@ process.on("SIGINT", cleanupSshCache)
 process.on("SIGTERM", cleanupSshCache)
 
 // Fetch a registry item from GitHub artifacts
-export async function getGitHubRegistryItem(
+export async function getGitHubRegistryArtifact(
   name: string,
   branch: string,
   customRepo?: string,
@@ -129,9 +129,42 @@ export async function getGitHubRegistryComposer(
   )
 }
 
+export async function getGitHubRegistryAdapter(
+  name: string,
+  branch: string,
+  customRepo?: string,
+  token?: string,
+  githubUrl?: string,
+): Promise<RegistryItem | null> {
+  const repo = customRepo || ENV_CONFIG.github.repo
+  const metadata = await fetchGitHubRegistryMetadata(
+    "adapter",
+    branch,
+    repo,
+    token,
+    githubUrl,
+  )
+  if (!metadata || !metadata[name]) {
+    logger.debug(`Adapter "${name}" not found in GitHub adapter metadata`)
+    return null
+  }
+
+  const componentMeta = metadata[name]
+
+  return await fetchGitHubComponentFromMetadata(
+    name,
+    "adapter",
+    componentMeta,
+    branch,
+    repo,
+    token,
+    githubUrl,
+  )
+}
+
 // Fetch metadata for GitHub registry components
 async function fetchGitHubRegistryMetadata(
-  type: "artifacts" | "ui" | "composer",
+  type: "artifacts" | "ui" | "composer" | "adapter",
   branch: string,
   repo?: string,
   token?: string,
@@ -149,7 +182,12 @@ async function fetchGitHubRegistryMetadata(
       baseUrl = REGISTRY_SOURCES.GITHUB(targetRepo, branch)
     }
 
-    const fileName = type === "composer" ? "composers.json" : `${type}.json`
+    const fileName =
+      type === "composer"
+        ? "composers.json"
+        : type === "adapter"
+          ? "adapters.json"
+          : `${type}.json`
     const metadataUrl = `${baseUrl}cli/src/registry/github-registry/${fileName}`
 
     const source: RegistrySource | undefined = githubUrl
@@ -178,7 +216,7 @@ async function fetchGitHubRegistryMetadata(
 
 async function fetchGitHubComponentFromMetadata(
   name: string,
-  type: "artifacts" | "ui" | "composer",
+  type: "artifacts" | "ui" | "composer" | "adapter",
   metadata: GitHubRegistryMetadata[string],
   branch: string,
   repo?: string,
@@ -231,7 +269,9 @@ async function fetchGitHubComponentFromMetadata(
           ? `hax/artifacts/${name}/${fileInfo.name}`
           : type === "composer"
             ? `hax/composer/${name}/${fileInfo.name}`
-            : `hax/components/ui/${fileInfo.name}`)
+            : type === "adapter"
+              ? `hax/adapter/${name}/${fileInfo.name}`
+              : `hax/components/ui/${fileInfo.name}`)
 
       const fileUrl = `${baseUrl}${filePath}`
       const fileContent = await fetchGitHubFile(fileUrl, token, source)

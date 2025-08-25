@@ -93,6 +93,8 @@ async function copyComponentFiles(
     switch (componentType) {
       case "registry:composer":
         return config.composers?.path ?? "src/hax/composers"
+      case "registry:adapter":
+        return config.adapters?.path ?? "src/hax/adapters"
       case "registry:artifacts":
       default:
         return config.artifacts?.path ?? "src/hax/artifacts"
@@ -110,6 +112,7 @@ async function copyComponentFiles(
     const relativePath = file.path
       .replace(`hax/composer/${name}/`, "")
       .replace(`hax/artifacts/${name}/`, "")
+      .replace(`hax/adapter/${name}/`, "")
     const targetDir = path.join(baseDir, name)
     const fullTargetPath = path.join(targetDir, relativePath)
 

@@ -30,6 +30,7 @@ export const RegistryItemTypeSchema = z.enum([
   "registry:ui",
   "registry:lib",
   "registry:composer",
+  "registry:adapter",
 ])
 export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>
 
@@ -120,6 +121,11 @@ export const HaxConfigSchema = z.object({
       path: z.string(),
     })
     .optional(),
+  adapters: z
+    .object({
+      path: z.string(),
+    })
+    .optional(),
   zones: z
     .object({
       path: z.string(),
@@ -153,6 +159,7 @@ export const HaxConfigSchema = z.object({
     .optional(),
   components: z.array(ComponentItemSchema).optional(),
   features: z.array(ComponentItemSchema).optional(),
+  installedAdapters: z.array(ComponentItemSchema).optional(),
   backend_framework: z.string().optional(),
   frontend_framework: z.string().optional(),
 })
