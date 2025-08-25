@@ -8,16 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-export interface FormField {
-  type: "text" | "email" | "number" | "select" | "checkbox" | "textarea";
-  label: string;
-  placeholder?: string;
-  options?: string[] | Array<{ value: string; label: string }>;
-  required?: boolean;
-  name?: string;
-  rows?: number;
-}
+import { FormField } from "./types";
 
 export interface HAXFormProps {
   title?: string;

@@ -110,14 +110,34 @@ async function getRegistryItemFromSource(
       const artifact = artifacts.find(
         (item: { name: string }) => item.name === name,
       )
-      if (artifact) return artifact
+      if (artifact) {
+        artifact.source = "local"
+        return artifact
+      }
+
+      try {
+        const { adapter } = await import("@/registry/default/adapter")
+        const adapterItem = adapter.find(
+          (item: { name: string }) => item.name === name,
+        )
+        if (adapterItem) {
+          adapterItem.source = "local"
+          return adapterItem
+        }
+      } catch {
+        // Continue to composer check
+      }
 
       try {
         const { composer } = await import("@/registry/default/composer")
         const composerItem = composer.find(
           (item: { name: string }) => item.name === name,
         )
-        return composerItem || null
+        if (composerItem) {
+          composerItem.source = "local"
+          return composerItem
+        }
+        return null
       } catch {
         return null
       }

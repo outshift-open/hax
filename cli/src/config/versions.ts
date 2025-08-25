@@ -13,6 +13,8 @@ export const PINNED_DEPENDENCIES = {
   "@copilotkit/react-core": COPILOTKIT_VERSION,
   "@copilotkit/react-ui": COPILOTKIT_VERSION,
   "@copilotkit/runtime": COPILOTKIT_VERSION,
+  "@copilotkit/runtime-client-gql": COPILOTKIT_VERSION,
+  "@copilotkit/shared": COPILOTKIT_VERSION,
 } as const
 
 export function getPinnedDependency(packageName: string): string {

@@ -1,12 +1,9 @@
 import { useCopilotAction } from "@copilotkit/react-core";
-import { ArtifactTab } from "./types";
+import { ArtifactTab, FormArtifact } from "./types";
 import { FORM_DESCRIPTION } from "./description";
 
 interface UseFormActionProps {
-  addOrUpdateArtifact: (
-    type: "form",
-    data: Extract<ArtifactTab, { type: "form" }>["data"]
-  ) => void;
+  addOrUpdateArtifact: (type: "form", data: FormArtifact["data"]) => void;
 }
 export const useFormAction = ({ addOrUpdateArtifact }: UseFormActionProps) => {
   useCopilotAction({

@@ -250,7 +250,42 @@ async function installNPMDependencies(dependencies: string[]) {
     )
     logger.debug("This might take a couple of minutes...")
 
-    const npmProcess = spawn("npm", ["install", ...dependencies], {
+    // Separate pinned and regular dependencies
+    const pinnedDeps: string[] = []
+    const regularDeps: string[] = []
+
+    dependencies.forEach((dep) => {
+      const pinnedVersion = getPinnedDependency(dep)
+      if (pinnedVersion !== dep) {
+        pinnedDeps.push(pinnedVersion)
+      } else {
+        regularDeps.push(dep)
+      }
+    })
+
+    const installPromises: Promise<void>[] = []
+
+    if (pinnedDeps.length > 0) {
+      installPromises.push(installWithFlags(pinnedDeps, ["--save-exact"]))
+    }
+
+    if (regularDeps.length > 0) {
+      installPromises.push(installWithFlags(regularDeps, []))
+    }
+
+    Promise.all(installPromises)
+      .then(() => resolve())
+      .catch(reject)
+  })
+}
+
+function installWithFlags(
+  dependencies: string[],
+  flags: string[],
+): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const args = ["install", ...flags, ...dependencies]
+    const npmProcess = spawn("npm", args, {
       stdio: "pipe",
       shell: true,
     })

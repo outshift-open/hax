@@ -2,12 +2,8 @@ import { Command } from "commander"
 import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, printPanelBox } from "../utils/logger"
-import {
-  getGitHubRegistryArtifact,
-  getGitHubRegistryComposer,
-  getGitHubRegistryAdapter,
-} from "@/registry/github-api"
-import { RegistryItem } from "@/types"
+
+import { getRegistryItem } from "@/registry/api"
 import fs from "fs"
 
 export const addCommand = new Command("add").description(
@@ -118,122 +114,13 @@ async function handleAdd(
 
   for (const componentName of componentNames) {
     try {
-      let component: RegistryItem | null = null
-      let foundInRepo: string | null = null
-
-      // If specific repo is requested, only check that one
-      if (options.repo) {
-        const source = config.registries?.sources?.[options.repo]
-        if (source) {
-          if (type === "artifact") {
-            component = await getGitHubRegistryArtifact(
-              componentName,
-              source.branch || "main",
-              source.repo!,
-              token || source.token,
-              source.githubUrl,
-            )
-          } else if (type === "composer") {
-            component = await getGitHubRegistryComposer(
-              componentName,
-              source.branch || "main",
-              source.repo!,
-              token || source.token,
-              source.githubUrl,
-            )
-          } else {
-            component = await getGitHubRegistryAdapter(
-              componentName,
-              source.branch || "main",
-              source.repo!,
-              token || source.token,
-              source.githubUrl,
-            )
-          }
-          if (component) {
-            foundInRepo = options.repo
-          }
-        }
-      } else {
-        // Try default repository first
-        const defaultRepo = config.registries?.default || "main"
-        const defaultSource = config.registries?.sources?.[defaultRepo]
-
-        if (defaultSource) {
-          if (type === "artifact") {
-            component = await getGitHubRegistryArtifact(
-              componentName,
-              defaultSource.branch || "main",
-              defaultSource.repo!,
-              token || defaultSource.token,
-              defaultSource.githubUrl,
-            )
-          } else if (type === "composer") {
-            component = await getGitHubRegistryComposer(
-              componentName,
-              defaultSource.branch || "main",
-              defaultSource.repo!,
-              token || defaultSource.token,
-              defaultSource.githubUrl,
-            )
-          } else {
-            component = await getGitHubRegistryAdapter(
-              componentName,
-              defaultSource.branch || "main",
-              defaultSource.repo!,
-              token || defaultSource.token,
-              defaultSource.githubUrl,
-            )
-          }
-          if (component) {
-            foundInRepo = defaultRepo
-          }
-        }
-
-        // If not found in default, try fallback repositories
-        if (!component && config.registries?.fallback) {
-          for (const fallbackRepo of config.registries.fallback) {
-            const fallbackSource = config.registries.sources?.[fallbackRepo]
-            if (!fallbackSource) continue
-
-            logger.debug(`Checking fallback repository: ${fallbackRepo}`)
-
-            if (type === "artifact") {
-              component = await getGitHubRegistryArtifact(
-                componentName,
-                fallbackSource.branch || "main",
-                fallbackSource.repo!,
-                token || fallbackSource.token,
-                fallbackSource.githubUrl,
-              )
-            } else if (type === "composer") {
-              component = await getGitHubRegistryComposer(
-                componentName,
-                fallbackSource.branch || "main",
-                fallbackSource.repo!,
-                token || fallbackSource.token,
-                fallbackSource.githubUrl,
-              )
-            } else {
-              component = await getGitHubRegistryAdapter(
-                componentName,
-                fallbackSource.branch || "main",
-                fallbackSource.repo!,
-                token || fallbackSource.token,
-                fallbackSource.githubUrl,
-              )
-            }
-
-            if (component) {
-              foundInRepo = fallbackRepo
-              logger.info(
-                `📦 Found ${componentName} in fallback repository: ${fallbackRepo}`,
-              )
-              break
-            }
-          }
-        }
-      }
+      // Use unified registry API that handles local/GitHub fallback automatically
+      const component = await getRegistryItem(
+        componentName,
+        options.repo, // specific repo if provided
+        config,
+        token,
+      )
 
       if (!component) {
         logger.error(
@@ -242,11 +129,6 @@ async function handleAdd(
         errorCount++
         continue
       }
-
-      // Set source information for dependency resolution
-      const sourceRepo =
-        foundInRepo || options.repo || config.registries?.default || "main"
-      component.source = sourceRepo
 
       await generateComponent(componentName, config, component)
 
@@ -265,7 +147,7 @@ async function handleAdd(
         if (!existingComponent) {
           config.components.push({
             name: componentName,
-            source: sourceRepo,
+            source: component.source || "local",
           })
         }
       } else if (type === "composer") {
@@ -282,7 +164,7 @@ async function handleAdd(
         if (!existingFeature) {
           config.features.push({
             name: componentName,
-            source: sourceRepo,
+            source: component.source || "local",
           })
         }
       } else {
@@ -299,7 +181,7 @@ async function handleAdd(
         if (!existingAdapter) {
           config.installedAdapters.push({
             name: componentName,
-            source: sourceRepo,
+            source: component.source || "local",
           })
         }
       }

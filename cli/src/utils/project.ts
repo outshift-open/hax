@@ -25,6 +25,7 @@ export async function ensurePathAliases(
   const configPath = path.resolve(cwd, configFileName)
 
   let config: ProjectConfig = {}
+  let canParseExisting = true
 
   // Read existing config if it exists
   if (fs.existsSync(configPath)) {
@@ -36,9 +37,15 @@ export async function ensurePathAliases(
       config = JSON.parse(cleanContent)
     } catch {
       logger.warn(
-        `Warning: Could not parse ${configFileName}, creating new config`,
+        `Warning: Could not parse ${configFileName}, skipping path alias update`,
       )
+      canParseExisting = false
     }
+  }
+
+  // If we can't parse existing config, don't modify it
+  if (!canParseExisting) {
+    return
   }
 
   if (!config.compilerOptions) {
@@ -54,6 +61,7 @@ export async function ensurePathAliases(
     )
 
   if (hasBaseUrl && hasPaths) {
+    logger.debug(`${configFileName} already has required path aliases`)
     return
   }
 
