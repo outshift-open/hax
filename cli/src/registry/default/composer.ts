@@ -94,6 +94,13 @@ export const composer: RegistryItem[] = [
         content: readComponentFile("hax/composer/file-upload/info-icon.tsx"),
       },
       {
+        path: "hax/composer/file-upload/useDragAndDrop.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/composer/file-upload/useDragAndDrop.ts",
+        ),
+      },
+      {
         path: "hax/composer/file-upload/types.ts",
         type: "registry:types",
         content: readComponentFile("hax/composer/file-upload/types.ts"),

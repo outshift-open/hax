@@ -18,6 +18,7 @@ export async function getRegistryItem(
   haxType?: "artifact" | "composer" | "adapter",
 ): Promise<any> {
   try {
+    // If specific repo is provided via CLI, use it directly
     if (repo) {
       const source = `https://github.com/${repo}`
       return await getRegistryItemFromSource(
@@ -31,6 +32,37 @@ export async function getRegistryItem(
 
     const haxConfig = config || readConfig()
 
+    // Priority 1: Check .env configuration first
+    if (ENV_CONFIG.registrySource && ENV_CONFIG.registrySource !== "local") {
+      logger.info(`Using .env registry source: ${ENV_CONFIG.registrySource}`)
+      const result = await getRegistryItemFromSource(
+        name,
+        ENV_CONFIG.registrySource,
+        haxConfig,
+        token,
+        haxType,
+      )
+      if (result) {
+        return result
+      }
+    }
+
+    // Priority 2: If .env is "local" or not set, check local registry first
+    if (!ENV_CONFIG.registrySource || ENV_CONFIG.registrySource === "local") {
+      const localResult = await getRegistryItemFromSource(
+        name,
+        "local",
+        haxConfig,
+        token,
+        haxType,
+      )
+      if (localResult) {
+        logger.info(`Component "${name}" found in local registry`)
+        return localResult
+      }
+    }
+
+    // Priority 3: Fallback to hax.json registries configuration if component not found locally
     if (haxConfig.registries) {
       const defaultRepo =
         haxConfig.registries.default || haxConfig.registries.fallback[0]
@@ -41,6 +73,14 @@ export async function getRegistryItem(
       const actualSearchOrder = [defaultRepo, ...fallbackOrder]
 
       for (const repoName of actualSearchOrder) {
+        // Skip local if we already checked it
+        if (
+          repoName === "local" &&
+          (!ENV_CONFIG.registrySource || ENV_CONFIG.registrySource === "local")
+        ) {
+          continue
+        }
+
         const item = await getRegistryItemFromSource(
           name,
           repoName,
@@ -65,13 +105,17 @@ export async function getRegistryItem(
       }
     }
 
-    return await getRegistryItemFromSource(
-      name,
-      ENV_CONFIG.registrySource,
-      undefined,
-      undefined,
-      haxType,
-    )
+    if (ENV_CONFIG.registrySource && ENV_CONFIG.registrySource !== "local") {
+      return await getRegistryItemFromSource(
+        name,
+        ENV_CONFIG.registrySource,
+        undefined,
+        undefined,
+        haxType,
+      )
+    }
+
+    return null
   } catch (error) {
     logger.error(`Failed to fetch component "${name}": ${error}`)
     return null
