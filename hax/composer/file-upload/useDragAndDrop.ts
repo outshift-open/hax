@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { FileUploadError } from "./types";
 import { maxFileSize, validExtensions } from "./file-upload.constant";
 
@@ -8,7 +8,7 @@ interface UseDragAndDropProps {
   onFileError?: (error: FileUploadError) => void;
 }
 
-export const useDragAndDrop = ({
+const useDragAndDrop = ({
   enableDragDrop,
   onFileSelection,
   onFileError,
@@ -16,11 +16,10 @@ export const useDragAndDrop = ({
   const [isDragOver, setIsDragOver] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Simplified global drag detection
   useEffect(() => {
     if (!enableDragDrop) return;
 
-    let dragCounter = 0; // ← Local variable, no state
+    let dragCounter = 0;
 
     const handleDocumentDragEnter = (e: DragEvent) => {
       if (e.dataTransfer?.types.includes("Files")) {
@@ -67,7 +66,7 @@ export const useDragAndDrop = ({
   }, [enableDragDrop]);
 
   // File validation
-  const validateFile = (file: File): FileUploadError | null => {
+  const validateFile = useCallback((file: File): FileUploadError | null => {
     const isValidType = validExtensions.some((ext) =>
       file.name.toLowerCase().endsWith(ext)
     );
@@ -91,84 +90,90 @@ export const useDragAndDrop = ({
     }
 
     return null;
-  };
+  }, []);
 
   // Enhanced file processing
-  const handleFiles = async (fileList: FileList) => {
-    if (!onFileSelection) return;
+  const handleFiles = useCallback(
+    async (fileList: FileList) => {
+      if (!onFileSelection) return;
 
-    setIsProcessing(true);
+      setIsProcessing(true);
 
-    try {
-      const files = Array.from(fileList);
-      const validFiles: File[] = [];
-      const errors: FileUploadError[] = [];
+      try {
+        const files = Array.from(fileList);
+        const validFiles: File[] = [];
+        const errors: FileUploadError[] = [];
 
-      for (const file of files) {
-        const error = validateFile(file);
-        if (error) {
-          errors.push(error);
-        } else {
-          validFiles.push(file);
+        for (const file of files) {
+          const error = validateFile(file);
+          if (error) {
+            errors.push(error);
+          } else {
+            validFiles.push(file);
+          }
         }
-      }
 
-      for (const error of errors) {
-        onFileError?.(error);
-      }
-
-      if (validFiles.length > 0) {
-        try {
-          const dataTransfer = new DataTransfer();
-          validFiles.forEach((file) => dataTransfer.items.add(file));
-          onFileSelection(dataTransfer.files);
-        } catch (error) {
-          onFileError?.({
-            type: "UPLOAD_ERROR",
-            message: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-            details: error,
-          });
+        for (const error of errors) {
+          onFileError?.(error);
         }
-      }
-    } catch (error) {
-      onFileError?.({
-        type: "UPLOAD_ERROR",
-        message: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-        details: error,
-      });
-    } finally {
-      setIsProcessing(false);
-      setIsDragOver(false);
-    }
-  };
 
-  const handleDragEnter = (e: React.DragEvent) => {
+        if (validFiles.length > 0) {
+          try {
+            const dataTransfer = new DataTransfer();
+            validFiles.forEach((file) => dataTransfer.items.add(file));
+            onFileSelection(dataTransfer.files);
+          } catch (error) {
+            onFileError?.({
+              type: "UPLOAD_ERROR",
+              message: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+              details: error,
+            });
+          }
+        }
+      } catch (error) {
+        onFileError?.({
+          type: "UPLOAD_ERROR",
+          message: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+          details: error,
+        });
+      } finally {
+        setIsProcessing(false);
+        setIsDragOver(false);
+      }
+    },
+    [onFileSelection, onFileError, validateFile]
+  );
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-  };
+  }, []);
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-  };
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = "copy";
     }
-  };
+  }, []);
 
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      await handleFiles(files);
-    }
-  };
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        await handleFiles(files);
+      }
+    },
+    [handleFiles]
+  );
 
   return {
     handleDragEnter,
@@ -179,3 +184,5 @@ export const useDragAndDrop = ({
     isProcessing,
   };
 };
+
+export default useDragAndDrop;

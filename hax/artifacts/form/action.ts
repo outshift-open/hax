@@ -1,5 +1,5 @@
 import { useCopilotAction } from "@copilotkit/react-core";
-import { ArtifactTab, FormArtifact } from "./types";
+import { FormArtifact } from "./types";
 import { FORM_DESCRIPTION } from "./description";
 
 interface UseFormActionProps {
