@@ -270,7 +270,7 @@ async function fetchGitHubComponentFromMetadata(
           : type === "composer"
             ? `hax/composer/${name}/${fileInfo.name}`
             : type === "adapter"
-              ? `hax/adapter/${name}/${fileInfo.name}`
+              ? `hax/adapter/${fileInfo.name}`
               : `hax/components/ui/${fileInfo.name}`)
 
       const fileUrl = `${baseUrl}${filePath}`

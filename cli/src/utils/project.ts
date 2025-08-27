@@ -36,9 +36,6 @@ export async function ensurePathAliases(
         .replace(/\/\/.*$/gm, "")
       config = JSON.parse(cleanContent)
     } catch {
-      logger.warn(
-        `Warning: Could not parse ${configFileName}, skipping path alias update`,
-      )
       canParseExisting = false
     }
   }

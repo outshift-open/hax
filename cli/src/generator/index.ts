@@ -112,8 +112,9 @@ async function copyComponentFiles(
     const relativePath = file.path
       .replace(`hax/composer/${name}/`, "")
       .replace(`hax/artifacts/${name}/`, "")
-      .replace(`hax/adapter/${name}/`, "")
-    const targetDir = path.join(baseDir, name)
+      .replace(`hax/adapter/`, "")
+    const targetDir =
+      component.type === "registry:adapter" ? baseDir : path.join(baseDir, name)
     const fullTargetPath = path.join(targetDir, relativePath)
 
     const targetFileDir = path.dirname(fullTargetPath)
