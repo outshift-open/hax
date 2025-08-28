@@ -2,6 +2,13 @@ import { Command } from "commander"
 import inquirer from "inquirer"
 import { logger, highlighter } from "@/utils/logger"
 
+interface GitHubInvitation {
+  id: number
+  invitee?: {
+    login: string
+  }
+}
+
 export const manageAccessCommand = new Command()
   .name("manage-access")
   .description("Manage access control and permissions")
@@ -15,7 +22,7 @@ export const manageAccessCommand = new Command()
 export async function manageAccess(
   repo?: string,
   user?: string,
-  action: string = "list",
+  action = "list",
 ) {
   logger.info(`🔐 Managing access for repository: ${repo || "current"}`)
 
@@ -151,7 +158,7 @@ export async function manageAccess(
             if (invitationsResponse.ok) {
               const invitations = await invitationsResponse.json()
               const userInvitation = invitations.find(
-                (inv: any) => inv.invitee?.login === user,
+                (inv: GitHubInvitation) => inv.invitee?.login === user,
               )
 
               if (userInvitation) {

@@ -2,9 +2,14 @@ import { Command } from "commander"
 import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, printPanelBox } from "../utils/logger"
-
+import { HaxConfig, ComponentItem } from "@/types"
 import { getRegistryItem } from "@/registry/api"
 import fs from "fs"
+
+interface AddCommandOptions {
+  repo?: string
+  token?: string
+}
 
 export const addCommand = new Command("add").description(
   "Add HAX components from the library to your project",
@@ -42,7 +47,7 @@ addCommand
 
 async function handleAdd(
   componentNames: string[],
-  options: any,
+  options: AddCommandOptions,
   type: "artifact" | "composer" | "adapter",
 ) {
   if (componentNames.length === 0) {
@@ -53,7 +58,7 @@ async function handleAdd(
   }
   logger.break()
 
-  let config
+  let config: HaxConfig
   try {
     config = readConfig()
   } catch (err) {
@@ -120,7 +125,7 @@ async function handleAdd(
         options.repo, // specific repo if provided
         config,
         token,
-        type, // Pass the component type to avoid checking other types
+        type,
       )
 
       if (!component) {
@@ -140,10 +145,11 @@ async function handleAdd(
           config.artifacts = { path: "src/hax/artifacts" }
         }
         if (!config.components) config.components = []
-        const existingComponent = config.components.find((comp: any) =>
-          typeof comp === "string"
-            ? comp === componentName
-            : comp.name === componentName,
+        const existingComponent = config.components.find(
+          (comp: ComponentItem) =>
+            typeof comp === "string"
+              ? comp === componentName
+              : comp.name === componentName,
         )
         if (!existingComponent) {
           config.components.push({
@@ -157,7 +163,7 @@ async function handleAdd(
           config.composers = { path: "src/hax/composers" }
         }
         if (!config.features) config.features = []
-        const existingFeature = config.features.find((feat: any) =>
+        const existingFeature = config.features.find((feat: ComponentItem) =>
           typeof feat === "string"
             ? feat === componentName
             : feat.name === componentName,
@@ -174,10 +180,11 @@ async function handleAdd(
           config.adapters = { path: "src/hax/adapters" }
         }
         if (!config.installedAdapters) config.installedAdapters = []
-        const existingAdapter = config.installedAdapters.find((adapt: any) =>
-          typeof adapt === "string"
-            ? adapt === componentName
-            : adapt.name === componentName,
+        const existingAdapter = config.installedAdapters.find(
+          (adapt: ComponentItem) =>
+            typeof adapt === "string"
+              ? adapt === componentName
+              : adapt.name === componentName,
         )
         if (!existingAdapter) {
           config.installedAdapters.push({

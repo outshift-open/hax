@@ -1,6 +1,7 @@
 import { Command } from "commander"
 import { readConfig, updateConfig } from "../config"
 import { logger } from "@/utils/logger"
+import { ComponentItem } from "@/types"
 import fs from "fs"
 import path from "path"
 import inquirer from "inquirer"
@@ -19,7 +20,7 @@ export const removeCommand = new Command("remove")
     let componentType = null
     let componentIndex = -1
 
-    componentIndex = components.findIndex((comp: any) => {
+    componentIndex = components.findIndex((comp: ComponentItem) => {
       if (typeof comp === "string") {
         return comp === componentName
       } else {
@@ -32,7 +33,7 @@ export const removeCommand = new Command("remove")
     }
 
     if (componentIndex === -1) {
-      componentIndex = features.findIndex((feat: any) => {
+      componentIndex = features.findIndex((feat: ComponentItem) => {
         if (typeof feat === "string") {
           return feat === componentName
         } else {
@@ -46,7 +47,7 @@ export const removeCommand = new Command("remove")
     }
 
     if (componentIndex === -1) {
-      componentIndex = adapters.findIndex((adapt: any) => {
+      componentIndex = adapters.findIndex((adapt: ComponentItem) => {
         if (typeof adapt === "string") {
           return adapt === componentName
         } else {

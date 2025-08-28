@@ -1,5 +1,6 @@
 import { Command } from "commander"
 import { readConfig } from "../config"
+import { ComponentItem } from "@/types"
 
 import Table from "cli-table3"
 import { logger } from "@/utils/logger"
@@ -14,9 +15,21 @@ export const listCommand = new Command("list")
     const adapters = config.installedAdapters || []
 
     const allItems = [
-      ...components.map((comp: any) => ({ ...comp, type: "artifact" })),
-      ...features.map((feat: any) => ({ ...feat, type: "composer" })),
-      ...adapters.map((adapt: any) => ({ ...adapt, type: "adapter" })),
+      ...components.map((comp: ComponentItem) =>
+        typeof comp === "string"
+          ? { name: comp, type: "artifact" }
+          : { ...comp, type: "artifact" },
+      ),
+      ...features.map((feat: ComponentItem) =>
+        typeof feat === "string"
+          ? { name: feat, type: "composer" }
+          : { ...feat, type: "composer" },
+      ),
+      ...adapters.map((adapt: ComponentItem) =>
+        typeof adapt === "string"
+          ? { name: adapt, type: "adapter" }
+          : { ...adapt, type: "adapter" },
+      ),
     ]
 
     if (allItems.length === 0) {
@@ -35,16 +48,15 @@ export const listCommand = new Command("list")
       style: { head: ["cyan"] },
     })
 
-    allItems.forEach((item: any) => {
-      const name = typeof item === "string" ? item : item.name
-      const source =
-        typeof item === "string"
-          ? chalk.gray("—")
-          : chalk.yellow(item.source || "—")
-      const type = item.type || "unknown"
+    allItems.forEach(
+      (item: { name: string; type: string; source?: string }) => {
+        const name = item.name
+        const source = chalk.yellow(item.source || "—")
+        const type = item.type || "unknown"
 
-      table.push([name, chalk.blue(type), source])
-    })
+        table.push([name, chalk.blue(type), source])
+      },
+    )
 
     logger.log(table.toString())
   })
