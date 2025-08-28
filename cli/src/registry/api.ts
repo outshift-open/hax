@@ -73,7 +73,6 @@ export async function getRegistryItem(
       const actualSearchOrder = [defaultRepo, ...fallbackOrder]
 
       for (const repoName of actualSearchOrder) {
-        // Skip local if we already checked it
         if (
           repoName === "local" &&
           (!ENV_CONFIG.registrySource || ENV_CONFIG.registrySource === "local")
