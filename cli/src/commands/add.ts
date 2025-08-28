@@ -61,7 +61,7 @@ async function handleAdd(
     return
   }
 
-  let token: string | undefined = options.token
+  const token: string | undefined = options.token
 
   let successCount = 0
   let errorCount = 0

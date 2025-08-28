@@ -3,8 +3,6 @@ import path from "path"
 import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
-import { updateConfig } from "@/config"
-import { getComposersPath } from "@/utils/paths"
 import {
   getRegistryItem,
   resolveRegistryDependencies,
@@ -21,7 +19,7 @@ import { getPinnedDependency } from "../config/versions"
 
 async function collectDependencies(
   component: RegistryItem,
-  source?: string,
+  _source?: string,
 ): Promise<{
   npmDependencies: string[]
   registryDependencies: RegistryItem[]

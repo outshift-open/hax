@@ -9,11 +9,11 @@ const originalConsoleLog = console.log
 console.log = () => {}
 try {
   dotenv.config({ path: path.join(process.cwd(), ".env"), debug: false })
-} catch (error) {}
+} catch {}
 
 try {
   dotenv.config({ path: path.join(__dirname, "../../.env"), debug: false })
-} catch (error) {}
+} catch {}
 console.log = originalConsoleLog
 
 export const ENV_CONFIG = {

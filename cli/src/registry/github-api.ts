@@ -19,10 +19,10 @@ const sshCloneCache = new Map<string, string>()
 const enterpriseApiRestricted = new Set<string>()
 
 export function cleanupSshCache() {
-  for (const [key, tempDir] of sshCloneCache.entries()) {
+  for (const [, tempDir] of sshCloneCache.entries()) {
     try {
       fs.rmSync(tempDir, { recursive: true, force: true })
-    } catch (error) {}
+    } catch {}
   }
   sshCloneCache.clear()
 }
