@@ -165,6 +165,16 @@ export const composer: RegistryItem[] = [
         type: "registry:types",
         content: readComponentFile("hax/composer/chat-commands/types.ts"),
       },
+      {
+        path: "hax/composer/chat-commands/types/agent.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/composer/chat-commands/types/agent.ts"),
+      },
+      {
+        path: "hax/composer/chat-commands/types/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/composer/chat-commands/types/index.ts"),
+      },
 
       {
         path: "hax/composer/chat-commands/commands/agent-delegation-command.tsx",
@@ -239,6 +249,13 @@ export const composer: RegistryItem[] = [
         ),
       },
       {
+        path: "hax/composer/chat-commands/middleware/logger.ts",
+        type: "registry:lib",
+        content: readComponentFile(
+          "hax/composer/chat-commands/middleware/logger.ts",
+        ),
+      },
+      {
         path: "hax/composer/chat-commands/middleware/chat-middleware-adapter.ts",
         type: "registry:lib",
         content: readComponentFile(
@@ -280,6 +297,11 @@ export const composer: RegistryItem[] = [
         content: readComponentFile(
           "hax/composer/chat-commands/state/command-registry.tsx",
         ),
+      },
+      {
+        path: "hax/composer/chat-commands/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/composer/chat-commands/index.ts"),
       },
     ],
   },

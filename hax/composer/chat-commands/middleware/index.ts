@@ -1,9 +1,17 @@
-// Types
-export type { ChatMiddleware, AgentDelegation, ToolCall } from "./types"
+export type { ChatMiddleware, AgentDelegation, ToolCall } from "./types";
 
-// Middleware implementations
-export { AgentDelegationMiddleware } from "./agent-delegation"
-export { ToolCallMiddleware } from "./tool-call"
+export { AgentDelegationMiddleware } from "./agent-delegation";
+export { ToolCallMiddleware } from "./tool-call";
 
-// Middleware chain
-export { MiddlewareChain } from "./middleware-chain"
+export { MiddlewareChain } from "./middleware-chain";
+
+export { ChatMiddlewareAdapter } from "./chat-middleware-adapter";
+
+export {
+  logger,
+  useLogger,
+  createLogger,
+  ConsoleLogger,
+  SilentLogger,
+} from "./logger";
+export type { Logger, LogLevel, LoggerOptions } from "./logger";

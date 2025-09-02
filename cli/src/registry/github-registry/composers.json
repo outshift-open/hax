@@ -51,6 +51,8 @@
       { "name": "file-picker-input.tsx", "type": "registry:component" },
       { "name": "file-upload.constant.ts", "type": "registry:constants" },
       { "name": "types.ts", "type": "registry:types" },
+      { "name": "types/agent.ts", "type": "registry:types" },
+      { "name": "types/index.ts", "type": "registry:index" },
       {
         "name": "commands/agent-delegation-command.tsx",
         "type": "registry:component"
@@ -71,11 +73,17 @@
         "name": "middleware/chat-middleware-adapter.ts",
         "type": "registry:lib"
       },
+      {
+        "name": "middleware/logger.ts",
+        "type": "registry:lib"
+      },
+
       { "name": "middleware/middleware-chain.ts", "type": "registry:lib" },
       { "name": "middleware/tool-call.ts", "type": "registry:lib" },
       { "name": "middleware/types.ts", "type": "registry:types" },
       { "name": "middleware/index.ts", "type": "registry:index" },
-      { "name": "state/command-registry.tsx", "type": "registry:component" }
+      { "name": "state/command-registry.tsx", "type": "registry:component" },
+      { "name": "index.ts", "type": "registry:index" }
     ]
   }
 }
