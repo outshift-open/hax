@@ -2,12 +2,14 @@ import { Command } from "commander"
 import { generateComponent } from "../generator"
 import { readConfig, updateConfig } from "../config"
 import { logger, printPanelBox } from "../utils/logger"
-import {
-  getGitHubRegistryItem,
-  getGitHubRegistryComposer,
-} from "@/registry/github-api"
-import { RegistryItem } from "@/types"
+import { HaxConfig, ComponentItem } from "@/types"
+import { getRegistryItem } from "@/registry/api"
 import fs from "fs"
+
+interface AddCommandOptions {
+  repo?: string
+  token?: string
+}
 
 export const addCommand = new Command("add").description(
   "Add HAX components from the library to your project",
@@ -33,10 +35,20 @@ addCommand
     await handleAdd(componentNames, options, "composer")
   })
 
+addCommand
+  .command("adapter")
+  .argument("<components...>", "Adapter component name(s) to add")
+  .description("Add adapter components from the registry")
+  .option("--repo <repository>", "Specific repository to pull from")
+  .option("--token <token>", "GitHub token for private repository access")
+  .action(async (componentNames: string[], options) => {
+    await handleAdd(componentNames, options, "adapter")
+  })
+
 async function handleAdd(
   componentNames: string[],
-  options: any,
-  type: "artifact" | "composer",
+  options: AddCommandOptions,
+  type: "artifact" | "composer" | "adapter",
 ) {
   if (componentNames.length === 0) {
     logger.error(
@@ -46,7 +58,7 @@ async function handleAdd(
   }
   logger.break()
 
-  let config
+  let config: HaxConfig
   try {
     config = readConfig()
   } catch (err) {
@@ -54,13 +66,23 @@ async function handleAdd(
     return
   }
 
-  let token: string | undefined = options.token
+  const token: string | undefined = options.token
 
   let successCount = 0
   let errorCount = 0
 
-  const typeLabel = type === "artifact" ? "component" : "composer"
-  const typeLabelPlural = type === "artifact" ? "components" : "composers"
+  const typeLabel =
+    type === "artifact"
+      ? "component"
+      : type === "composer"
+        ? "composer"
+        : "adapter"
+  const typeLabelPlural =
+    type === "artifact"
+      ? "components"
+      : type === "composer"
+        ? "composers"
+        : "adapters"
 
   if (componentNames.length === 1) {
     logger.info(`🔮 Adding ${typeLabel}: ${componentNames[0]} from HAX library`)
@@ -79,109 +101,32 @@ async function handleAdd(
         `Artifacts path '${artifactsPath}' does not exist. It will be created.`,
       )
     }
-  } else {
+  } else if (type === "composer") {
     const composersPath = config.composers?.path ?? "src/hax/composers"
     if (!fs.existsSync(composersPath)) {
       logger.info(
         `Composers path '${composersPath}' does not exist. It will be created.`,
       )
     }
+  } else {
+    const adaptersPath = config.adapters?.path ?? "src/hax/adapters"
+    if (!fs.existsSync(adaptersPath)) {
+      logger.info(
+        `Adapters path '${adaptersPath}' does not exist. It will be created.`,
+      )
+    }
   }
 
   for (const componentName of componentNames) {
     try {
-      let component: RegistryItem | null = null
-      let foundInRepo: string | null = null
-
-      // If specific repo is requested, only check that one
-      if (options.repo) {
-        const source = config.registries?.sources?.[options.repo]
-        if (source) {
-          if (type === "artifact") {
-            component = await getGitHubRegistryItem(
-              componentName,
-              source.branch || "main",
-              source.repo!,
-              token || source.token,
-              source.githubUrl,
-            )
-          } else {
-            component = await getGitHubRegistryComposer(
-              componentName,
-              source.branch || "main",
-              source.repo!,
-              token || source.token,
-              source.githubUrl,
-            )
-          }
-          if (component) {
-            foundInRepo = options.repo
-          }
-        }
-      } else {
-        // Try default repository first
-        const defaultRepo = config.registries?.default || "main"
-        const defaultSource = config.registries?.sources?.[defaultRepo]
-
-        if (defaultSource) {
-          if (type === "artifact") {
-            component = await getGitHubRegistryItem(
-              componentName,
-              defaultSource.branch || "main",
-              defaultSource.repo!,
-              token || defaultSource.token,
-              defaultSource.githubUrl,
-            )
-          } else {
-            component = await getGitHubRegistryComposer(
-              componentName,
-              defaultSource.branch || "main",
-              defaultSource.repo!,
-              token || defaultSource.token,
-              defaultSource.githubUrl,
-            )
-          }
-          if (component) {
-            foundInRepo = defaultRepo
-          }
-        }
-
-        // If not found in default, try fallback repositories
-        if (!component && config.registries?.fallback) {
-          for (const fallbackRepo of config.registries.fallback) {
-            const fallbackSource = config.registries.sources?.[fallbackRepo]
-            if (!fallbackSource) continue
-
-            logger.debug(`Checking fallback repository: ${fallbackRepo}`)
-
-            if (type === "artifact") {
-              component = await getGitHubRegistryItem(
-                componentName,
-                fallbackSource.branch || "main",
-                fallbackSource.repo!,
-                token || fallbackSource.token,
-                fallbackSource.githubUrl,
-              )
-            } else {
-              component = await getGitHubRegistryComposer(
-                componentName,
-                fallbackSource.branch || "main",
-                fallbackSource.repo!,
-                token || fallbackSource.token,
-                fallbackSource.githubUrl,
-              )
-            }
-
-            if (component) {
-              foundInRepo = fallbackRepo
-              logger.info(
-                `📦 Found ${componentName} in fallback repository: ${fallbackRepo}`,
-              )
-              break
-            }
-          }
-        }
-      }
+      // Use unified registry API that handles local/GitHub fallback automatically
+      const component = await getRegistryItem(
+        componentName,
+        options.repo, // specific repo if provided
+        config,
+        token,
+        type,
+      )
 
       if (!component) {
         logger.error(
@@ -190,11 +135,6 @@ async function handleAdd(
         errorCount++
         continue
       }
-
-      // Set source information for dependency resolution
-      const sourceRepo =
-        foundInRepo || options.repo || config.registries?.default || "main"
-      component.source = sourceRepo
 
       await generateComponent(componentName, config, component)
 
@@ -205,24 +145,25 @@ async function handleAdd(
           config.artifacts = { path: "src/hax/artifacts" }
         }
         if (!config.components) config.components = []
-        const existingComponent = config.components.find((comp: any) =>
-          typeof comp === "string"
-            ? comp === componentName
-            : comp.name === componentName,
+        const existingComponent = config.components.find(
+          (comp: ComponentItem) =>
+            typeof comp === "string"
+              ? comp === componentName
+              : comp.name === componentName,
         )
         if (!existingComponent) {
           config.components.push({
             name: componentName,
-            source: sourceRepo,
+            source: component.source || "local",
           })
         }
-      } else {
+      } else if (type === "composer") {
         // Set up composers config if first composer
         if (!config.composers) {
           config.composers = { path: "src/hax/composers" }
         }
         if (!config.features) config.features = []
-        const existingFeature = config.features.find((feat: any) =>
+        const existingFeature = config.features.find((feat: ComponentItem) =>
           typeof feat === "string"
             ? feat === componentName
             : feat.name === componentName,
@@ -230,7 +171,25 @@ async function handleAdd(
         if (!existingFeature) {
           config.features.push({
             name: componentName,
-            source: sourceRepo,
+            source: component.source || "local",
+          })
+        }
+      } else {
+        // Set up adapters config if first adapter
+        if (!config.adapters) {
+          config.adapters = { path: "src/hax/adapters" }
+        }
+        if (!config.installedAdapters) config.installedAdapters = []
+        const existingAdapter = config.installedAdapters.find(
+          (adapt: ComponentItem) =>
+            typeof adapt === "string"
+              ? adapt === componentName
+              : adapt.name === componentName,
+        )
+        if (!existingAdapter) {
+          config.installedAdapters.push({
+            name: componentName,
+            source: component.source || "local",
           })
         }
       }

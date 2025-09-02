@@ -222,7 +222,7 @@ export async function createAndPushToGitHub(
         `${highlighter.warn("Next Steps:")}\n` +
         `1. Add your custom components to the appropriate directories\n` +
         `2. Update the registry JSON files\n` +
-        `3. Test with: ${highlighter.primary("agntcy-hax admin validate-registry --remote https://github.com/" + githubRepo)}`,
+        `3. Test with: ${highlighter.primary(`agntcy-hax admin validate-registry --remote https://github.com/${githubRepo}`)}`,
     )
   } catch (error) {
     logger.error(`❌ Failed to create/push repository: ${error}`)

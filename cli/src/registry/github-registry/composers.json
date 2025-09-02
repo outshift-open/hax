@@ -26,6 +26,7 @@
       { "name": "action.tsx", "type": "registry:hook" },
       { "name": "drag-drop-zone.tsx", "type": "registry:component" },
       { "name": "info-icon.tsx", "type": "registry:component" },
+      { "name": "useDragAndDrop.ts", "type": "registry:hook" },
       { "name": "types.ts", "type": "registry:types" },
       { "name": "index.ts", "type": "registry:index" },
       { "name": "description.ts", "type": "registry:description" },
@@ -50,6 +51,8 @@
       { "name": "file-picker-input.tsx", "type": "registry:component" },
       { "name": "file-upload.constant.ts", "type": "registry:constants" },
       { "name": "types.ts", "type": "registry:types" },
+      { "name": "types/agent.ts", "type": "registry:types" },
+      { "name": "types/index.ts", "type": "registry:index" },
       {
         "name": "commands/agent-delegation-command.tsx",
         "type": "registry:component"
@@ -70,11 +73,17 @@
         "name": "middleware/chat-middleware-adapter.ts",
         "type": "registry:lib"
       },
+      {
+        "name": "middleware/logger.ts",
+        "type": "registry:lib"
+      },
+
       { "name": "middleware/middleware-chain.ts", "type": "registry:lib" },
       { "name": "middleware/tool-call.ts", "type": "registry:lib" },
       { "name": "middleware/types.ts", "type": "registry:types" },
       { "name": "middleware/index.ts", "type": "registry:index" },
-      { "name": "state/command-registry.tsx", "type": "registry:component" }
+      { "name": "state/command-registry.tsx", "type": "registry:component" },
+      { "name": "index.ts", "type": "registry:index" }
     ]
   }
 }

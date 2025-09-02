@@ -7,6 +7,7 @@ import { ChatMiddleware } from "./types";
 import { MiddlewareChain } from "./middleware-chain";
 import { AgentDelegationMiddleware } from "./agent-delegation";
 import { ToolCallMiddleware } from "./tool-call";
+import { logger } from "./logger";
 
 // Chat Middleware Adapter using Middleware Pattern
 export class ChatMiddlewareAdapter implements CopilotServiceAdapter {
@@ -23,7 +24,7 @@ export class ChatMiddlewareAdapter implements CopilotServiceAdapter {
   async process(
     request: CopilotRuntimeChatCompletionRequest
   ): Promise<CopilotRuntimeChatCompletionResponse> {
-    console.log(
+    logger.info(
       "[ChatMiddlewareAdapter] Processing request with middleware chain"
     );
 

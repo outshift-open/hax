@@ -1,6 +1,7 @@
 import { Command } from "commander"
 import { readConfig, updateConfig } from "../config"
 import { logger } from "@/utils/logger"
+import { ComponentItem } from "@/types"
 import fs from "fs"
 import path from "path"
 import inquirer from "inquirer"
@@ -12,14 +13,52 @@ export const removeCommand = new Command("remove")
   .action(async (componentName: string, options: { force?: boolean }) => {
     const config = readConfig()
     const components = config.components || []
+    const features = config.features || []
+    const adapters = config.installedAdapters || []
 
-    const componentIndex = components.findIndex((comp: any) => {
+    let componentInfo = null
+    let componentType = null
+    let componentIndex = -1
+
+    componentIndex = components.findIndex((comp: ComponentItem) => {
       if (typeof comp === "string") {
         return comp === componentName
       } else {
         return comp.name === componentName
       }
     })
+    if (componentIndex !== -1) {
+      componentInfo = components[componentIndex]
+      componentType = "artifact"
+    }
+
+    if (componentIndex === -1) {
+      componentIndex = features.findIndex((feat: ComponentItem) => {
+        if (typeof feat === "string") {
+          return feat === componentName
+        } else {
+          return feat.name === componentName
+        }
+      })
+      if (componentIndex !== -1) {
+        componentInfo = features[componentIndex]
+        componentType = "composer"
+      }
+    }
+
+    if (componentIndex === -1) {
+      componentIndex = adapters.findIndex((adapt: ComponentItem) => {
+        if (typeof adapt === "string") {
+          return adapt === componentName
+        } else {
+          return adapt.name === componentName
+        }
+      })
+      if (componentIndex !== -1) {
+        componentInfo = adapters[componentIndex]
+        componentType = "adapter"
+      }
+    }
 
     if (componentIndex === -1) {
       logger.error(`❌ Component "${componentName}" is not installed`)
@@ -27,23 +66,22 @@ export const removeCommand = new Command("remove")
       return
     }
 
-    const component = components[componentIndex]
     const componentSource =
-      typeof component === "string" ? "unknown" : component.source || "unknown"
+      typeof componentInfo === "string"
+        ? "unknown"
+        : componentInfo?.source || "unknown"
 
     // Show component info
     logger.info(`📦 Found component: ${componentName}`)
+    logger.info(`   Type: ${componentType}`)
     logger.info(`   Source: ${componentSource}`)
-    logger.info(
-      `   Type: ${typeof component === "string" ? "legacy" : "tracked"}`,
-    )
 
     if (!options.force) {
       const answers = await inquirer.prompt([
         {
           type: "confirm",
           name: "confirm",
-          message: `Are you sure you want to remove "${componentName}"?`,
+          message: `Are you sure you want to remove "${componentName}" ${componentType}?`,
           default: false,
         },
       ])
@@ -54,17 +92,32 @@ export const removeCommand = new Command("remove")
       }
     }
 
-    components.splice(componentIndex, 1)
-    config.components = components
+    // Remove from the appropriate array
+    if (componentType === "artifact") {
+      components.splice(componentIndex, 1)
+      config.components = components
+    } else if (componentType === "composer") {
+      features.splice(componentIndex, 1)
+      config.features = features
+    } else if (componentType === "adapter") {
+      adapters.splice(componentIndex, 1)
+      config.installedAdapters = adapters
+    }
+
     updateConfig(config)
 
-    const componentPath = path.join(
-      process.cwd(),
-      "src",
-      "hax",
-      "artifacts",
-      componentName,
-    )
+    // Determine the correct path based on component type
+    let componentPath: string
+    if (componentType === "artifact") {
+      const artifactsPath = config.artifacts?.path || "src/hax/artifacts"
+      componentPath = path.join(process.cwd(), artifactsPath, componentName)
+    } else if (componentType === "composer") {
+      const composersPath = config.composers?.path || "src/hax/composers"
+      componentPath = path.join(process.cwd(), composersPath, componentName)
+    } else {
+      const adaptersPath = config.adapters?.path || "src/hax/adapters"
+      componentPath = path.join(process.cwd(), adaptersPath, componentName)
+    }
 
     if (fs.existsSync(componentPath)) {
       try {
@@ -78,11 +131,16 @@ export const removeCommand = new Command("remove")
       logger.info(`ℹ️  No component files found at ${componentPath}`)
     }
 
-    logger.success(`✅ Component "${componentName}" removed successfully`)
+    logger.success(
+      `✅ ${componentType!.charAt(0).toUpperCase() + componentType!.slice(1)} "${componentName}" removed successfully`,
+    )
 
-    const remainingComponents = config.components || []
-    if (remainingComponents.length > 0) {
-      logger.info(`\n📦 Remaining components: ${remainingComponents.length}`)
+    const totalRemaining =
+      (config.components || []).length +
+      (config.features || []).length +
+      (config.installedAdapters || []).length
+    if (totalRemaining > 0) {
+      logger.info(`\n📦 Remaining components: ${totalRemaining}`)
       logger.info("Run 'agntcy-hax list' to see them")
     } else {
       logger.info("\n📦 No components remaining")

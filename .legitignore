@@ -1,0 +1,3 @@
+# False positive - comment contains word "Basic" but is not an actual secret
+# Line: // Basic request/response logging for visibility
+instance_35E69F9B1ECC03A78FD3DDAFB5F22984

@@ -94,6 +94,13 @@ export const composer: RegistryItem[] = [
         content: readComponentFile("hax/composer/file-upload/info-icon.tsx"),
       },
       {
+        path: "hax/composer/file-upload/useDragAndDrop.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/composer/file-upload/useDragAndDrop.ts",
+        ),
+      },
+      {
         path: "hax/composer/file-upload/types.ts",
         type: "registry:types",
         content: readComponentFile("hax/composer/file-upload/types.ts"),
@@ -157,6 +164,16 @@ export const composer: RegistryItem[] = [
         path: "hax/composer/chat-commands/types.ts",
         type: "registry:types",
         content: readComponentFile("hax/composer/chat-commands/types.ts"),
+      },
+      {
+        path: "hax/composer/chat-commands/types/agent.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/composer/chat-commands/types/agent.ts"),
+      },
+      {
+        path: "hax/composer/chat-commands/types/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/composer/chat-commands/types/index.ts"),
       },
 
       {
@@ -232,6 +249,13 @@ export const composer: RegistryItem[] = [
         ),
       },
       {
+        path: "hax/composer/chat-commands/middleware/logger.ts",
+        type: "registry:lib",
+        content: readComponentFile(
+          "hax/composer/chat-commands/middleware/logger.ts",
+        ),
+      },
+      {
         path: "hax/composer/chat-commands/middleware/chat-middleware-adapter.ts",
         type: "registry:lib",
         content: readComponentFile(
@@ -273,6 +297,11 @@ export const composer: RegistryItem[] = [
         content: readComponentFile(
           "hax/composer/chat-commands/state/command-registry.tsx",
         ),
+      },
+      {
+        path: "hax/composer/chat-commands/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/composer/chat-commands/index.ts"),
       },
     ],
   },

@@ -50,7 +50,7 @@ export async function validateRegistry(
             errors.push(`${file}: Component "${key}" missing required fields`)
           }
         })
-      } catch (e) {
+      } catch {
         errors.push(`${file}: Invalid JSON format`)
       }
     } else {
@@ -91,7 +91,7 @@ export async function validateRegistry(
             } else {
               errors.push(`Failed to fetch remote ${file}: ${response.status}`)
             }
-          } catch (e) {
+          } catch {
             errors.push(`Invalid JSON in remote ${file}`)
           }
         }
