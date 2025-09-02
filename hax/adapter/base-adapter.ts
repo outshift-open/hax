@@ -63,7 +63,7 @@ export abstract class HAXAdapter implements CopilotServiceAdapter {
 
     const url = `${this.baseURL}${endpoint}`;
 
-    // Basic request/response logging for visibility
+    // Request/response logging for visibility
     logger.info("REST url:", url);
     logger.debug("REST payload:", JSON.stringify(body, null, 2));
 
