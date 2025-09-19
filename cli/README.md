@@ -66,6 +66,7 @@ agntcy-hax list
 - **code-editor** - Monaco-based code editor
 - **details** - Statistics and data display component
 - **data-visualizer** - Data visualization wrapper
+- **source-attribution** - Source citation component with clickable reference badges
 
 ### Available Composers
 
