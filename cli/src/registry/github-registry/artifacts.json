@@ -115,5 +115,24 @@
       { "name": "index.ts", "type": "registry:index" },
       { "name": "description.ts", "type": "registry:description" }
     ]
+  },
+  "source-attribution": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react"
+    ],
+    "registryDependencies": ["badge"],
+    "files": [
+      { "name": "source-attribution.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
   }
 }
