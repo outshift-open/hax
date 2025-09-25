@@ -247,4 +247,50 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "source-attribution",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+    ],
+    registryDependencies: ["badge"],
+    files: [
+      {
+        path: "hax/artifacts/source-attribution/source-attribution.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/source-attribution/source-attribution.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/source-attribution/action.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/artifacts/source-attribution/action.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/source-attribution/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/source-attribution/types.ts"),
+      },
+      {
+        path: "hax/artifacts/source-attribution/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/source-attribution/index.ts"),
+      },
+      {
+        path: "hax/artifacts/source-attribution/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/source-attribution/description.ts",
+        ),
+      },
+    ],
+  },
 ]
