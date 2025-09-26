@@ -94,7 +94,7 @@ Users can add this registry to their HAX projects:
 
 \`\`\`bash
 export HAX_REGISTRY_SOURCE="github:${githubRepo}:main"
-agntcy-hax add <component-name>
+hax add <component-name>
 \`\`\`
 
 ## Structure
@@ -109,7 +109,7 @@ agntcy-hax add <component-name>
 
 1. Add your component files to the appropriate directory
 2. Update the corresponding registry JSON file
-3. Test with \`agntcy-hax admin validate-registry\`
+3. Test with \`hax admin validate-registry\`
 `
 
   fs.writeFileSync(path.join(repoPath, "README.md"), readme)
@@ -126,7 +126,7 @@ agntcy-hax add <component-name>
         `${highlighter.warn("Next Steps:")}\n` +
         `1. Add your components to the appropriate directories\n` +
         `2. Update registry JSON files\n` +
-        `3. Run: ${highlighter.primary("agntcy-hax admin validate-registry")}\n` +
+        `3. Run: ${highlighter.primary("hax admin validate-registry")}\n` +
         `4. Commit and push to GitHub`,
     )
   }
@@ -217,12 +217,12 @@ export async function createAndPushToGitHub(
         `${highlighter.debug("Path:")} ${highlighter.info(repoPath)}\n\n` +
         `${highlighter.success("✅ Your repository is now live!")}\n` +
         `Users can now add your registry:\n` +
-        `${highlighter.primary(`agntcy-hax repo add myrepo --github=${githubRepo}`)}\n` +
-        `${highlighter.primary(`agntcy-hax add <component-name> --repo=myrepo`)}\n\n` +
+        `${highlighter.primary(`hax repo add myrepo --github=${githubRepo}`)}\n` +
+        `${highlighter.primary(`hax add <component-name> --repo=myrepo`)}\n\n` +
         `${highlighter.warn("Next Steps:")}\n` +
         `1. Add your custom components to the appropriate directories\n` +
         `2. Update the registry JSON files\n` +
-        `3. Test with: ${highlighter.primary(`agntcy-hax admin validate-registry --remote https://github.com/${githubRepo}`)}`,
+        `3. Test with: ${highlighter.primary(`hax admin validate-registry --remote https://github.com/${githubRepo}`)}`,
     )
   } catch (error) {
     logger.error(`❌ Failed to create/push repository: ${error}`)

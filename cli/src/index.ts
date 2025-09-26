@@ -13,7 +13,7 @@ import { admin } from "./commands/admin"
 const program = new Command()
 
 program
-  .name("agntcy-hax")
+  .name("hax")
   .description("CLI tool for managing HAX SDK components")
   .version("0.1.0")
 

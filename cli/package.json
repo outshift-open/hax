@@ -1,9 +1,9 @@
 {
-  "name": "agntcy-hax-cli",
+  "name": "hax-cli",
   "version": "1.0.0",
   "type": "module",
   "bin": {
-    "agntcy-hax": "./cli.js"
+    "hax": "./cli.js"
   },
   "scripts": {
     "dev": "tsx src/index.ts",
