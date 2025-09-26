@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "style": {
+      "type": "string",
+      "enum": ["default"],
+      "description": "The style variant to use"
+    },
+    "artifacts": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to artifacts directory"
+        }
+      },
+      "required": ["path"],
+      "description": "Configuration for artifacts"
+    },
+    "zones": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to zones directory"
+        }
+      },
+      "description": "Configuration for zones"
+    },
+    "messages": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to messages directory"
+        }
+      },
+      "description": "Configuration for messages"
+    },
+    "prompts": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to prompts directory"
+        }
+      },
+      "description": "Configuration for prompts"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of installed components"
+    },
+    "backend_framework": {
+      "type": "string",
+      "enum": ["LangGraph"],
+      "description": "Backend framework to use"
+    },
+    "frontend_framework": {
+      "type": "string",
+      "enum": ["React"],
+      "description": "Frontend framework to use"
+    }
+  },
+  "required": [
+    "style",
+    "artifacts",
+    "components",
+    "backend_framework",
+    "frontend_framework"
+  ],
+  "additionalProperties": false
+}
