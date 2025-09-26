@@ -34,7 +34,7 @@ repo
         sources: {
           main: {
             type: "github",
-            repo: "cisco-eti/agntcy-hax",
+            repo: "cisco-eti/hax",
             branch: "main",
           },
         },

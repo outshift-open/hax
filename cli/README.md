@@ -29,33 +29,33 @@ GITHUB_TOKEN=your_github_token_here
 ```
 
 Get your GitHub token from: https://github.com/settings/tokens  
-(Required because the agntcy-hax repository is private)
+(Required because the hax repository is private)
 
 Initialize HAX in your project:
 
 ```bash
-agntcy-hax init
+hax init
 ```
 
 Add components to your project:
 
 ```bash
-agntcy-hax add artifact form
-agntcy-hax add artifact code-editor data-visualizer
+hax add artifact form
+hax add artifact code-editor data-visualizer
 ```
 
 Add Composers (chat features) to your project
 
 ```bash
-agntcy-hax add composer chat-commands file-upload rules-context
-agntcy-hax add composer chat-commands
+hax add composer chat-commands file-upload rules-context
+hax add composer chat-commands
 
 ```
 
 List available components:
 
 ```bash
-agntcy-hax list
+hax list
 ```
 
 ## Available Components
@@ -78,7 +78,7 @@ agntcy-hax list
 
 The CLI creates a `hax.json` file in your project:
 
-**Basic configuration (after `agntcy-hax init`):**
+**Basic configuration (after `hax init`):**
 
 ```json
 {
@@ -118,7 +118,7 @@ The CLI creates a `hax.json` file in your project:
     "sources": {
       "official": {
         "type": "github",
-        "repo": "cisco-eti/agntcy-hax",
+        "repo": "cisco-eti/hax",
         "branch": "main",
         "name": "official"
       },
@@ -183,7 +183,7 @@ Set via environment variable:
 export HAX_REGISTRY_SOURCE=github:main
 
 # Or run with environment variable
-HAX_REGISTRY_SOURCE=github:main agntcy-hax add artifact form
+HAX_REGISTRY_SOURCE=github:main hax add artifact form
 ```
 
 ## Multi-Repository Architecture
@@ -271,7 +271,7 @@ component-name/
 Initialize HAX in your project:
 
 ```bash
-agntcy-hax init
+hax init
 ```
 
 ### `add [components...]`
@@ -279,11 +279,11 @@ agntcy-hax init
 Install one or more components:
 
 ```bash
-agntcy-hax add artifact form timeline
+hax add artifact form timeline
 
 # Install from specific repository
-agntcy-hax add artifact custom-dashboard --repo=testing
-agntcy-hax add artifact salesCustom-timeline --repo=sales
+hax add artifact custom-dashboard --repo=testing
+hax add artifact salesCustom-timeline --repo=sales
 ```
 
 ### `list`
@@ -291,7 +291,7 @@ agntcy-hax add artifact salesCustom-timeline --repo=sales
 Show installed components:
 
 ```bash
-agntcy-hax list
+hax list
 ```
 
 ## `repo` Remote Repository Management & Admin Features
@@ -323,7 +323,7 @@ For enterprise setups, multi-repository management, and administrative features,
 
 Create a `.env` file in your test project with the same configuration.
 
-**Note**: A GitHub token is required because the `agntcy-hax` repository is private.
+**Note**: A GitHub token is required because the `hax` repository is private.
 Get your GitHub token from: https://github.com/settings/tokens
 
 ### Build CLI
@@ -339,8 +339,8 @@ npm run build
 npm link
 
 # Test commands
-agntcy-hax --help
-agntcy-hax add form
+hax --help
+hax add form
 ```
 
 ### Testing Multi-Repository Functionality
@@ -348,36 +348,36 @@ agntcy-hax add form
 **Setup test repositories:**
 ```bash
 # Initialize project
-agntcy-hax init
+hax init
 
 # Add test repositories
-agntcy-hax repo add testing --github cisco-eti/agntcy-hax --branch test-remote-repo
-agntcy-hax repo add sales --github cisco-eti/agntcy-hax --branch sales-remote-hax
+hax repo add testing --github cisco-eti/hax --branch test-remote-repo
+hax repo add sales --github cisco-eti/hax --branch sales-remote-hax
 ```
 
 **Test component resolution:**
 ```bash
 # Test automatic fallback
-agntcy-hax add custom-timeline    # Should find in testing
-agntcy-hax add salesCustom-dashboard  # Should find in sales
-agntcy-hax add form              # Should find in official
+hax add custom-timeline    # Should find in testing
+hax add salesCustom-dashboard  # Should find in sales
+hax add form              # Should find in official
 
 # Test specific repository targeting
-agntcy-hax add custom-dashboard --repo=testing
-agntcy-hax add mindmap --repo=official
+hax add custom-dashboard --repo=testing
+hax add mindmap --repo=official
 ```
 
 **Test repository switching:**
 ```bash
 # Test priority changes
-agntcy-hax repo switch testing
-agntcy-hax add salesCustom-timeline  # Should show "not found in testing, found in sales"
+hax repo switch testing
+hax add salesCustom-timeline  # Should show "not found in testing, found in sales"
 
-agntcy-hax repo switch sales
-agntcy-hax add custom-timeline       # Should show "not found in sales, found in testing"
+hax repo switch sales
+hax add custom-timeline       # Should show "not found in sales, found in testing"
 
 # View current configuration
-agntcy-hax repo list
+hax repo list
 ```
 
 ## Troubleshooting

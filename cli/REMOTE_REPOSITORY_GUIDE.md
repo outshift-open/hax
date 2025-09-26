@@ -40,13 +40,13 @@ export HAX_GITHUB_TOKEN=your_hax_specific_token_here
 
 ```bash
 # Initialize HAX in your project
-agntcy-hax init
+hax init
 
 # List available commands
-agntcy-hax --help
+hax --help
 
 # View configured repositories
-agntcy-hax repo list
+hax repo list
 ```
 
 ## Admin Commands
@@ -59,10 +59,10 @@ Initialize a new HAX component repository:
 
 ```bash
 # Basic initialization (local only)
-agntcy-hax admin init-repo --github owner/repo-name --path ./my-registry
+hax admin init-repo --github owner/repo-name --path ./my-registry
 
 # Full initialization with GitHub repository creation
-agntcy-hax admin init-repo \
+hax admin init-repo \
   --github owner/repo-name \
   --path ./my-registry \
   --create-remote \
@@ -91,15 +91,15 @@ Validate registry structure and configuration:
 
 ```bash
 # Validate local registry
-agntcy-hax admin validate-registry --path ./my-registry
+hax admin validate-registry --path ./my-registry
 
 # Validate remote registry
-agntcy-hax admin validate-registry \
+hax admin validate-registry \
   --remote https://github.com/owner/repo \
   --token $GITHUB_TOKEN
 
 # Validate both local and remote
-agntcy-hax admin validate-registry \
+hax admin validate-registry \
   --path ./my-registry \
   --remote https://github.com/owner/repo \
   --token $GITHUB_TOKEN
@@ -123,18 +123,18 @@ Generate component and composer templates:
 
 ```bash
 # Generate artifact template
-agntcy-hax admin generate-template --type artifact --name data-processor
+hax admin generate-template --type artifact --name data-processor
 
-agntcy-hax admin generate-template --type composer --name chat-feature
+hax admin generate-template --type composer --name chat-feature
 
 # Generate with custom output path
-agntcy-hax admin generate-template \
+hax admin generate-template \
   --type artifact \
   --name analytics-dashboard \
   --output ./custom-templates
 
 # Interactive mode (prompts for name)
-agntcy-hax admin generate-template --type artifact
+hax admin generate-template --type artifact
 ```
 
 **Template types:**
@@ -148,15 +148,15 @@ Manage repository access and permissions:
 
 ```bash
 # List current access permissions
-agntcy-hax admin manage-access --repo owner/repo-name
+hax admin manage-access --repo owner/repo-name
 
 # Grant access to a user (example: add and revoke johndoe's access to sales internal-components repository)
-agntcy-hax admin manage-access \
+hax admin manage-access \
   --repo sales/internal-components \
   --user johndoe \
   --action grant
 
-agntcy-hax admin manage-access \
+hax admin manage-access \
   --repo sales/internal-components \
   --user johndoe \
   --action revoke
@@ -175,10 +175,10 @@ agntcy-hax admin manage-access \
 ````bash
 ```bash
 # Add repository
-agntcy-hax repo add internal --github your-org/components --branch main
+hax repo add internal --github your-org/components --branch main
 
 # Add repository with custom GitHub Enterprise URL
-agntcy-hax repo add enterprise
+hax repo add enterprise
   --github enterprise-org/components
   --branch main
   --github-url https://github.yourcompany.com
@@ -192,38 +192,38 @@ agntcy-hax repo add enterprise
 
 ```bash
 # List all configured repositories
-agntcy-hax repo list
+hax repo list
 
 # Switch default repository (for example, switch to internal as the default repository)
-agntcy-hax repo switch sales
-agntcy-hax add customer-success-dashboard  #pulls from sales
+hax repo switch sales
+hax add customer-success-dashboard  #pulls from sales
 
 
 # Remove repository
-agntcy-hax repo remove sales
+hax repo remove sales
 ````
 
 ### Using Components from Specific Repositories
 
 ```bash
-agntcy-hax add artifact form
-agntcy-hax add composer chat-commands
-agntcy-hax add composer file-upload rules-context --repo intranet-repo
+hax add artifact form
+hax add composer chat-commands
+hax add composer file-upload rules-context --repo intranet-repo
 
 # Pull from specific repositories
-agntcy-hax add artifact custom-timeline --repo internal
-agntcy-hax add composer chat-feature --repo sales
+hax add artifact custom-timeline --repo internal
+hax add composer chat-feature --repo sales
 
 # For enterprise or private repositories (enterprise repositories will fall back to SSH when API access is restricted,)
 export GITHUB_TOKEN=your_enterprise_token
-agntcy-hax add artifact custom-timeline --repo intranet
+hax add artifact custom-timeline --repo intranet
 
 # Or pass token explicitly
-agntcy-hax add composer analytics --repo intranet --token $GITHUB_TOKEN
+hax add composer analytics --repo intranet --token $GITHUB_TOKEN
 
 # Automatic fallback repository checking
 # If component not found in default repo, CLI automatically checks fallback repos:
-agntcy-hax add artifact custom-timeline
+hax add artifact custom-timeline
 # Output: "📦 Found custom-timeline in fallback repository: internal"
 ```
 
@@ -244,7 +244,7 @@ When a component isn't found in the default repository, the CLI automatically:
 Components track their source repository:
 
 ```bash
-agntcy-hax list
+hax list
 # Shows:
 # Component            │ Source
 # custom-timeline      │ internal
@@ -263,13 +263,13 @@ agntcy-hax list
 # This could be due to:
 
 # 1. Component doesn't exist - check available components
-agntcy-hax list
+hax list
 
 # 2. Authentication issue - verify token is set
 echo $GITHUB_TOKEN
 
 # 3. Wrong repository - check repository configuration
-agntcy-hax repo list
+hax repo list
 
 # 4. Private repository access - ensure token has proper permissions
 curl -H "Authorization: token $GITHUB_TOKEN" \
@@ -303,7 +303,7 @@ If you're seeing verbose logs like "Trying Contents API", "Trying raw URL", etc.
 # Problem: Enterprise GitHub API restrictions causing fallback attempts
 # Solution 1: Skip API attempts entirely (faster)
 unset GITHUB_TOKEN  # or remove from environment
-agntcy-hax add component-name --repo enterprise-repo
+hax add component-name --repo enterprise-repo
 
 # Solution 2: Verify SSH access is working
 ssh -T git@your-enterprise-github.com
@@ -325,24 +325,24 @@ curl -H "Authorization: token $GITHUB_TOKEN" \
 ```bash
 # Setup (use GITHUB_TOKEN for consistency)
 export GITHUB_TOKEN=your_token
-agntcy-hax init
+hax init
 
 # Admin workflow
-agntcy-hax admin init-repo --github org/repo --create-remote --private --token $GITHUB_TOKEN
-agntcy-hax admin validate-registry --remote https://github.com/org/repo --token $GITHUB_TOKEN
-agntcy-hax admin generate-template --type artifact --name component-name
-agntcy-hax admin manage-access --repo org/repo --user username --action grant
+hax admin init-repo --github org/repo --create-remote --private --token $GITHUB_TOKEN
+hax admin validate-registry --remote https://github.com/org/repo --token $GITHUB_TOKEN
+hax admin generate-template --type artifact --name component-name
+hax admin manage-access --repo org/repo --user username --action grant
 
 # Repository management
-agntcy-hax repo add name --github org/repo --branch main
-agntcy-hax repo list
-agntcy-hax repo switch name
-agntcy-hax add artifact component-name
-agntcy-hax add composer feature-name --repo name
-agntcy-hax list
+hax repo add name --github org/repo --branch main
+hax repo list
+hax repo switch name
+hax add artifact component-name
+hax add composer feature-name --repo name
+hax list
 
 # Configuration
-agntcy-hax config set default-repo name
+hax config set default-repo name
 ```
 
 ### Enterprise GitHub
@@ -352,25 +352,25 @@ agntcy-hax config set default-repo name
 export GITHUB_TOKEN=your_enterprise_token
 
 # Add enterprise repository (token not stored, used only for initial validation)
-agntcy-hax repo add intranet \
+hax repo add intranet \
   --github your-org/internal-components \
   --github-url https://github.yourcompany.com \
   --branch main
 
 # List repositories to verify
-agntcy-hax repo list
+hax repo list
 
 # Use components from enterprise repository
 # Token will be read from GITHUB_TOKEN environment variable
-agntcy-hax add artifact custom-timeline --repo intranet
-agntcy-hax add composer dashboard-widget --repo intranet
+hax add artifact custom-timeline --repo intranet
+hax add composer dashboard-widget --repo intranet
 
 # Alternative: Pass token explicitly (if needed)
-agntcy-hax add artifact custom-timeline --repo intranet --token $GITHUB_TOKEN
+hax add artifact custom-timeline --repo intranet --token $GITHUB_TOKEN
 
 # Switch to enterprise repo as default
-agntcy-hax repo switch intranet
-agntcy-hax add artifact analytics-component  # Now pulls from intranet by default
+hax repo switch intranet
+hax add artifact analytics-component  # Now pulls from intranet by default
 ```
 
 **Note**: Enterprise repositories require:

@@ -7,7 +7,7 @@ import { HaxConfig, CONFIG_FILE } from "@/types"
 export function readConfig(): HaxConfig {
   if (!fs.existsSync(CONFIG_FILE)) {
     logger.error(
-      "\n" + "Error: Config file not found. Have you run 'agntcy-hax init'?",
+      "\n" + "Error: Config file not found. Have you run 'hax init'?",
     )
     process.exit(1)
   }
@@ -69,7 +69,7 @@ export async function createConfig(): Promise<void> {
     logger.error(
       "\n" +
         "Error: No package.json found in current directory.\n" +
-        "Please run 'agntcy-hax init' in a Node.js project directory.",
+        "Please run 'hax init' in a Node.js project directory.",
     )
     process.exit(1)
   }
@@ -132,6 +132,6 @@ export async function createConfig(): Promise<void> {
   printPanelBox(
     `${highlighter.success("✨ Successfully initialized HAX SDK!")}\n` +
       `${highlighter.debug("🎯 You can now start adding components with:")}\n` +
-      `${highlighter.primary("🚀 agntcy-hax add <component-name>")}`,
+      `${highlighter.primary("🚀 hax add <component-name>")}`,
   )
 }

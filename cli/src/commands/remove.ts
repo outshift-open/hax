@@ -62,7 +62,7 @@ export const removeCommand = new Command("remove")
 
     if (componentIndex === -1) {
       logger.error(`❌ Component "${componentName}" is not installed`)
-      logger.info("Run 'agntcy-hax list' to see installed components")
+      logger.info("Run 'hax list' to see installed components")
       return
     }
 
@@ -141,7 +141,7 @@ export const removeCommand = new Command("remove")
       (config.installedAdapters || []).length
     if (totalRemaining > 0) {
       logger.info(`\n📦 Remaining components: ${totalRemaining}`)
-      logger.info("Run 'agntcy-hax list' to see them")
+      logger.info("Run 'hax list' to see them")
     } else {
       logger.info("\n📦 No components remaining")
     }

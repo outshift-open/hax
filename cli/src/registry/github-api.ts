@@ -301,7 +301,7 @@ async function fetchGitHubFile(
 ): Promise<string | null> {
   try {
     const headers: Record<string, string> = {
-      "User-Agent": "agntcy-hax-cli",
+      "User-Agent": "hax-cli",
     }
 
     const authToken = token || source?.token || ENV_CONFIG.github.token
