@@ -1,0 +1,17 @@
+{
+  "base-adapter": {
+    "type": "registry:adapter",
+    "dependencies": [
+      "@copilotkit/shared",
+      "@copilotkit/runtime",
+      "@copilotkit/runtime-client-gql"
+    ],
+    "registryDependencies": [],
+    "files": [
+      { "name": "base-adapter.ts", "type": "registry:component" },
+      { "name": "agent.type.ts", "type": "registry:types" },
+      { "name": "logger.ts", "type": "registry:lib" },
+      { "name": "index.ts", "type": "registry:index" }
+    ]
+  }
+}
