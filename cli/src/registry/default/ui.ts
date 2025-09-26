@@ -165,4 +165,16 @@ export const uiComponents: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "progress",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-progress", "clsx", "tailwind-merge"],
+    files: [
+      {
+        path: "hax/components/ui/progress.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/progress.tsx"),
+      },
+    ],
+  },
 ]

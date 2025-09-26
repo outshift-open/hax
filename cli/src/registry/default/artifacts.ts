@@ -293,4 +293,45 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "rationale",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+      "class-variance-authority",
+    ],
+    registryDependencies: ["badge", "button", "progress"],
+    files: [
+      {
+        path: "hax/artifacts/rationale/rationale.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/artifacts/rationale/rationale.tsx"),
+      },
+      {
+        path: "hax/artifacts/rationale/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/artifacts/rationale/action.ts"),
+      },
+      {
+        path: "hax/artifacts/rationale/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/rationale/types.ts"),
+      },
+      {
+        path: "hax/artifacts/rationale/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/rationale/index.ts"),
+      },
+      {
+        path: "hax/artifacts/rationale/description.ts",
+        type: "registry:description",
+        content: readComponentFile("hax/artifacts/rationale/description.ts"),
+      },
+    ],
+  },
 ]

@@ -67,6 +67,7 @@ agntcy-hax list
 - **details** - Statistics and data display component
 - **data-visualizer** - Data visualization wrapper
 - **source-attribution** - Source citation component with clickable reference badges
+- **rationale** - Decision reasoning component with confidence indicators and criteria badges
 
 ### Available Composers
 
