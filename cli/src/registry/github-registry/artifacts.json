@@ -134,5 +134,25 @@
       { "name": "index.ts", "type": "registry:index" },
       { "name": "description.ts", "type": "registry:description" }
     ]
+  },
+  "rationale": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+      "class-variance-authority"
+    ],
+    "registryDependencies": ["badge", "button", "progress"],
+    "files": [
+      { "name": "rationale.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
   }
 }

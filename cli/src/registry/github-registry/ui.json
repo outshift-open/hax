@@ -89,5 +89,11 @@
     "dependencies": ["@radix-ui/react-dialog", "class-variance-authority"],
     "registryDependencies": [],
     "files": [{ "name": "drawer.tsx", "type": "registry:component" }]
+  },
+  "progress": {
+    "type": "registry:ui",
+    "dependencies": ["@radix-ui/react-progress", "clsx", "tailwind-merge"],
+    "registryDependencies": [],
+    "files": [{ "name": "progress.tsx", "type": "registry:component" }]
   }
 }
