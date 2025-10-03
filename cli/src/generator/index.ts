@@ -21,6 +21,7 @@ import path from "path"
 import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
+import { cleanFileContent } from "@/utils/file-content"
 import {
   getRegistryItem,
   resolveRegistryDependencies,
@@ -138,8 +139,11 @@ async function copyComponentFiles(
 
     if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
       // Add source attribution comment to the top of component files
+
+      const cleanedContent = cleanFileContent(file.content || "")
+
       const sourceAttribution = `// HAX Component: ${name}\n// Source: ${source || "main"}\n// Generated: ${new Date().toISOString().split("T")[0]}\n\n`
-      const contentWithAttribution = sourceAttribution + (file.content || "")
+      const contentWithAttribution = sourceAttribution + cleanedContent
 
       writeFileIfNotExists(
         fullTargetPath,
@@ -162,18 +166,22 @@ async function copyComponentFiles(
         ] as string[]
       ).includes(file.type)
     ) {
+      const cleanedContent = cleanFileContent(file.content || "")
+
       writeFileIfNotExists(
         fullTargetPath,
-        file.content,
+        cleanedContent,
         `${file.type} file`,
         createdFiles,
       )
     }
 
     if (file.type === REGISTRY_FILE_TYPES.DESCRIPTION) {
+      const cleanedContent = cleanFileContent(file.content || "")
+
       writeFileIfNotExists(
         fullTargetPath,
-        file.content,
+        cleanedContent,
         `description file`,
         createdFiles,
       )
@@ -379,7 +387,10 @@ async function installUIComponent(name: string, _config: HaxConfig) {
 
     fs.mkdirSync(targetDir, { recursive: true })
     const targetPath = path.join(targetDir, path.basename(file.path))
-    writeFileIfNotExists(targetPath, file.content, `UI component file`, [])
+
+    const cleanedContent = cleanFileContent(file.content)
+
+    writeFileIfNotExists(targetPath, cleanedContent, `UI component file`, [])
   }
 }
 
@@ -394,9 +405,11 @@ async function ensureUtilsFile(_config: HaxConfig, createdFiles: string[]) {
       const utilsContent = readComponentFile("hax/lib/utils.ts")
 
       if (utilsContent) {
+        const cleanedUtilsContent = cleanFileContent(utilsContent)
+
         writeFileIfNotExists(
           utilsTargetPath,
-          utilsContent,
+          cleanedUtilsContent,
           "utils file",
           createdFiles,
         )
