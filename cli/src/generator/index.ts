@@ -1,8 +1,27 @@
+/*
+ * Copyright 2025 Cisco Systems, Inc. and its affiliates
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import fs from "fs"
 import path from "path"
 import { spawn } from "child_process"
 import { ensurePathAliases } from "@/utils/project"
 import { logger } from "@/utils/logger"
+import { cleanFileContent } from "@/utils/file-content"
 import {
   getRegistryItem,
   resolveRegistryDependencies,
@@ -120,8 +139,11 @@ async function copyComponentFiles(
 
     if (file.type === REGISTRY_FILE_TYPES.COMPONENT) {
       // Add source attribution comment to the top of component files
+
+      const cleanedContent = cleanFileContent(file.content || "")
+
       const sourceAttribution = `// HAX Component: ${name}\n// Source: ${source || "main"}\n// Generated: ${new Date().toISOString().split("T")[0]}\n\n`
-      const contentWithAttribution = sourceAttribution + (file.content || "")
+      const contentWithAttribution = sourceAttribution + cleanedContent
 
       writeFileIfNotExists(
         fullTargetPath,
@@ -144,18 +166,22 @@ async function copyComponentFiles(
         ] as string[]
       ).includes(file.type)
     ) {
+      const cleanedContent = cleanFileContent(file.content || "")
+
       writeFileIfNotExists(
         fullTargetPath,
-        file.content,
+        cleanedContent,
         `${file.type} file`,
         createdFiles,
       )
     }
 
     if (file.type === REGISTRY_FILE_TYPES.DESCRIPTION) {
+      const cleanedContent = cleanFileContent(file.content || "")
+
       writeFileIfNotExists(
         fullTargetPath,
-        file.content,
+        cleanedContent,
         `description file`,
         createdFiles,
       )
@@ -361,7 +387,10 @@ async function installUIComponent(name: string, _config: HaxConfig) {
 
     fs.mkdirSync(targetDir, { recursive: true })
     const targetPath = path.join(targetDir, path.basename(file.path))
-    writeFileIfNotExists(targetPath, file.content, `UI component file`, [])
+
+    const cleanedContent = cleanFileContent(file.content)
+
+    writeFileIfNotExists(targetPath, cleanedContent, `UI component file`, [])
   }
 }
 
@@ -376,9 +405,11 @@ async function ensureUtilsFile(_config: HaxConfig, createdFiles: string[]) {
       const utilsContent = readComponentFile("hax/lib/utils.ts")
 
       if (utilsContent) {
+        const cleanedUtilsContent = cleanFileContent(utilsContent)
+
         writeFileIfNotExists(
           utilsTargetPath,
-          utilsContent,
+          cleanedUtilsContent,
           "utils file",
           createdFiles,
         )
