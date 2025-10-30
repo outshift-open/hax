@@ -2,7 +2,7 @@
 
 ![GitHub Release (latest by date)](https://img.shields.io/github/v/release/outshift-open/hax)
 [![Tests](https://github.com/outshift-open/hax/actions/workflows/test-signing-and-pushing.yml/badge.svg?branch=main)](https://github.com/outshift-open/hax/actions/workflows/test-signing-and-pushing.yml)
-[![License](https://img.shields.io/github/license/outshift-open/hax)](LICENSE.md)
+[![License](https://img.shields.io/github/license/outshift-open/hax)](LICENSE)
 
 ## Overview
 
