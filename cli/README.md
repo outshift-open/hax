@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/repo-img.png" alt="Agntcy HAX SDK" width="200">
+  <img src="assets/repo-img.png" alt="HAX SDK" width="200">
 </p>
 
 <h1 align="center">HAX SDK</h1>
