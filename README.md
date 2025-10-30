@@ -1,7 +1,8 @@
 # HAX: Human-Agent Experience Interface
 
-[![Release](https://img.shields.io/github/v/release/agntcy/repo-template?display_name=tag)](CHANGELOG.md)
-[![Contributor-Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-fbab2c.svg)](CODE_OF_CONDUCT.md)
+![GitHub Release (latest by date)](https://img.shields.io/github/v/release/outshift-open/hax)
+[![Tests](https://github.com/outshift-open/hax/actions/workflows/test-signing-and-pushing.yml/badge.svg?branch=main)](https://github.com/outshift-open/hax/actions/workflows/test-signing-and-pushing.yml)
+[![License](https://img.shields.io/github/license/outshift-open/hax)](LICENSE.md)
 
 ## Overview
 
@@ -14,7 +15,6 @@ The HAX Interface provides tools and guidelines for creating consistent, trusted
 ![HAX UI Mockup](./docs/imgs/hax_ui_mockup.png)
 
 ## Installation
-
 
 ## Architecture Overview
 
@@ -33,7 +33,7 @@ To get started with the CLI, see the [CLI README](cli/README.md) for installatio
 
 ## Roadmap
 
-See the [open issues](https://github.com/cisco-outshift-ai-agents/hax-agntcy-interface/issues) for a list
+See the [open issues](https://github.com/outshift-open/hax/issues) for a list
 of proposed features (and known issues). (Replace with the actual repo issues link)
 
 ## Contributing
@@ -50,6 +50,6 @@ information.
 
 ## Acknowledgements
 
-For more information about our various agents, please visit the [agntcy project page](https://github.com/agntcy).
+For more information about our various agents, please visit the [Outshift Open page](https://github.com/outshift-open).
 
 `
