@@ -44,11 +44,6 @@ jobs:
           cd cli
           npm install
 
-      - name: Run CLI tests
-        run: |
-          cd cli
-          npm test
-
       - name: Lint CLI
         run: |
           cd cli
@@ -66,3 +61,8 @@ jobs:
         run: |
           cd cli
           node cli.js --help
+
+      - name: Run CLI tests
+        run: |
+          cd cli
+          npm test
