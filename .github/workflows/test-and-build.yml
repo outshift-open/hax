@@ -37,10 +37,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Install CLI devDependencies
-        run: npm install --include=dev --workspace=cli
+        run: npm ci
 
       - name: Lint CLI
         run: npm run cli:lint
