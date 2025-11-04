@@ -39,20 +39,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install CLI dependencies
-        run: |
-          cd cli
-          npm install
-
       - name: Lint CLI
-        run: |
-          cd cli
-          npm run lint
+        run: npm run cli:lint
 
       - name: Type check CLI
-        run: |
-          cd cli
-          npm run typecheck
+        run: npm run cli:typecheck
 
       - name: Build CLI
         run: npm run cli:build
@@ -63,6 +54,4 @@ jobs:
           node cli.js --help
 
       - name: Run CLI tests
-        run: |
-          cd cli
-          npm test
+        run: npm run cli:test
