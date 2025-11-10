@@ -1,6 +1,6 @@
 # HAX: Human-Agent Experience Interface
 
-![GitHub Release (latest by date)](https://img.shields.io/github/v/release/outshift-open/hax)
+[![GitHub Release (latest by date)](https://img.shields.io/github/v/release/outshift-open/hax)](https://github.com/outshift-open/hax/releases)
 [![Tests](https://github.com/outshift-open/hax/actions/workflows/test-and-build.yml/badge.svg?branch=main)](https://github.com/outshift-open/hax/actions/workflows/test-and-build.yml)
 [![License](https://img.shields.io/github/license/outshift-open/hax)](LICENSE)
 
