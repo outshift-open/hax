@@ -1,5 +1,5 @@
 {
-  "name": "hax-cli",
+  "name": "@outshift/hax",
   "version": "1.0.0",
   "type": "module",
   "bin": {
@@ -15,9 +15,26 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "hax",
+    "ai",
+    "agents",
+    "cli",
+    "components",
+    "human-agent-experience"
+  ],
+  "author": "Outshift by Cisco",
+  "license": "Apache-2.0",
+  "description": "A human-AI experience CLI tool for installing composable building blocks for rich, agentic user experiences.",
+  "homepage": "https://github.com/outshift-open/hax",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/outshift-open/hax.git",
+    "directory": "cli"
+  },
+  "bugs": {
+    "url": "https://github.com/outshift-open/hax/issues"
+  },
   "dependencies": {
     "@copilotkit/react-core": "^1.9.3",
     "@radix-ui/react-select": "^2.2.5",

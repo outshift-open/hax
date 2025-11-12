@@ -52,7 +52,7 @@ repo
         sources: {
           main: {
             type: "github",
-            repo: "cisco-eti/hax",
+            repo: "outshift-open/hax",
             branch: "main",
           },
         },

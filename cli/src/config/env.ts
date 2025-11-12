@@ -40,7 +40,7 @@ export const ENV_CONFIG = {
   defaultRegistry: process.env.HAX_DEFAULT_REGISTRY || "official",
 
   github: {
-    repo: process.env.HAX_GITHUB_REPO || "cisco-eti/hax",
+    repo: process.env.HAX_GITHUB_REPO || "outshift-open/hax",
     defaultBranch: process.env.HAX_GITHUB_DEFAULT_BRANCH || "main",
     token: process.env.GITHUB_TOKEN || process.env.HAX_GITHUB_TOKEN || "",
   },

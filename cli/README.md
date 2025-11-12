@@ -10,26 +10,24 @@ A human-AI experience CLI tool for installing composable building blocks for ric
 
 ## Installation
 
+Install globally via npm:
+
 ```bash
-# From the cli directory
-cd cli
+npm install -g @outshift/hax
+```
+
+Or for development from source:
+
+```bash
+# Clone the repository
+git clone https://github.com/outshift-open/hax.git
+cd hax/cli
 npm install
 npm run build
 npm link
 ```
 
 ## Quick Start
-
-**Important**: Create a `.env` file in your project directory with your GitHub token:
-
-```bash
-# .env file
-HAX_REGISTRY_SOURCE=github:component-integration
-GITHUB_TOKEN=your_github_token_here
-```
-
-Get your GitHub token from: https://github.com/settings/tokens  
-(Required because the hax repository is private)
 
 Initialize HAX in your project:
 
@@ -119,7 +117,7 @@ The CLI creates a `hax.json` file in your project:
     "sources": {
       "official": {
         "type": "github",
-        "repo": "cisco-eti/hax",
+        "repo": "outshift-open/hax",
         "branch": "main",
         "name": "official"
       },
@@ -165,8 +163,10 @@ The CLI supports multiple registry sources:
 
 ### GitHub Registry (Default)
 
+The CLI uses the public GitHub registry by default. No additional configuration needed:
+
 ```bash
-# Uses GitHub registry from specified branch
+# Uses public GitHub registry from main branch (default)
 HAX_REGISTRY_SOURCE=github:main
 ```
 
@@ -177,7 +177,7 @@ HAX_REGISTRY_SOURCE=github:main
 HAX_REGISTRY_SOURCE=local
 ```
 
-Set via environment variable:
+Set via environment variable if needed:
 
 ```bash
 # Set environment variable for current session
@@ -222,10 +222,10 @@ This ensures:
 
 ### Security & Authentication
 
-- **Public Repositories**: No authentication required
-- **Private Repositories**: Secure with GitHub tokens
+- **Public Repositories**: No authentication required (default)
+- **Private Repositories**: Secure with GitHub tokens (enterprise use)
 - **Per-Repository Tokens**: Different authentication for different repositories
-- **Environment Variables**: Global GitHub token fallback
+- **Environment Variables**: Global GitHub token fallback for private repos
 
 ## Project Structure
 
@@ -307,25 +307,23 @@ For enterprise setups, multi-repository management, and administrative features,
 
 **Working on the CLI code itself:**
 
-1. **Set up environment in the CLI directory**:
+1. **Clone and set up the repository**:
    ```bash
-   cd cli
-   cp .env.example .env
+   git clone https://github.com/outshift-open/hax.git
+   cd hax/cli
+   npm install
    ```
 
-2. **Update `.env` with your GitHub token**:
+2. **For testing with private component repositories** (optional):
    ```bash
-   # Edit .env file
-   HAX_REGISTRY_SOURCE=github:component-integration
-   GITHUB_TOKEN=your_actual_github_token
+   # Create .env file if needed for private repos
+   cp .env.example .env
+   # Add GITHUB_TOKEN=your_token for private repository access
    ```
 
 **Testing the CLI in other projects:**
 
-Create a `.env` file in your test project with the same configuration.
-
-**Note**: A GitHub token is required because the `hax` repository is private.
-Get your GitHub token from: https://github.com/settings/tokens
+The CLI works out-of-the-box with public repositories. For private component repositories, create a `.env` file in your test project.
 
 ### Build CLI
 
@@ -352,8 +350,8 @@ hax add form
 hax init
 
 # Add test repositories
-hax repo add testing --github cisco-eti/hax --branch test-remote-repo
-hax repo add sales --github cisco-eti/hax --branch sales-remote-hax
+hax repo add testing --github outshift-open/hax --branch test-remote-repo
+hax repo add sales --github outshift-open/hax --branch sales-remote-hax
 ```
 
 **Test component resolution:**
@@ -388,8 +386,8 @@ hax repo list
 **"Component not found in registry"**
 
 - Check component name spelling
-- Verify registry source is accessible
-- Check network connection for GitHub registry
+- Verify internet connection for GitHub registry access
+- Try: `hax list` to see available components
 
 **"npm install failed"**
 
