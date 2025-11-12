@@ -35,7 +35,7 @@ try {
 console.log = originalConsoleLog
 
 export const ENV_CONFIG = {
-  registrySource: process.env.HAX_REGISTRY_SOURCE || "local",
+  registrySource: process.env.HAX_REGISTRY_SOURCE || "github:main",
 
   defaultRegistry: process.env.HAX_DEFAULT_REGISTRY || "official",
 

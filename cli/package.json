@@ -1,6 +1,6 @@
 {
   "name": "@outshift/hax",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "type": "module",
   "bin": {
     "hax": "./cli.js"
@@ -35,6 +35,13 @@
   "bugs": {
     "url": "https://github.com/outshift-open/hax/issues"
   },
+  "files": [
+    "dist/",
+    "cli.js",
+    "README.md",
+    "schema.json",
+    "assets/"
+  ],
   "dependencies": {
     "@copilotkit/react-core": "^1.9.3",
     "@radix-ui/react-select": "^2.2.5",

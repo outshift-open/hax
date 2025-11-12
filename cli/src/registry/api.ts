@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { uiComponents } from "@/registry/default/ui"
+// Lazy import - moved to getRegistryItemFromSource function
 import { logger } from "@/utils/logger"
 import { HaxConfig, RegistryItem } from "@/types"
 import { ENV_CONFIG } from "@/config/env"
@@ -334,6 +334,7 @@ async function getRegistryDependencyFromSource(
 }
 
 export async function getUIComponent(name: string) {
+  const { uiComponents } = await import("@/registry/default/ui")
   return uiComponents.find((comp) => comp.name === name)
 }
 
