@@ -18,7 +18,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { Command } from "commander"
 import { initCommand } from "@/commands/init"
 import { listCommand } from "@/commands/list"
@@ -28,13 +27,23 @@ import { logger } from "./utils/logger"
 import { repo } from "./commands/repository"
 import { configCommand } from "./commands/config"
 import { admin } from "./commands/admin"
+import { readFileSync } from "fs"
+import { join, dirname } from "path"
+import { fileURLToPath } from "url"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const packageJson = JSON.parse(
+  readFileSync(join(__dirname, "../package.json"), "utf-8"),
+)
+const version = packageJson.version
 
 const program = new Command()
 
 program
   .name("hax")
   .description("CLI tool for managing HAX SDK components")
-  .version("0.1.0")
+  .version(version)
 
 // Register commands
 program.addCommand(initCommand)
