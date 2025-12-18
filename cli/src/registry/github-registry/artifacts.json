@@ -154,5 +154,23 @@
       { "name": "index.ts", "type": "registry:index" },
       { "name": "description.ts", "type": "registry:description" }
     ]
+  },
+  "findings": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core"
+    ],
+    "registryDependencies": [],
+    "files": [
+      { "name": "findings.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
   }
 }
