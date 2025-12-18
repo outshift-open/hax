@@ -352,4 +352,48 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "thinking-process",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+    ],
+    registryDependencies: [],
+    files: [
+      {
+        path: "hax/artifacts/thinking-process/thinking-process.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/thinking-process/thinking-process.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/thinking-process/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/artifacts/thinking-process/action.ts"),
+      },
+      {
+        path: "hax/artifacts/thinking-process/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/thinking-process/types.ts"),
+      },
+      {
+        path: "hax/artifacts/thinking-process/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/thinking-process/index.ts"),
+      },
+      {
+        path: "hax/artifacts/thinking-process/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/thinking-process/description.ts",
+        ),
+      },
+    ],
+  },
 ]
