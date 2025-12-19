@@ -195,4 +195,16 @@ export const uiComponents: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "avatar",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-avatar", "clsx", "tailwind-merge"],
+    files: [
+      {
+        path: "hax/components/ui/avatar.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/avatar.tsx"),
+      },
+    ],
+  },
 ]
