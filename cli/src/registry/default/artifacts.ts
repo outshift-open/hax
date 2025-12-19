@@ -352,4 +352,53 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "contextual-explanation",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
+    registryDependencies: ["button"],
+    files: [
+      {
+        path: "hax/artifacts/contextual-explanation/contextual-explanation.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/contextual-explanation.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/contextual-explanation/action.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/action.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/contextual-explanation/types.ts",
+        type: "registry:types",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/types.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/contextual-explanation/index.ts",
+        type: "registry:index",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/index.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/contextual-explanation/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/description.ts",
+        ),
+      },
+    ],
+  },
 ]
