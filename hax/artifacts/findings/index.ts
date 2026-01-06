@@ -22,14 +22,17 @@ export {
   FindingsCard,
   SourceChips,
   SourceChip,
-} from "./findings"
+  AllSourcesPopover,
+} from "./findings";
 export type {
   Finding,
   FindingsPanelProps,
   FindingsCardProps,
   SourceChipsProps,
   SourceChipProps,
-} from "./findings"
-export { useFindingsAction } from "./action"
-export type { FindingsArtifact } from "./types"
-export { FindingsArtifactZod } from "./types"
+  AllSourcesPopoverProps,
+  HAXFindingsProps,
+} from "./findings";
+export { useFindingsAction } from "./action";
+export type { FindingsArtifact, Source } from "./types";
+export { FindingsArtifactZod, FindingZod, SourceZod } from "./types";

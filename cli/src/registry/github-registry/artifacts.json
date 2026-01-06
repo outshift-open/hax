@@ -8,13 +8,32 @@
       "zod",
       "@copilotkit/react-core"
     ],
-    "registryDependencies": ["button", "input", "select"],
+    "registryDependencies": [
+      "button",
+      "input",
+      "select"
+    ],
     "files": [
-      { "name": "form.tsx", "type": "registry:component" },
-      { "name": "action.ts", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "form.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.ts",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   },
   "timeline": {
@@ -30,11 +49,26 @@
     ],
     "registryDependencies": [],
     "files": [
-      { "name": "timeline.tsx", "type": "registry:component" },
-      { "name": "action.ts", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "timeline.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.ts",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   },
   "mindmap": {
@@ -50,11 +84,26 @@
     ],
     "registryDependencies": [],
     "files": [
-      { "name": "mindmap.tsx", "type": "registry:component" },
-      { "name": "action.tsx", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "mindmap.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.tsx",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   },
   "code-editor": {
@@ -68,13 +117,31 @@
       "@monaco-editor/react",
       "monaco-editor"
     ],
-    "registryDependencies": ["select", "generated-ui-wrapper"],
+    "registryDependencies": [
+      "select",
+      "generated-ui-wrapper"
+    ],
     "files": [
-      { "name": "code-editor.tsx", "type": "registry:component" },
-      { "name": "action.ts", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "code-editor.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.ts",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   },
   "details": {
@@ -87,13 +154,31 @@
       "@copilotkit/react-core",
       "lucide-react"
     ],
-    "registryDependencies": ["table", "card"],
+    "registryDependencies": [
+      "table",
+      "card"
+    ],
     "files": [
-      { "name": "details.tsx", "type": "registry:component" },
-      { "name": "action.ts", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "details.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.ts",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   },
   "data-visualizer": {
@@ -109,11 +194,26 @@
     ],
     "registryDependencies": [],
     "files": [
-      { "name": "data-visualizer.tsx", "type": "registry:component" },
-      { "name": "action.ts", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "data-visualizer.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.ts",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   },
   "source-attribution": {
@@ -126,13 +226,30 @@
       "@copilotkit/react-core",
       "lucide-react"
     ],
-    "registryDependencies": ["badge"],
+    "registryDependencies": [
+      "badge"
+    ],
     "files": [
-      { "name": "source-attribution.tsx", "type": "registry:component" },
-      { "name": "action.ts", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "source-attribution.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.ts",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   },
   "rationale": {
@@ -146,13 +263,32 @@
       "lucide-react",
       "class-variance-authority"
     ],
-    "registryDependencies": ["badge", "button", "progress"],
+    "registryDependencies": [
+      "badge",
+      "button",
+      "progress"
+    ],
     "files": [
-      { "name": "rationale.tsx", "type": "registry:component" },
-      { "name": "action.ts", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "rationale.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.ts",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   },
   "findings": {
@@ -162,15 +298,35 @@
       "clsx",
       "tailwind-merge",
       "zod",
-      "@copilotkit/react-core"
+      "@copilotkit/react-core",
+      "lucide-react",
+      "@radix-ui/react-popover"
     ],
-    "registryDependencies": [],
+    "registryDependencies": [
+      "button",
+      "popover"
+    ],
     "files": [
-      { "name": "findings.tsx", "type": "registry:component" },
-      { "name": "action.ts", "type": "registry:hook" },
-      { "name": "types.ts", "type": "registry:types" },
-      { "name": "index.ts", "type": "registry:index" },
-      { "name": "description.ts", "type": "registry:description" }
+      {
+        "name": "findings.tsx",
+        "type": "registry:component"
+      },
+      {
+        "name": "action.ts",
+        "type": "registry:hook"
+      },
+      {
+        "name": "types.ts",
+        "type": "registry:types"
+      },
+      {
+        "name": "index.ts",
+        "type": "registry:index"
+      },
+      {
+        "name": "description.ts",
+        "type": "registry:description"
+      }
     ]
   }
 }
