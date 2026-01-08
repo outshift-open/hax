@@ -16,15 +16,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCopilotAction } from "@copilotkit/react-core"
-import { ArtifactTab } from "./types"
-import { CAPABILITY_MANIFEST_DESCRIPTION } from "./description"
+import { useCopilotAction } from "@copilotkit/react-core";
+import z from "zod";
+import {
+  CapabilityManifestArtifact,
+  AgentTagZod,
+  CapabilityZod,
+  CapabilityGroupZod,
+  AlertZod,
+} from "./types";
+import { CAPABILITY_MANIFEST_DESCRIPTION } from "./description";
 
 interface UseCapabilityManifestActionProps {
   addOrUpdateArtifact: (
     type: "capability-manifest",
-    data: Extract<ArtifactTab, { type: "capability-manifest" }>["data"],
-  ) => void
+    data: CapabilityManifestArtifact["data"],
+  ) => void;
 }
 
 export const useCapabilityManifestAction = ({
@@ -38,25 +45,29 @@ export const useCapabilityManifestAction = ({
       {
         name: "agentName",
         type: "string",
-        description: "Name of the AI agent (e.g., 'Data Analyst', 'Code Assistant')",
+        description:
+          "Name of the AI agent (e.g., 'Data Analyst', 'Code Assistant')",
         required: true,
       },
       {
         name: "agentRole",
         type: "string",
-        description: "Role or type of the agent (e.g., 'Agent', 'AI', 'Enterprise AI')",
+        description:
+          "Role or type of the agent (e.g., 'Agent', 'AI', 'Enterprise AI')",
         required: false,
       },
       {
         name: "statusText",
         type: "string",
-        description: "Status message displayed below agent name (e.g., 'Ready for interaction')",
+        description:
+          "Status message displayed below agent name (e.g., 'Ready for interaction')",
         required: false,
       },
       {
         name: "agentTagsJson",
         type: "string",
-        description: "JSON array of tags: [{label: string, variant?: 'default'|'outline'|'filled', color?: string}]",
+        description:
+          "JSON array of tags: [{label: string, variant?: 'default'|'outline'|'filled', color?: string}]",
         required: false,
       },
 
@@ -64,19 +75,22 @@ export const useCapabilityManifestAction = ({
       {
         name: "capabilitiesJson",
         type: "string",
-        description: "JSON array of capabilities: [{id: string, name: string, status: 'enabled'|'disabled'|'pending'|'error', description?: string, iconColor?: string}]",
+        description:
+          "JSON array of capabilities: [{id: string, name: string, status: 'enabled'|'disabled'|'pending'|'error', description?: string, iconColor?: string}]",
         required: false,
       },
       {
         name: "capabilityGroupsJson",
         type: "string",
-        description: "JSON array of capability groups for organized display: [{id: string, label: string, capabilities: [...], collapsible?: boolean, defaultCollapsed?: boolean}]",
+        description:
+          "JSON array of capability groups for organized display: [{id: string, label: string, capabilities: [...], collapsible?: boolean, defaultCollapsed?: boolean}]",
         required: false,
       },
       {
         name: "capabilitiesLabel",
         type: "string",
-        description: "Custom label for capabilities section (default: 'Capabilities')",
+        description:
+          "Custom label for capabilities section (default: 'Capabilities')",
         required: false,
       },
       {
@@ -90,7 +104,8 @@ export const useCapabilityManifestAction = ({
       {
         name: "alertsJson",
         type: "string",
-        description: "JSON array of alerts: [{id: string, title: string, description: string, variant: 'warning'|'error'|'info'|'success', dismissible?: boolean}]",
+        description:
+          "JSON array of alerts: [{id: string, title: string, description: string, variant: 'warning'|'error'|'info'|'success', dismissible?: boolean}]",
         required: false,
       },
 
@@ -98,25 +113,29 @@ export const useCapabilityManifestAction = ({
       {
         name: "connectionStatus",
         type: "string",
-        description: "Connection status: 'connected', 'connecting', 'disconnected', or 'error'",
+        description:
+          "Connection status: 'connected', 'connecting', 'disconnected', or 'error'",
         required: false,
       },
       {
         name: "connectionLabel",
         type: "string",
-        description: "Custom label for connection status (e.g., 'Handshake Complete')",
+        description:
+          "Custom label for connection status (e.g., 'Handshake Complete')",
         required: false,
       },
       {
         name: "sessionId",
         type: "string",
-        description: "Session identifier for tracking (e.g., 'HAX-2024-DA-001')",
+        description:
+          "Session identifier for tracking (e.g., 'HAX-2024-DA-001')",
         required: false,
       },
       {
         name: "statusMetadataJson",
         type: "string",
-        description: "JSON object of additional status metadata: {key: value} (e.g., {\"Region\": \"US-EAST\", \"Uptime\": \"99.9%\"})",
+        description:
+          'JSON object of additional status metadata: {key: value} (e.g., {"Region": "US-EAST", "Uptime": "99.9%"})',
         required: false,
       },
 
@@ -124,7 +143,8 @@ export const useCapabilityManifestAction = ({
       {
         name: "showSeparator",
         type: "boolean",
-        description: "Whether to show separator line before status (default: true)",
+        description:
+          "Whether to show separator line before status (default: true)",
         required: false,
       },
       {
@@ -138,13 +158,15 @@ export const useCapabilityManifestAction = ({
       {
         name: "variant",
         type: "string",
-        description: "Card style variant: 'default' (with shadow), 'outline' (border only), 'ghost' (transparent)",
+        description:
+          "Card style variant: 'default' (with shadow), 'outline' (border only), 'ghost' (transparent)",
         required: false,
       },
       {
         name: "size",
         type: "string",
-        description: "Size variant: 'sm' (compact), 'md' (default), 'lg' (expanded)",
+        description:
+          "Size variant: 'sm' (compact), 'md' (default), 'lg' (expanded)",
         required: false,
       },
       {
@@ -175,32 +197,39 @@ export const useCapabilityManifestAction = ({
           variant,
           size,
           showShadow,
-        } = args
+        } = args;
 
-        // Parse JSON strings
-        let agentTags
+        // Parse and validate JSON strings with Zod
+        let agentTags: z.infer<typeof AgentTagZod>[] | undefined;
         if (agentTagsJson) {
-          agentTags = JSON.parse(agentTagsJson)
+          const parsed = JSON.parse(agentTagsJson);
+          agentTags = z.array(AgentTagZod).parse(parsed);
         }
 
-        let capabilities
+        let capabilities: z.infer<typeof CapabilityZod>[] | undefined;
         if (capabilitiesJson) {
-          capabilities = JSON.parse(capabilitiesJson)
+          const parsed = JSON.parse(capabilitiesJson);
+          capabilities = z.array(CapabilityZod).parse(parsed);
         }
 
-        let capabilityGroups
+        let capabilityGroups: z.infer<typeof CapabilityGroupZod>[] | undefined;
         if (capabilityGroupsJson) {
-          capabilityGroups = JSON.parse(capabilityGroupsJson)
+          const parsed = JSON.parse(capabilityGroupsJson);
+          capabilityGroups = z.array(CapabilityGroupZod).parse(parsed);
         }
 
-        let alerts
+        let alerts: z.infer<typeof AlertZod>[] | undefined;
         if (alertsJson) {
-          alerts = JSON.parse(alertsJson)
+          const parsed = JSON.parse(alertsJson);
+          alerts = z.array(AlertZod).parse(parsed);
         }
 
-        let statusMetadata
+        let statusMetadata: Record<string, string | number> | undefined;
         if (statusMetadataJson) {
-          statusMetadata = JSON.parse(statusMetadataJson)
+          const parsed = JSON.parse(statusMetadataJson);
+          statusMetadata = z
+            .record(z.union([z.string(), z.number()]))
+            .parse(parsed);
         }
 
         addOrUpdateArtifact("capability-manifest", {
@@ -227,15 +256,15 @@ export const useCapabilityManifestAction = ({
           variant: variant as "default" | "outline" | "ghost" | undefined,
           size: size as "sm" | "md" | "lg" | undefined,
           showShadow,
-        })
+        });
 
-        return `Created capability manifest for "${agentName}"`
+        return `Created capability manifest for "${agentName}"`;
       } catch (error) {
-        console.error("Error in create_capability_manifest handler:", error)
+        console.error("Error in create_capability_manifest handler:", error);
         const errorMessage =
-          error instanceof Error ? error.message : "Unknown error"
-        return `Failed to create capability manifest: ${errorMessage}`
+          error instanceof Error ? error.message : "Unknown error";
+        return `Failed to create capability manifest: ${errorMessage}`;
       }
     },
-  })
-}
+  });
+};

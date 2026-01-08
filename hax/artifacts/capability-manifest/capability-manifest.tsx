@@ -27,6 +27,8 @@ import {
   XCircle,
   Info,
   AlertCircle,
+  ChevronRight,
+  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import type {
@@ -63,7 +65,6 @@ export interface HAXCapabilityManifestProps
   extends React.HTMLAttributes<HTMLDivElement> {
   data: CapabilityManifestData;
   onCapabilityClick?: (capability: Capability) => void;
-  onAlertAction?: (alert: Alert) => void;
   onAlertDismiss?: (alert: Alert) => void;
   onStatusClick?: () => void;
 }
@@ -145,11 +146,10 @@ const variantStyles = {
 
 interface AlertItemProps {
   alert: Alert;
-  onAction?: (alert: Alert) => void;
   onDismiss?: (alert: Alert) => void;
 }
 
-function AlertItem({ alert, onAction: _onAction, onDismiss }: AlertItemProps) {
+function AlertItem({ alert, onDismiss }: AlertItemProps) {
   const styles = alertVariantStyles[alert.variant];
   const IconComponent = styles.icon;
 
@@ -159,7 +159,7 @@ function AlertItem({ alert, onAction: _onAction, onDismiss }: AlertItemProps) {
         styles.bg,
         "border border-solid",
         styles.border,
-        "rounded-lg p-4 flex gap-3 items-start w-full"
+        "rounded-lg p-4 flex gap-3 items-start w-full",
       )}
     >
       <div className="shrink-0 pt-[3px]">
@@ -168,7 +168,7 @@ function AlertItem({ alert, onAction: _onAction, onDismiss }: AlertItemProps) {
       <div
         className={cn(
           "flex-1 flex flex-col gap-px text-sm leading-[21px] tracking-[0.07px]",
-          styles.text
+          styles.text,
         )}
       >
         <p className="font-semibold">{alert.title}</p>
@@ -205,7 +205,7 @@ function CapabilityItem({ capability, onClick }: CapabilityItemProps) {
     <div
       className={cn(
         "flex gap-2 items-center min-h-[32px] px-2 py-[5.5px] rounded-md w-full",
-        onClick && "cursor-pointer hover:bg-[#f8fafc] transition-colors"
+        onClick && "cursor-pointer hover:bg-[#f8fafc] transition-colors",
       )}
       onClick={handleClick}
       role={onClick ? "button" : undefined}
@@ -249,7 +249,7 @@ function CapabilityGroupComponent({
   onCapabilityClick,
 }: CapabilityGroupComponentProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(
-    group.defaultCollapsed ?? false
+    group.defaultCollapsed ?? false,
   );
 
   return (
@@ -257,7 +257,7 @@ function CapabilityGroupComponent({
       <div
         className={cn(
           "flex items-center min-h-[32px] px-2 py-[5.5px] rounded-md w-full",
-          group.collapsible && "cursor-pointer hover:bg-[#f8fafc]"
+          group.collapsible && "cursor-pointer hover:bg-[#f8fafc]",
         )}
         onClick={() => group.collapsible && setIsCollapsed(!isCollapsed)}
       >
@@ -265,8 +265,12 @@ function CapabilityGroupComponent({
           {group.label}
         </p>
         {group.collapsible && (
-          <span className="ml-auto text-[#64748b] text-xs">
-            {isCollapsed ? "▸" : "▾"}
+          <span className="ml-auto text-[#64748b]">
+            {isCollapsed ? (
+              <ChevronRight className="size-4" />
+            ) : (
+              <ChevronDown className="size-4" />
+            )}
           </span>
         )}
       </div>
@@ -322,7 +326,6 @@ function CapabilityGroupComponent({
 export function HAXCapabilityManifest({
   data,
   onCapabilityClick,
-  onAlertAction,
   onAlertDismiss,
   onStatusClick,
   className,
@@ -385,12 +388,11 @@ export function HAXCapabilityManifest({
     },
   ];
 
-  const hasCapabilities = resolvedGroups.some(
-    (g) => g.capabilities.length > 0
-  );
+  const hasCapabilities = resolvedGroups.some((g) => g.capabilities.length > 0);
 
   const sizeConfig = sizeStyles[size];
-  const statusColor = resolvedStatus.color ?? statusColors[resolvedStatus.status];
+  const statusColor =
+    resolvedStatus.color ?? statusColors[resolvedStatus.status];
   const statusLabel =
     resolvedStatus.label ?? statusLabels[resolvedStatus.status];
 
@@ -401,7 +403,7 @@ export function HAXCapabilityManifest({
         sizeConfig.padding,
         variantStyles[variant],
         !showShadow && "shadow-none",
-        className
+        className,
       )}
       {...props}
     >
@@ -414,7 +416,7 @@ export function HAXCapabilityManifest({
                 <p
                   className={cn(
                     "font-semibold leading-6 text-[#171717]",
-                    sizeConfig.text
+                    sizeConfig.text,
                   )}
                 >
                   {resolvedAgent.role
@@ -430,9 +432,11 @@ export function HAXCapabilityManifest({
                         ? "bg-[#020617] text-white"
                         : tag.variant === "outline"
                           ? "border border-[#e2e8f0] text-[#64748b]"
-                          : "bg-[#f1f5f9] text-[#64748b]"
+                          : "bg-[#f1f5f9] text-[#64748b]",
                     )}
-                    style={tag.color ? { backgroundColor: tag.color } : undefined}
+                    style={
+                      tag.color ? { backgroundColor: tag.color } : undefined
+                    }
                   >
                     {tag.label}
                   </span>
@@ -474,7 +478,7 @@ export function HAXCapabilityManifest({
                   group={group}
                   onCapabilityClick={onCapabilityClick}
                 />
-              )
+              ),
             )}
           </div>
         )}
@@ -486,7 +490,6 @@ export function HAXCapabilityManifest({
               <AlertItem
                 key={alert.id}
                 alert={alert}
-                onAction={onAlertAction}
                 onDismiss={onAlertDismiss}
               />
             ))}
@@ -503,7 +506,7 @@ export function HAXCapabilityManifest({
           <div
             className={cn(
               "flex gap-2 items-center justify-between min-h-[32px] px-2 py-[5.5px] rounded-md w-full",
-              onStatusClick && "cursor-pointer hover:bg-[#f8fafc]"
+              onStatusClick && "cursor-pointer hover:bg-[#f8fafc]",
             )}
             onClick={onStatusClick}
           >
@@ -512,7 +515,7 @@ export function HAXCapabilityManifest({
                 <div
                   className={cn(
                     "size-2 rounded-full",
-                    resolvedStatus.status === "connecting" && "animate-pulse"
+                    resolvedStatus.status === "connecting" && "animate-pulse",
                   )}
                   style={{ backgroundColor: statusColor }}
                 />
