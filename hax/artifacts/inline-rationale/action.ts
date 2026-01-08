@@ -16,15 +16,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCopilotAction } from "@copilotkit/react-core"
-import { INLINE_RATIONALE_DESCRIPTION } from "./description"
-import type { InlineRationaleArtifact, Intent, ImpactLevel, ExploitabilityLevel } from "./types"
+import { useCopilotAction } from "@copilotkit/react-core";
+import z from "zod";
+import { INLINE_RATIONALE_DESCRIPTION } from "./description";
+import type {
+  InlineRationaleArtifact,
+  Intent,
+  ImpactLevel,
+  ExploitabilityLevel,
+} from "./types";
+
+const RationaleItemZod = z.object({
+  label: z.string(),
+  value: z.string(),
+});
 
 interface UseInlineRationaleActionProps {
   addOrUpdateArtifact: (
     type: "inline-rationale",
     data: InlineRationaleArtifact["data"],
-  ) => void
+  ) => void;
 }
 
 export const useInlineRationaleAction = ({
@@ -88,7 +99,8 @@ export const useInlineRationaleAction = ({
       {
         name: "tagsJson",
         type: "string",
-        description: "Optional JSON string of tags array (e.g., ['v2.4.0', 'Production'])",
+        description:
+          "Optional JSON string of tags array (e.g., ['v2.4.0', 'Production'])",
         required: false,
       },
       {
@@ -118,18 +130,20 @@ export const useInlineRationaleAction = ({
           tagsJson,
           collapsible,
           collapsed,
-        } = args
+        } = args;
 
-        // Parse rationale JSON
-        let rationale = []
+        // Parse and validate rationale JSON with Zod
+        let rationale: z.infer<typeof RationaleItemZod>[] = [];
         if (rationaleJson) {
-          rationale = JSON.parse(rationaleJson)
+          const parsed = JSON.parse(rationaleJson);
+          rationale = z.array(RationaleItemZod).parse(parsed);
         }
 
-        // Parse tags JSON
-        let tags: string[] | undefined
+        // Parse and validate tags JSON with Zod
+        let tags: string[] | undefined;
         if (tagsJson) {
-          tags = JSON.parse(tagsJson)
+          const parsed = JSON.parse(tagsJson);
+          tags = z.array(z.string()).parse(parsed);
         }
 
         addOrUpdateArtifact("inline-rationale", {
@@ -146,15 +160,15 @@ export const useInlineRationaleAction = ({
           confidence,
           collapsible,
           collapsed,
-        })
+        });
 
-        return `Created inline rationale "${title}"`
+        return `Created inline rationale "${title}"`;
       } catch (error) {
-        console.error("Error in create_inline_rationale handler:", error)
+        console.error("Error in create_inline_rationale handler:", error);
         const errorMessage =
-          error instanceof Error ? error.message : "Unknown error"
-        return `Failed to create inline rationale: ${errorMessage}`
+          error instanceof Error ? error.message : "Unknown error";
+        return `Failed to create inline rationale: ${errorMessage}`;
       }
     },
-  })
-}
+  });
+};

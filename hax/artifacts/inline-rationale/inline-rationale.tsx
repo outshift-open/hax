@@ -16,11 +16,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import type {
   Intent,
   ImpactLevel,
@@ -28,7 +28,7 @@ import type {
   AssessmentSummary,
   RationaleItem,
   Metadata,
-} from "./types"
+} from "./types";
 
 // =============================================================================
 // Component Props
@@ -36,39 +36,39 @@ import type {
 
 export interface InlineRationaleProps {
   /** Unique identifier */
-  id: string
+  id: string;
   /** Assessment type - flexible string (e.g., "security_assessment", "code_review") */
-  assessmentType: string
+  assessmentType: string;
   /** Intent drives visual theme: warn=yellow, block=red, approve=green, inform=blue */
-  intent: Intent
+  intent: Intent;
   /** Display title */
-  title: string
+  title: string;
   /** Main description paragraph */
-  description: string
+  description: string;
   /** Structured summary for badges (impact + exploitability) */
-  summary: AssessmentSummary
+  summary: AssessmentSummary;
   /** Detail items displayed as "Label: Value" pairs */
-  rationale: RationaleItem[]
+  rationale: RationaleItem[];
   /** Confidence score 0-100 (badge color derived from intent) */
-  confidence: number
+  confidence: number;
   /** Optional metadata */
-  metadata?: Metadata
+  metadata?: Metadata;
   /** Optional: collapsed state */
-  collapsed?: boolean
+  collapsed?: boolean;
   /** Optional: enable collapse toggle */
-  collapsible?: boolean
+  collapsible?: boolean;
   /** Optional: collapse change callback */
-  onCollapseChange?: (collapsed: boolean) => void
+  onCollapseChange?: (collapsed: boolean) => void;
   /** Optional: additional CSS classes */
-  className?: string
+  className?: string;
 }
 
 // =============================================================================
 // Internal Style Mappings
 // =============================================================================
 
-type VariantKey = "critical" | "warning" | "success" | "info"
-type BadgeVariant = "default" | "success" | "warning" | "critical"
+type VariantKey = "critical" | "warning" | "success" | "info";
+type BadgeVariant = "default" | "success" | "warning" | "critical";
 
 /** Intent → card variant (background/border) */
 const INTENT_TO_VARIANT: Record<Intent, VariantKey> = {
@@ -76,7 +76,7 @@ const INTENT_TO_VARIANT: Record<Intent, VariantKey> = {
   approve: "success",
   block: "critical",
   inform: "info",
-}
+};
 
 /** Intent → confidence badge color */
 const INTENT_TO_BADGE_VARIANT: Record<Intent, BadgeVariant> = {
@@ -84,10 +84,13 @@ const INTENT_TO_BADGE_VARIANT: Record<Intent, BadgeVariant> = {
   approve: "success",
   block: "critical",
   inform: "success",
-}
+};
 
 /** Card variant styles */
-const VARIANT_STYLES: Record<VariantKey, { background: string; border: string }> = {
+const VARIANT_STYLES: Record<
+  VariantKey,
+  { background: string; border: string }
+> = {
   critical: {
     background: "bg-[#fff1f2]",
     border: "border-[#e11d48]",
@@ -104,7 +107,7 @@ const VARIANT_STYLES: Record<VariantKey, { background: string; border: string }>
     background: "bg-[#eff6ff]",
     border: "border-[#3b82f6]",
   },
-}
+};
 
 /** Badge variant styles */
 const BADGE_STYLES: Record<BadgeVariant, string> = {
@@ -112,7 +115,7 @@ const BADGE_STYLES: Record<BadgeVariant, string> = {
   success: "bg-[#a7f3d0] text-[#047857]",
   warning: "bg-[#fde68a] text-[#b45309]",
   critical: "bg-[#fecaca] text-[#dc2626]",
-}
+};
 
 /** Impact level labels */
 const IMPACT_LABELS: Record<ImpactLevel, string> = {
@@ -120,7 +123,7 @@ const IMPACT_LABELS: Record<ImpactLevel, string> = {
   medium: "Medium Impact",
   high: "High Impact",
   critical: "Critical Impact",
-}
+};
 
 /** Exploitability level labels */
 const EXPLOITABILITY_LABELS: Record<ExploitabilityLevel, string> = {
@@ -128,7 +131,7 @@ const EXPLOITABILITY_LABELS: Record<ExploitabilityLevel, string> = {
   low: "Exploitability : Low",
   medium: "Exploitability : Medium",
   high: "Exploitability : High",
-}
+};
 
 // =============================================================================
 // Component
@@ -148,31 +151,43 @@ export function InlineRationale({
   onCollapseChange,
   className,
 }: InlineRationaleProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(collapsed)
+  const [isCollapsed, setIsCollapsed] = React.useState(collapsed);
 
   React.useEffect(() => {
-    setIsCollapsed(collapsed)
-  }, [collapsed])
+    setIsCollapsed(collapsed);
+  }, [collapsed]);
 
   const handleToggleCollapse = () => {
     if (collapsible) {
-      const newState = !isCollapsed
-      setIsCollapsed(newState)
-      onCollapseChange?.(newState)
+      const newState = !isCollapsed;
+      setIsCollapsed(newState);
+      onCollapseChange?.(newState);
     }
-  }
+  };
 
   // Get card variant from intent
-  const variant = INTENT_TO_VARIANT[intent]
-  const variantStyle = VARIANT_STYLES[variant]
+  const variant = INTENT_TO_VARIANT[intent];
+  const variantStyle = VARIANT_STYLES[variant];
 
   // Build badges: Impact (gray) → Exploitability (gray) → Confidence (colored) → Tags (gray)
   const badges = [
-    { label: IMPACT_LABELS[summary.impact], variant: "default" as BadgeVariant },
-    { label: EXPLOITABILITY_LABELS[summary.exploitability], variant: "default" as BadgeVariant },
-    { label: `${confidence}% Confidence`, variant: INTENT_TO_BADGE_VARIANT[intent] },
-    ...(summary.tags?.map(tag => ({ label: tag, variant: "default" as BadgeVariant })) || []),
-  ]
+    {
+      label: IMPACT_LABELS[summary.impact],
+      variant: "default" as BadgeVariant,
+    },
+    {
+      label: EXPLOITABILITY_LABELS[summary.exploitability],
+      variant: "default" as BadgeVariant,
+    },
+    {
+      label: `${confidence}% Confidence`,
+      variant: INTENT_TO_BADGE_VARIANT[intent],
+    },
+    ...(summary.tags?.map((tag) => ({
+      label: tag,
+      variant: "default" as BadgeVariant,
+    })) || []),
+  ];
 
   return (
     <div
@@ -184,14 +199,14 @@ export function InlineRationale({
         "flex flex-col gap-4",
         variantStyle.background,
         variantStyle.border,
-        className
+        className,
       )}
     >
       {/* Header */}
       <div
         className={cn(
           "flex items-center justify-between gap-4 min-h-[24px]",
-          collapsible && "cursor-pointer"
+          collapsible && "cursor-pointer",
         )}
         onClick={handleToggleCollapse}
       >
@@ -210,7 +225,7 @@ export function InlineRationale({
                   "inline-flex items-center justify-center",
                   "min-h-[24px] px-2 py-[3px] rounded-lg",
                   "text-xs font-semibold leading-4 tracking-[0.18px] whitespace-nowrap",
-                  BADGE_STYLES[badge.variant]
+                  BADGE_STYLES[badge.variant],
                 )}
               >
                 {badge.label}
@@ -224,7 +239,7 @@ export function InlineRationale({
           <svg
             className={cn(
               "w-5 h-5 text-[#64748b] transition-transform shrink-0",
-              isCollapsed ? "rotate-0" : "rotate-180"
+              isCollapsed ? "rotate-0" : "rotate-180",
             )}
             fill="none"
             viewBox="0 0 24 24"
@@ -244,12 +259,7 @@ export function InlineRationale({
       {!isCollapsed && (
         <>
           {/* Separator - violet color as per Figma */}
-          <div className="w-full h-px relative">
-            <div
-              className="absolute inset-0"
-              style={{ backgroundColor: "#ddd6fe" }}
-            />
-          </div>
+          <div className="w-full h-px bg-violet-200" />
 
           {/* Body */}
           <div className="flex flex-col gap-[2px] w-full">
@@ -262,7 +272,10 @@ export function InlineRationale({
 
                 {/* Detail items */}
                 {rationale.map((item, index) => (
-                  <p key={index} className={cn(index < rationale.length - 1 && "mb-[14px]")}>
+                  <p
+                    key={index}
+                    className={cn(index < rationale.length - 1 && "mb-[14px]")}
+                  >
                     <span className="font-semibold">{item.label}:</span>
                     <span className="font-normal"> {item.value}</span>
                   </p>
@@ -273,7 +286,7 @@ export function InlineRationale({
         </>
       )}
     </div>
-  )
+  );
 }
 
 // =============================================================================
@@ -281,16 +294,16 @@ export function InlineRationale({
 // =============================================================================
 
 interface HAXInlineRationaleProps {
-  assessmentType: string
-  intent: Intent
-  title: string
-  description: string
-  summary: AssessmentSummary
-  rationale: RationaleItem[]
-  confidence: number
-  metadata?: Metadata
-  collapsed?: boolean
-  collapsible?: boolean
+  assessmentType: string;
+  intent: Intent;
+  title: string;
+  description: string;
+  summary: AssessmentSummary;
+  rationale: RationaleItem[];
+  confidence: number;
+  metadata?: Metadata;
+  collapsed?: boolean;
+  collapsible?: boolean;
 }
 
 export function HAXInlineRationale({
@@ -305,10 +318,11 @@ export function HAXInlineRationale({
   collapsed,
   collapsible,
 }: HAXInlineRationaleProps) {
+  const id = React.useId();
   return (
     <div className="m-4">
       <InlineRationale
-        id={`inline-rationale-${Date.now()}`}
+        id={`inline-rationale${id}`}
         assessmentType={assessmentType}
         intent={intent}
         title={title}
@@ -321,7 +335,7 @@ export function HAXInlineRationale({
         collapsible={collapsible}
       />
     </div>
-  )
+  );
 }
 
-export default InlineRationale
+export default InlineRationale;
