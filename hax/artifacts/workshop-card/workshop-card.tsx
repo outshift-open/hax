@@ -22,24 +22,13 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { GeneratedUiWrapper } from "@/components/generated-ui-wrapper";
-import {
-  CalendarIcon,
-  ClockIcon,
-  VideoIcon,
-  UsersIcon,
-} from "lucide-react";
+import { CalendarIcon, ClockIcon, VideoIcon, UsersIcon } from "lucide-react";
 import type { VariantProps } from "class-variance-authority";
-import type { WorkshopCardData } from "./types";
+import type { WorkshopCardData, Attendee } from "./types";
 
 // ============================================================================
 // Types
 // ============================================================================
-
-export interface Attendee {
-  id: string;
-  name: string;
-  avatarUrl?: string;
-}
 
 export interface EventDetailItemProps {
   icon?: React.ReactNode;
@@ -93,11 +82,11 @@ function EventDetailItem({
   className,
 }: EventDetailItemProps) {
   return (
-    <div className={cn("flex items-start gap-2 px-2 py-1.5 min-h-8", className)}>
+    <div
+      className={cn("flex items-start gap-2 px-2 py-1.5 min-h-8", className)}
+    >
       {icon && (
-        <div className="flex-shrink-0 size-5 text-foreground">
-          {icon}
-        </div>
+        <div className="flex-shrink-0 size-5 text-foreground">{icon}</div>
       )}
       <div className="flex flex-col flex-1 min-w-0">
         <span className="text-sm font-normal text-foreground tracking-[0.07px] leading-[21px]">
@@ -138,7 +127,7 @@ function AvatarStack({
           className={cn(
             avatarSizes[size],
             "border border-white",
-            index > 0 && "-ml-2"
+            index > 0 && "-ml-2",
           )}
         >
           {attendee.avatarUrl ? (
@@ -158,7 +147,7 @@ function AvatarStack({
             className={cn(
               avatarSizes[size],
               "rounded-full bg-secondary flex items-center justify-center -ml-2",
-              "text-xs font-semibold text-foreground tracking-[0.18px]"
+              "text-xs font-semibold text-foreground tracking-[0.18px]",
             )}
           >
             +{remainingCount}
@@ -286,7 +275,7 @@ export function HAXWorkshopCard({
           "bg-white rounded-lg border border-border shadow-sm",
           "flex flex-col gap-4 p-5",
           "max-w-md w-full",
-          className
+          className,
         )}
       >
         {/* Header with badges */}

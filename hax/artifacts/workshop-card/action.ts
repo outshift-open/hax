@@ -17,13 +17,14 @@
  */
 
 import { useCopilotAction } from "@copilotkit/react-core";
-import { ArtifactTab } from "./types";
+import { z } from "zod";
+import { WorkshopCardArtifact, AttendeeZod } from "./types";
 import { WORKSHOP_CARD_DESCRIPTION } from "./description";
 
 interface UseWorkshopCardActionProps {
   addOrUpdateArtifact: (
     type: "workshopCard",
-    data: Extract<ArtifactTab, { type: "workshopCard" }>["data"]
+    data: WorkshopCardArtifact["data"],
   ) => void;
 }
 
@@ -49,7 +50,8 @@ export const useWorkshopCardAction = ({
       {
         name: "eventType",
         type: "string",
-        description: "Type of event (e.g., 'Online Event', 'Workshop', 'Webinar', 'Conference')",
+        description:
+          "Type of event (e.g., 'Online Event', 'Workshop', 'Webinar', 'Conference')",
         required: false,
         default: "Online Event",
       },
@@ -63,7 +65,8 @@ export const useWorkshopCardAction = ({
       {
         name: "date",
         type: "string",
-        description: "The date of the event (e.g., 'Tuesday, January 15, 2025')",
+        description:
+          "The date of the event (e.g., 'Tuesday, January 15, 2025')",
         required: false,
       },
       {
@@ -81,7 +84,8 @@ export const useWorkshopCardAction = ({
       {
         name: "location",
         type: "string",
-        description: "Location or platform (e.g., 'Zoom Meeting', 'Google Meet', 'Microsoft Teams')",
+        description:
+          "Location or platform (e.g., 'Zoom Meeting', 'Google Meet', 'Microsoft Teams')",
         required: false,
       },
       {
@@ -127,41 +131,55 @@ export const useWorkshopCardAction = ({
       },
     ],
     handler: async (args) => {
-      const {
-        title,
-        description,
-        eventType,
-        status,
-        date,
-        time,
-        duration,
-        location,
-        attendeeCount,
-        attendees,
-        maxDisplayedAttendees,
-        showJoinButton,
-        showDeclineButton,
-        showMaybeButton,
-      } = args;
+      try {
+        const {
+          title,
+          description,
+          eventType,
+          status,
+          date,
+          time,
+          duration,
+          location,
+          attendeeCount,
+          attendees,
+          maxDisplayedAttendees,
+          showJoinButton,
+          showDeclineButton,
+          showMaybeButton,
+        } = args;
 
-      addOrUpdateArtifact("workshopCard", {
-        title: title ?? "Untitled Event",
-        description: description,
-        eventType: eventType ?? "Online Event",
-        status: (status as "confirmed" | "pending" | "cancelled") ?? "confirmed",
-        date: date,
-        time: time,
-        duration: duration,
-        location: location,
-        attendeeCount: attendeeCount ?? 0,
-        attendees: attendees ?? [],
-        maxDisplayedAttendees: maxDisplayedAttendees ?? 3,
-        showJoinButton: showJoinButton ?? true,
-        showDeclineButton: showDeclineButton ?? true,
-        showMaybeButton: showMaybeButton ?? true,
-      });
+        // Validate attendees array with Zod if provided
+        let validatedAttendees: z.infer<typeof AttendeeZod>[] | undefined;
+        if (attendees && Array.isArray(attendees)) {
+          validatedAttendees = z.array(AttendeeZod).parse(attendees);
+        }
 
-      return `Displayed workshop card for "${title}"${date ? ` on ${date}` : ""}${location ? ` at ${location}` : ""}.`;
+        addOrUpdateArtifact("workshopCard", {
+          title: title ?? "Untitled Event",
+          description: description,
+          eventType: eventType ?? "Online Event",
+          status:
+            (status as "confirmed" | "pending" | "cancelled") ?? "confirmed",
+          date: date,
+          time: time,
+          duration: duration,
+          location: location,
+          attendeeCount: attendeeCount ?? 0,
+          attendees: validatedAttendees ?? [],
+          maxDisplayedAttendees: maxDisplayedAttendees ?? 3,
+          showJoinButton: showJoinButton ?? true,
+          showDeclineButton: showDeclineButton ?? true,
+          showMaybeButton: showMaybeButton ?? true,
+        });
+
+        return `Displayed workshop card for "${title}"${date ? ` on ${date}` : ""}${location ? ` at ${location}` : ""}.`;
+      } catch (error) {
+        console.error("Error in show_workshop_card handler:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        return `Failed to create workshop card: ${errorMessage}`;
+      }
     },
   });
 };
