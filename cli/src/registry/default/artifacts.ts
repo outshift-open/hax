@@ -353,6 +353,56 @@ export const artifacts: RegistryItem[] = [
     ],
   },
   {
+    name: "capability-manifest",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+    ],
+    registryDependencies: [],
+    files: [
+      {
+        path: "hax/artifacts/capability-manifest/capability-manifest.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/capability-manifest.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/capability-manifest/action.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/action.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/capability-manifest/types.ts",
+        type: "registry:types",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/types.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/capability-manifest/index.ts",
+        type: "registry:index",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/index.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/capability-manifest/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/description.ts",
+        ),
+      },
+    ],
+  },
+  {
     name: "workshop-card",
     type: "registry:artifacts",
     dependencies: [
@@ -370,7 +420,9 @@ export const artifacts: RegistryItem[] = [
       {
         path: "hax/artifacts/workshop-card/workshop-card.tsx",
         type: "registry:component",
-        content: readComponentFile("hax/artifacts/workshop-card/workshop-card.tsx"),
+        content: readComponentFile(
+          "hax/artifacts/workshop-card/workshop-card.tsx",
+        ),
       },
       {
         path: "hax/artifacts/workshop-card/action.ts",
@@ -390,7 +442,9 @@ export const artifacts: RegistryItem[] = [
       {
         path: "hax/artifacts/workshop-card/description.ts",
         type: "registry:description",
-        content: readComponentFile("hax/artifacts/workshop-card/description.ts"),
+        content: readComponentFile(
+          "hax/artifacts/workshop-card/description.ts",
+        ),
       },
     ],
   },
