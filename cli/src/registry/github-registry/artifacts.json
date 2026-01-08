@@ -155,6 +155,24 @@
       { "name": "description.ts", "type": "registry:description" }
     ]
   },
+  "inline-rationale": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core"
+    ],
+    "registryDependencies": [],
+    "files": [
+      { "name": "inline-rationale.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  },
   "capability-manifest": {
     "type": "registry:artifacts",
     "dependencies": [
@@ -168,6 +186,32 @@
     "registryDependencies": [],
     "files": [
       { "name": "capability-manifest.tsx", "type": "registry:component" },
+      { "name": "action.ts", "type": "registry:hook" },
+      { "name": "types.ts", "type": "registry:types" },
+      { "name": "index.ts", "type": "registry:index" },
+      { "name": "description.ts", "type": "registry:description" }
+    ]
+  },
+  "workshop-card": {
+    "type": "registry:artifacts",
+    "dependencies": [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+      "class-variance-authority",
+      "@radix-ui/react-avatar"
+    ],
+    "registryDependencies": [
+      "button",
+      "badge",
+      "avatar",
+      "generated-ui-wrapper"
+    ],
+    "files": [
+      { "name": "workshop-card.tsx", "type": "registry:component" },
       { "name": "action.ts", "type": "registry:hook" },
       { "name": "types.ts", "type": "registry:types" },
       { "name": "index.ts", "type": "registry:index" },

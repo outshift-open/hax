@@ -402,4 +402,50 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "workshop-card",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+      "class-variance-authority",
+      "@radix-ui/react-avatar",
+    ],
+    registryDependencies: ["button", "badge", "avatar", "generated-ui-wrapper"],
+    files: [
+      {
+        path: "hax/artifacts/workshop-card/workshop-card.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/workshop-card/workshop-card.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/workshop-card/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/artifacts/workshop-card/action.ts"),
+      },
+      {
+        path: "hax/artifacts/workshop-card/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/workshop-card/types.ts"),
+      },
+      {
+        path: "hax/artifacts/workshop-card/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/workshop-card/index.ts"),
+      },
+      {
+        path: "hax/artifacts/workshop-card/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/workshop-card/description.ts",
+        ),
+      },
+    ],
+  },
 ]
