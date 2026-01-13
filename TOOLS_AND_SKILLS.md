@@ -44,9 +44,10 @@ This document outlines the technologies, tools, and skills required to work on t
 
 ### UI Frameworks and Libraries
 
-- **React** (v18.0+/v19.1+)
+- **React**
+  - v18.0+ (root workspace), v19.1+ (CLI workspace)
   - Component-based UI development
-  - React 18 hooks and modern patterns
+  - React hooks and modern patterns
   - JSX syntax with TypeScript
 
 - **React DOM** (v18.0+)
@@ -68,7 +69,7 @@ This document outlines the technologies, tools, and skills required to work on t
 
 - **Tailwind CSS** (implicit via dependencies)
   - Utility-first CSS framework
-  - `tailwind-merge` (v2.0+/v3.3+) - For merging Tailwind classes
+  - `tailwind-merge` (v2.0+ in root, v3.3+ in CLI) - For merging Tailwind classes
   - `class-variance-authority` (v0.7+) - For variant-based styling
   - `clsx` (v2.0+) - For conditional className composition
 
@@ -94,7 +95,8 @@ This document outlines the technologies, tools, and skills required to work on t
 
 ### UI Utilities
 
-- **Lucide React** (v0.400+/v0.534+)
+- **Lucide React**
+  - v0.400+ (root workspace), v0.534+ (CLI workspace)
   - Icon library with React components
   - Clean, consistent icon set
 
@@ -203,10 +205,12 @@ This document outlines the technologies, tools, and skills required to work on t
   - YAML parsing and generation
   - Configuration file support
 
-- **Zod** (v3.22+/v4.0+)
+- **Zod**
+  - v3.22+ (root workspace), v4.0+ (CLI workspace)
   - TypeScript-first schema validation
   - Runtime type checking
   - Used for configuration validation
+  - Note: Different major versions across workspaces
 
 ### Date Handling
 
@@ -250,7 +254,8 @@ This document outlines the technologies, tools, and skills required to work on t
 
 - **GitHub Actions**
   - Automated CI/CD pipelines
-  - See `.github/workflows/test-and-build.yml`
+  - See `.github/workflows/test-and-build.yml` (basic validation)
+  - See `.github/workflows/ci.yaml` (full CI/CD pipeline with Docker, Helm, etc.)
   - Project structure validation
 
 ---
