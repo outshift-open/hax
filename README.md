@@ -31,6 +31,16 @@ The HAX SDK includes a CLI to `init` setup, `add` components, and more.
 
 To get started with the CLI, see the [CLI README](cli/README.md) for installation and usage instructions.
 
+## Tools and Skills
+
+Want to contribute or learn what technologies power HAX? Check out our comprehensive [Tools and Skills Guide](TOOLS_AND_SKILLS.md) which covers:
+
+- Core technologies (TypeScript, React, Python)
+- Frontend frameworks and UI libraries
+- CLI development tools
+- AI/Agent integration with CopilotKit
+- Build, test, and deployment tools
+
 ## Roadmap
 
 See the [open issues](https://github.com/outshift-open/hax/issues) for a list
