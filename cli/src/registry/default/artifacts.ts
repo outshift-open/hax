@@ -394,49 +394,6 @@ export const artifacts: RegistryItem[] = [
     ],
   },
   {
-    name: "inline-rationale",
-    type: "registry:artifacts",
-    dependencies: [
-      "react",
-      "clsx",
-      "tailwind-merge",
-      "zod",
-      "@copilotkit/react-core",
-    ],
-    registryDependencies: [],
-    files: [
-      {
-        path: "hax/artifacts/inline-rationale/inline-rationale.tsx",
-        type: "registry:component",
-        content: readComponentFile(
-          "hax/artifacts/inline-rationale/inline-rationale.tsx",
-        ),
-      },
-      {
-        path: "hax/artifacts/inline-rationale/action.ts",
-        type: "registry:hook",
-        content: readComponentFile("hax/artifacts/inline-rationale/action.ts"),
-      },
-      {
-        path: "hax/artifacts/inline-rationale/types.ts",
-        type: "registry:types",
-        content: readComponentFile("hax/artifacts/inline-rationale/types.ts"),
-      },
-      {
-        path: "hax/artifacts/inline-rationale/index.ts",
-        type: "registry:index",
-        content: readComponentFile("hax/artifacts/inline-rationale/index.ts"),
-      },
-      {
-        path: "hax/artifacts/inline-rationale/description.ts",
-        type: "registry:description",
-        content: readComponentFile(
-          "hax/artifacts/inline-rationale/description.ts",
-        ),
-      },
-    ],
-  },
-  {
     name: "capability-manifest",
     type: "registry:artifacts",
     dependencies: [
@@ -487,7 +444,7 @@ export const artifacts: RegistryItem[] = [
     ],
   },
   {
-    name: "co-editing",
+    name: "workshop-card",
     type: "registry:artifacts",
     dependencies: [
       "react",
@@ -496,126 +453,38 @@ export const artifacts: RegistryItem[] = [
       "zod",
       "@copilotkit/react-core",
       "lucide-react",
+      "class-variance-authority",
+      "@radix-ui/react-avatar",
     ],
-    registryDependencies: ["button"],
+    registryDependencies: ["button", "badge", "avatar", "generated-ui-wrapper"],
     files: [
       {
-        path: "hax/artifacts/co-editing/co-editing.tsx",
-        type: "registry:component",
-        content: readComponentFile("hax/artifacts/co-editing/co-editing.tsx"),
-      },
-      {
-        path: "hax/artifacts/co-editing/action.ts",
-        type: "registry:hook",
-        content: readComponentFile("hax/artifacts/co-editing/action.ts"),
-      },
-      {
-        path: "hax/artifacts/co-editing/types.ts",
-        type: "registry:types",
-        content: readComponentFile("hax/artifacts/co-editing/types.ts"),
-      },
-      {
-        path: "hax/artifacts/co-editing/index.ts",
-        type: "registry:index",
-        content: readComponentFile("hax/artifacts/co-editing/index.ts"),
-      },
-      {
-        path: "hax/artifacts/co-editing/description.ts",
-        type: "registry:description",
-        content: readComponentFile("hax/artifacts/co-editing/description.ts"),
-      },
-    ],
-  },
-  {
-    name: "event-workshop-card",
-    type: "registry:artifacts",
-    dependencies: [
-      "react",
-      "clsx",
-      "tailwind-merge",
-      "zod",
-      "@copilotkit/react-core",
-      "lucide-react",
-    ],
-    registryDependencies: ["avatar", "badge"],
-    files: [
-      {
-        path: "hax/artifacts/event-workshop-card/event-workshop-card.tsx",
+        path: "hax/artifacts/workshop-card/workshop-card.tsx",
         type: "registry:component",
         content: readComponentFile(
-          "hax/artifacts/event-workshop-card/event-workshop-card.tsx",
+          "hax/artifacts/workshop-card/workshop-card.tsx",
         ),
       },
       {
-        path: "hax/artifacts/event-workshop-card/action.ts",
+        path: "hax/artifacts/workshop-card/action.ts",
         type: "registry:hook",
-        content: readComponentFile(
-          "hax/artifacts/event-workshop-card/action.ts",
-        ),
+        content: readComponentFile("hax/artifacts/workshop-card/action.ts"),
       },
       {
-        path: "hax/artifacts/event-workshop-card/types.ts",
+        path: "hax/artifacts/workshop-card/types.ts",
         type: "registry:types",
-        content: readComponentFile(
-          "hax/artifacts/event-workshop-card/types.ts",
-        ),
+        content: readComponentFile("hax/artifacts/workshop-card/types.ts"),
       },
       {
-        path: "hax/artifacts/event-workshop-card/index.ts",
+        path: "hax/artifacts/workshop-card/index.ts",
         type: "registry:index",
-        content: readComponentFile(
-          "hax/artifacts/event-workshop-card/index.ts",
-        ),
+        content: readComponentFile("hax/artifacts/workshop-card/index.ts"),
       },
       {
-        path: "hax/artifacts/event-workshop-card/description.ts",
+        path: "hax/artifacts/workshop-card/description.ts",
         type: "registry:description",
         content: readComponentFile(
-          "hax/artifacts/event-workshop-card/description.ts",
-        ),
-      },
-    ],
-  },
-  {
-    name: "routing-changes",
-    type: "registry:artifacts",
-    dependencies: [
-      "react",
-      "clsx",
-      "tailwind-merge",
-      "zod",
-      "@copilotkit/react-core",
-      "lucide-react",
-    ],
-    registryDependencies: ["button"],
-    files: [
-      {
-        path: "hax/artifacts/routing-changes/routing-changes.tsx",
-        type: "registry:component",
-        content: readComponentFile(
-          "hax/artifacts/routing-changes/routing-changes.tsx",
-        ),
-      },
-      {
-        path: "hax/artifacts/routing-changes/action.ts",
-        type: "registry:hook",
-        content: readComponentFile("hax/artifacts/routing-changes/action.ts"),
-      },
-      {
-        path: "hax/artifacts/routing-changes/types.ts",
-        type: "registry:types",
-        content: readComponentFile("hax/artifacts/routing-changes/types.ts"),
-      },
-      {
-        path: "hax/artifacts/routing-changes/index.ts",
-        type: "registry:index",
-        content: readComponentFile("hax/artifacts/routing-changes/index.ts"),
-      },
-      {
-        path: "hax/artifacts/routing-changes/description.ts",
-        type: "registry:description",
-        content: readComponentFile(
-          "hax/artifacts/routing-changes/description.ts",
+          "hax/artifacts/workshop-card/description.ts",
         ),
       },
     ],
