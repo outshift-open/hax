@@ -16,20 +16,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCopilotAction } from "@copilotkit/react-core"
-import { ArtifactTab } from "./types"
-import { FINDINGS_DESCRIPTION } from "./description"
+import { useCopilotAction } from "@copilotkit/react-core";
+import { FindingsArtifact } from "./types";
+import { FINDINGS_DESCRIPTION } from "./description";
 
 interface UseFindingsActionProps {
-  addOrUpdateArtifact: (
-    type: "findings",
-    data: Extract<ArtifactTab, { type: "findings" }>["data"],
-  ) => void
+  addOrUpdateArtifact: (type: "findings", data: FindingsArtifact["data"]) => void;
 }
 
-export const useFindingsAction = ({
-  addOrUpdateArtifact,
-}: UseFindingsActionProps) => {
+export const useFindingsAction = ({ addOrUpdateArtifact }: UseFindingsActionProps) => {
   useCopilotAction({
     name: "create_findings",
     description: FINDINGS_DESCRIPTION,
@@ -37,50 +32,23 @@ export const useFindingsAction = ({
       {
         name: "title",
         type: "string",
-        description: "Header title for the findings panel",
+        description: "Panel title for the findings",
         required: true,
       },
       {
         name: "findingsJson",
         type: "string",
-        description:
-          "JSON string of findings array. Each finding must have: id (unique string), title (string), description (string), and optionally sources (array of {label: string, href?: string})",
+        description: "JSON string of findings array: [{id, title, description, sources?: [{label, href?}]}]",
         required: true,
-      },
-      {
-        name: "sourcesLabel",
-        type: "string",
-        description: "Custom label for sources section (default: 'Sources:')",
-        required: false,
-      },
-      {
-        name: "maxVisibleSources",
-        type: "number",
-        description:
-          "Maximum number of source chips to show before collapsing into '+N' (default: 2)",
-        required: false,
       },
     ],
     handler: async (args) => {
-      try {
-        const { title, findingsJson, sourcesLabel, maxVisibleSources } = args
+      const { title, findingsJson } = args;
+      const findings = JSON.parse(findingsJson);
 
-        const findings = JSON.parse(findingsJson)
+      addOrUpdateArtifact("findings", { title, findings });
 
-        addOrUpdateArtifact("findings", {
-          title,
-          findings,
-          sourcesLabel,
-          maxVisibleSources,
-        })
-
-        return `Created findings panel "${title}" with ${findings.length} findings`
-      } catch (error) {
-        console.error("Error in create_findings handler:", error)
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error"
-        return `Failed to create findings: ${errorMessage}`
-      }
+      return `Created findings panel "${title}" with ${findings.length} findings`;
     },
-  })
-}
+  });
+};

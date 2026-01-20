@@ -16,23 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export {
-  HAXFindings,
-  FindingsPanel,
-  FindingsCard,
-  SourceChips,
-  SourceChip,
-  AllSourcesPopover,
-} from "./findings";
-export type {
-  Finding,
-  FindingsPanelProps,
-  FindingsCardProps,
-  SourceChipsProps,
-  SourceChipProps,
-  AllSourcesPopoverProps,
-  HAXFindingsProps,
-} from "./findings";
+export { HAXFindings } from "./findings";
 export { useFindingsAction } from "./action";
-export type { FindingsArtifact, Source } from "./types";
+export type { FindingsArtifact, Finding, Source } from "./types";
 export { FindingsArtifactZod, FindingZod, SourceZod } from "./types";

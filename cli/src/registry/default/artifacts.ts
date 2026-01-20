@@ -364,7 +364,7 @@ export const artifacts: RegistryItem[] = [
       "lucide-react",
       "@radix-ui/react-popover",
     ],
-    registryDependencies: ["button", "popover"],
+    registryDependencies: ["button", "popover", "findings"],
     files: [
       {
         path: "hax/artifacts/findings/findings.tsx",

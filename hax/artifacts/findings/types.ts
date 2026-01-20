@@ -16,19 +16,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import z from "zod"
+import { z } from "zod";
 
-const FindingSourceZod = z.object({
+export const SourceZod = z.object({
   label: z.string(),
   href: z.string().optional(),
-})
+});
 
-const FindingZod = z.object({
+export const FindingZod = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
-  sources: z.array(FindingSourceZod).optional(),
-})
+  sources: z.array(SourceZod).optional(),
+});
 
 export const FindingsArtifactZod = z.object({
   id: z.string(),
@@ -36,12 +36,9 @@ export const FindingsArtifactZod = z.object({
   data: z.object({
     title: z.string(),
     findings: z.array(FindingZod),
-    sourcesLabel: z.string().optional(),
-    maxVisibleSources: z.number().optional(),
   }),
-})
+});
 
-export type FindingsArtifact = z.infer<typeof FindingsArtifactZod>
-
-export const ArtifactTabZod = z.discriminatedUnion("type", [FindingsArtifactZod])
-export type ArtifactTab = z.infer<typeof ArtifactTabZod>
+export type FindingsArtifact = z.infer<typeof FindingsArtifactZod>;
+export type Finding = z.infer<typeof FindingZod>;
+export type Source = z.infer<typeof SourceZod>;

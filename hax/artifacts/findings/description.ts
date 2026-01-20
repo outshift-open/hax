@@ -17,21 +17,21 @@
  */
 
 export const FINDINGS_DESCRIPTION =
-  `Use findings artifacts to present a list of key insights, recommendations, or discoveries with their supporting sources. Best for research summaries, analysis results, audit findings, security assessments, and any situation where users need to see multiple findings with source attribution.
+  `Use findings panels for answering factual questions, research queries, and displaying analysis results with source attribution. This is the PRIMARY artifact for questions like "Is X safe?", "What is Y?", "How does Z work?".
 
-Structure each finding with a clear title, descriptive explanation, and optional source references. The panel displays findings in a clean, scannable format with source chips for quick reference.
+PREFER findings over thinking-process for simple research/factual questions. Use thinking-process only when user explicitly asks to see reasoning steps.
 
-Features:
-- Panel header with customizable title
-- Individual finding cards with title and description
-- Source chips with overflow handling (shows "+N" when exceeding maxVisibleSources)
-- Clean, professional styling following design system guidelines
+Best for:
+- Factual questions and research queries
+- AI research results and analysis summaries
+- Security findings and audit results
+- Recommendations with supporting evidence
 
-Best practices:
-- Keep finding titles concise and actionable (under 10 words)
-- Provide clear, specific descriptions that explain the finding's significance
-- Include relevant sources to build credibility and enable follow-up
-- Limit to 3-7 findings per panel to maintain readability
-- Use consistent source labeling conventions
+Include a panel title and one or more findings. Each finding should have:
+- Clear title summarizing the key insight
+- Detailed description with the answer/information
+- Relevant sources for credibility and verification
 
-Don't use findings for simple lists without context or single-item displays. Avoid overly long descriptions that should be broken into separate findings.` as const
+Write clear, actionable finding descriptions. Include all relevant sources for each finding. Group related findings together. Keep findings focused and specific. Ensure each finding has a unique ID.
+
+Don't use for: Complex multi-step debugging workflows (use thinking-process), code examples (use code-editor), or simple status updates.` as const;

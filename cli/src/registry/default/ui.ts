@@ -207,4 +207,54 @@ export const uiComponents: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "popover",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-popover", "clsx", "tailwind-merge"],
+    files: [
+      {
+        path: "hax/components/ui/popover.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/ui/popover.tsx"),
+      },
+    ],
+  },
+  {
+    name: "findings",
+    type: "registry:ui",
+    dependencies: ["clsx", "tailwind-merge", "@radix-ui/react-popover"],
+    registryDependencies: ["button", "popover"],
+    files: [
+      {
+        path: "hax/components/findings/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/components/findings/index.ts"),
+      },
+      {
+        path: "hax/components/findings/FindingsPanel.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/findings/FindingsPanel.tsx"),
+      },
+      {
+        path: "hax/components/findings/FindingsCard.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/findings/FindingsCard.tsx"),
+      },
+      {
+        path: "hax/components/findings/SourceChips.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/findings/SourceChips.tsx"),
+      },
+      {
+        path: "hax/components/findings/SourceChip.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/findings/SourceChip.tsx"),
+      },
+      {
+        path: "hax/components/findings/AllSourcesPopover.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/components/findings/AllSourcesPopover.tsx"),
+      },
+    ],
+  },
 ]

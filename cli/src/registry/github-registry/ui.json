@@ -101,5 +101,24 @@
     "dependencies": ["@radix-ui/react-avatar", "clsx", "tailwind-merge"],
     "registryDependencies": [],
     "files": [{ "name": "avatar.tsx", "type": "registry:component" }]
+  },
+  "popover": {
+    "type": "registry:ui",
+    "dependencies": ["@radix-ui/react-popover", "clsx", "tailwind-merge"],
+    "registryDependencies": [],
+    "files": [{ "name": "popover.tsx", "type": "registry:component" }]
+  },
+  "findings": {
+    "type": "registry:ui",
+    "dependencies": ["clsx", "tailwind-merge", "@radix-ui/react-popover"],
+    "registryDependencies": ["button", "popover"],
+    "files": [
+      { "name": "index.ts", "type": "registry:index", "path": "hax/components/findings/index.ts" },
+      { "name": "FindingsPanel.tsx", "type": "registry:component", "path": "hax/components/findings/FindingsPanel.tsx" },
+      { "name": "FindingsCard.tsx", "type": "registry:component", "path": "hax/components/findings/FindingsCard.tsx" },
+      { "name": "SourceChips.tsx", "type": "registry:component", "path": "hax/components/findings/SourceChips.tsx" },
+      { "name": "SourceChip.tsx", "type": "registry:component", "path": "hax/components/findings/SourceChip.tsx" },
+      { "name": "AllSourcesPopover.tsx", "type": "registry:component", "path": "hax/components/findings/AllSourcesPopover.tsx" }
+    ]
   }
 }
