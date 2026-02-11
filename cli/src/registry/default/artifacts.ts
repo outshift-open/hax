@@ -536,4 +536,53 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "diagnostic-report",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
+    registryDependencies: ["button", "progress"],
+    files: [
+      {
+        path: "hax/artifacts/diagnostic-report/diagnostic-report.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/diagnostic-report.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/diagnostic-report/action.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/action.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/diagnostic-report/types.ts",
+        type: "registry:types",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/types.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/diagnostic-report/index.ts",
+        type: "registry:index",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/index.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/diagnostic-report/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/description.ts",
+        ),
+      },
+    ],
+  },
 ]
