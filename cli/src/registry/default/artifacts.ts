@@ -352,4 +352,287 @@ export const artifacts: RegistryItem[] = [
       },
     ],
   },
+  {
+    name: "capability-manifest",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+    ],
+    registryDependencies: [],
+    files: [
+      {
+        path: "hax/artifacts/capability-manifest/capability-manifest.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/capability-manifest.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/capability-manifest/action.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/action.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/capability-manifest/types.ts",
+        type: "registry:types",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/types.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/capability-manifest/index.ts",
+        type: "registry:index",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/index.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/capability-manifest/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/capability-manifest/description.ts",
+        ),
+      },
+    ],
+  },
+  {
+    name: "workshop-card",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+      "class-variance-authority",
+      "@radix-ui/react-avatar",
+    ],
+    registryDependencies: ["button", "badge", "avatar", "generated-ui-wrapper"],
+    files: [
+      {
+        path: "hax/artifacts/workshop-card/workshop-card.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/workshop-card/workshop-card.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/workshop-card/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/artifacts/workshop-card/action.ts"),
+      },
+      {
+        path: "hax/artifacts/workshop-card/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/workshop-card/types.ts"),
+      },
+      {
+        path: "hax/artifacts/workshop-card/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/workshop-card/index.ts"),
+      },
+      {
+        path: "hax/artifacts/workshop-card/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/workshop-card/description.ts",
+        ),
+      },
+    ],
+  },
+  {
+    name: "findings",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
+    registryDependencies: [],
+    files: [
+      {
+        path: "hax/artifacts/findings/findings.tsx",
+        type: "registry:component",
+        content: readComponentFile("hax/artifacts/findings/findings.tsx"),
+      },
+      {
+        path: "hax/artifacts/findings/action.ts",
+        type: "registry:hook",
+        content: readComponentFile("hax/artifacts/findings/action.ts"),
+      },
+      {
+        path: "hax/artifacts/findings/types.ts",
+        type: "registry:types",
+        content: readComponentFile("hax/artifacts/findings/types.ts"),
+      },
+      {
+        path: "hax/artifacts/findings/index.ts",
+        type: "registry:index",
+        content: readComponentFile("hax/artifacts/findings/index.ts"),
+      },
+      {
+        path: "hax/artifacts/findings/description.ts",
+        type: "registry:description",
+        content: readComponentFile("hax/artifacts/findings/description.ts"),
+      },
+    ],
+  },
+  {
+    name: "contextual-explanation",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
+    registryDependencies: ["button"],
+    files: [
+      {
+        path: "hax/artifacts/contextual-explanation/contextual-explanation.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/contextual-explanation.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/contextual-explanation/action.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/action.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/contextual-explanation/types.ts",
+        type: "registry:types",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/types.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/contextual-explanation/index.ts",
+        type: "registry:index",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/index.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/contextual-explanation/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/contextual-explanation/description.ts",
+        ),
+      },
+    ],
+  },
+  {
+    name: "diagnostic-report",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+    ],
+    registryDependencies: ["button", "progress"],
+    files: [
+      {
+        path: "hax/artifacts/diagnostic-report/diagnostic-report.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/diagnostic-report.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/diagnostic-report/action.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/action.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/diagnostic-report/types.ts",
+        type: "registry:types",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/types.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/diagnostic-report/index.ts",
+        type: "registry:index",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/index.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/diagnostic-report/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/diagnostic-report/description.ts",
+        ),
+      },
+    ],
+  },
+  {
+    name: "thinking-process",
+    type: "registry:artifacts",
+    dependencies: [
+      "react",
+      "clsx",
+      "tailwind-merge",
+      "zod",
+      "@copilotkit/react-core",
+      "lucide-react",
+    ],
+    registryDependencies: [],
+    files: [
+      {
+        path: "hax/artifacts/thinking-process/thinking-process.tsx",
+        type: "registry:component",
+        content: readComponentFile(
+          "hax/artifacts/thinking-process/thinking-process.tsx",
+        ),
+      },
+      {
+        path: "hax/artifacts/thinking-process/action.ts",
+        type: "registry:hook",
+        content: readComponentFile(
+          "hax/artifacts/thinking-process/action.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/thinking-process/types.ts",
+        type: "registry:types",
+        content: readComponentFile(
+          "hax/artifacts/thinking-process/types.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/thinking-process/index.ts",
+        type: "registry:index",
+        content: readComponentFile(
+          "hax/artifacts/thinking-process/index.ts",
+        ),
+      },
+      {
+        path: "hax/artifacts/thinking-process/description.ts",
+        type: "registry:description",
+        content: readComponentFile(
+          "hax/artifacts/thinking-process/description.ts",
+        ),
+      },
+    ],
+  },
 ]
